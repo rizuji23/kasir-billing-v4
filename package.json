@@ -1,26 +1,36 @@
 {
   "name": "kasir",
-  "version": "0.1.0",
+  "version": "4.0.0",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
+    "@types/moment-timezone": "^0.5.30",
     "@types/node": "^16.18.3",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.8",
+    "@types/react-router-dom": "^5.3.3",
+    "node-polyfill-webpack-plugin": "^2.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.3",
     "react-scripts": "5.0.1",
+    "react-toastify": "^9.1.1",
     "typescript": "^4.8.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start:web": "react-scripts start",
+    "build:web": "react-scripts build",
+    "start": "electron ./dist/src/main.js",
+    "start:dev": " concurrently \"npm run start:web\" \"yarn run electron\"",
+    "electron": "wait-on http://localhost:3000 && npm start",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "electron-rebuild",
+    "build-ts": "tsc"
   },
   "eslintConfig": {
     "extends": [
@@ -39,5 +49,30 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "browser": {
+    "crypto": false,
+    "fs": false,
+    "path": false,
+    "os": false,
+    "net": false,
+    "stream": false,
+    "tls": false
+  },
+  "devDependencies": {
+    "@types/moment": "^2.13.0",
+    "bootstrap": "^5.2.2",
+    "concurrently": "^7.5.0",
+    "electron": "^21.2.2",
+    "electron-rebuild": "^3.2.9",
+    "keyv": "^4.5.1",
+    "react-bootstrap": "^2.6.0",
+    "serialport": "^10.4.0",
+    "shortid": "^2.2.16",
+    "sqlite3": "^5.1.2",
+    "sweetalert": "^2.1.2",
+    "ts-loader": "^9.4.1",
+    "typeorm": "^0.3.10",
+    "wait-on": "^6.0.1"
   }
 }
