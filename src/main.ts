@@ -5,6 +5,8 @@ import PortConnect from './system/PortConnect'
 import {TableRegular, TablePersonal} from './system/Table'
 import Auth from './system/Auth';
 import BillingOperation from './system/BillingOpration'
+import WaitingListSystem from './system/WaitingListSystem'
+import MemberSystem from './system/MemberSystem'
 
 
 // AppDataSource.initialize().then(async () => {
@@ -108,19 +110,20 @@ ipcMain.handle('start_loss', async(event, id_table, start, stop, data_booking, r
             table_01.stopTimer(table_01_time_loss, true)
         } else {
             if (start === true) {
-                table_01_time_loss = table_01.startTimer(data_booking);
-            } else if (reset === true) {
+                table_01_time_loss = await table_01.startTimer(data_booking);
+                console.log(table_01_time_loss)
 
+            } else if (reset === true) {
+                await table_01.resetTable(data_booking, table_01_time_loss, true)
+                console.log(table_01_time_loss)
             }
         }
     }
 })
+//end loss
 
-
-
+//operation
 const bill = new BillingOperation();
-
-
 ipcMain.handle("login",async (event, username, password) => {
     const data_user = new Auth(username, password);
     return await data_user.goAuth()
@@ -144,9 +147,38 @@ ipcMain.handle("getCafeDetail", async (event, id_booking) => {
 
 ipcMain.handle("getDetailPriceBill", async (event, id_booking) => {
     return await bill.getDetailPriceBill(id_booking);
-})
+});
 
 ipcMain.handle("inputPrice", async (event, data_booking) => {
-    const bill = new BillingOperation();
     return await bill.inputPrice(data_booking);
-})
+});
+
+
+ipcMain.handle("waitinglist", async (event, get_data, add_new, delete_waiting, id_waiting, data_waiting) => {
+    if (add_new === true) {
+        return await WaitingListSystem.addDataWaiting(data_waiting);
+    } else if (delete_waiting === true) {
+        return await WaitingListSystem.deleteDataWaiting(id_waiting);
+    } else if (get_data === true) {
+        return await WaitingListSystem.getDataWaiting();
+    }
+});
+
+ipcMain.handle("member", async (event, get_data, get_price, add_new, delete_member, data_member, update_member, get_by_id) => {
+    if (get_data === true) {
+        return await MemberSystem.getAllMember();
+    } else if (get_price === true) {
+        return await MemberSystem.getPriceMember(data_member);
+    } else if (add_new === true) {
+        return await MemberSystem.addMember(data_member);
+    } else if (delete_member === true) {
+        return await MemberSystem.deleteMember(data_member);
+    } else if (update_member === true) {
+        return await MemberSystem.editMember(data_member);
+    } else if (get_by_id === true) {
+        return await MemberSystem.getDataById(data_member);
+    } else {
+        return {response: false, data: "error brow"};
+    }
+});
+//endopration

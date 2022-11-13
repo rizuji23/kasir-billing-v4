@@ -57,7 +57,9 @@ a {
     background-color: rgba(0, 0, 0, 0.549);
 }
 
-
+.form-control:disabled {
+    background-color: #1A1B1F;
+}
 
 .swal-footer {
     background-color: rgb(245, 248, 250);

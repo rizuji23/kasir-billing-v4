@@ -1,4 +1,5 @@
-import React, {useEffect, useState } from "react";
+import React from "react";
+import { NavLink } from "react-router-dom";
 
 class Sidebar extends React.Component<any, any> {
 
@@ -11,19 +12,20 @@ class Sidebar extends React.Component<any, any> {
                     <span className="nav_logo-name"><img src="assets/img/logo.png" alt=""/></span>
                 </a>
                 <div className="nav_list">
-                    <a href="javascript:void(0)" className="nav_link active" title="Home">
+                    <NavLink to="/dashboard" className={({isActive}) => isActive ? "nav_link active": "nav_link" }>
                         <i className='bx bx-home-alt nav_icon'></i>
                         <span className="nav_name">Home</span>
-                    </a>
-                    <a href="javascript:void(0)" className="nav_link" title="Waiting List">
-                        <i className='bx bx-list-plus nav_icon'></i>
+                    </NavLink>
+                    
+                    <NavLink to="/waiting-list" className={({isActive}) => isActive ? "nav_link active": "nav_link" }>
+                        <i className='bx bx-home-alt nav_icon'></i>
                         <span className="nav_name">Waiting List</span>
-                    </a>
-                    <a href="javascript:void(0)" className="nav_link" title="Add Member">
+                    </NavLink>
+                    <NavLink to="/member" className={({isActive}) => isActive ? "nav_link active": "nav_link" }>
                         <i className='bx bx-user-plus nav_icon'></i>
-                        <span className="nav_name">Add Member</span>
-                    </a>
-
+                        <span className="nav_name">Member</span>
+                    </NavLink>
+                    
                     <a href="javascript:void(0)" className="nav_link" title="Menu Makanan">
                         <i className='bx bx-bowl-rice nav_icon'></i>
                         <span className="nav_name">Menu Makanan</span>

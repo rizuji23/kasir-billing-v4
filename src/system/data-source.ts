@@ -1,4 +1,3 @@
-import "reflect-metadata"
 import { DataSource, Table } from "typeorm"
 import { User_Kasir } from "../entity/User_Kasir"
 import { Booking } from "../entity/Booking"
@@ -16,6 +15,8 @@ import { Stok } from "../entity/Stok"
 import { Struk } from "../entity/Struk"
 import { Table_Billiard } from "../entity/Table_Billiard"
 import { Waiting_List } from "../entity/Waiting_List"
+import { Harga_Member } from "../entity/Harga_Member"
+import { Member } from "../entity/Member"
 
 const AppDataSource = async () => {
     const dataSourceConn = new DataSource({
@@ -39,7 +40,9 @@ const AppDataSource = async () => {
             Stok,
             Struk,
             Table_Billiard,
-            Waiting_List
+            Waiting_List,
+            Harga_Member,
+            Member
         ],
         migrations: [
             "./src/migrations/**/*.ts"

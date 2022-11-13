@@ -200,11 +200,10 @@ class TableRegular {
 
     async resetTable(data_booking, table_timer, turn_off):Promise<any> {
         try {
-            console.log('colled')
             let service = await dataSource;
             const check_table = await service.manager.find(Table_Billiard, {
                 where: {
-                    id_table: data_booking.id_table
+                    id_table: this.id_table
                 }
             });
 
@@ -213,10 +212,6 @@ class TableRegular {
                     id_booking: data_booking.id_booking
                 }
             });
-
-            console.log(check_booking)
-            console.log(data_booking)
-
 
             if (check_table.length !== 0 && check_booking.length !== 0) {
                 const update_table = await service.manager.createQueryBuilder().update(Table_Billiard).set({
@@ -317,15 +312,10 @@ class TablePersonal extends TableRegular {
 
             console.log(`${this.getIdTable} => ${h}:${m}:${s}`);
           };
-
-          this.table_timer = setInterval(this.table_timer, 1000);
-
     }
 
     async startTimer(data_booking:any) {
         const id_booking = shortid.generate();
-        const id_detail_booking = shortid.generate();
-
         const bill = new BillingOperation();
         const harga = await bill.checkHarga(1);
 
@@ -333,6 +323,8 @@ class TablePersonal extends TableRegular {
             id_booking: id_booking,
             durasi: data_booking.durasi_booking,
             status: "active",
+            created_at: this.date_now,
+            updated_at: this.date_now
         }).where('id_table = :id', {id: this.id_table}).execute();
         
         (await dataSource).createQueryBuilder().insert().into(Booking).values({
@@ -340,7 +332,7 @@ class TablePersonal extends TableRegular {
             id_member: '',
             nama_booking: data_booking.nama,
             id_table: this.id_table,
-            durasi_booking: data_booking.durasi_booking,
+            durasi_booking: 1,
             total_harga: harga.total_harga,
             uang_cash: 0,
             tipe_booking: data_booking.tipe_booking,
@@ -350,6 +342,7 @@ class TablePersonal extends TableRegular {
             updated_at: this.date_now
         }).execute();
 
+        const id_detail_booking = shortid.generate();
         (await dataSource).createQueryBuilder().insert().into(Detail_Booking).values({
             id_detail_booking: id_detail_booking,
             id_booking: id_booking,
@@ -363,6 +356,54 @@ class TablePersonal extends TableRegular {
         }).execute();
        
         this.timerInit();
+        this.table_timer_2 = setInterval(this.table_timer_2, 1000);
+        await this.port.write(`on ${this.table_number}`);
+        return this.table_timer_2;
+    }
+
+    async resetTable(data_booking, table_timer, turn_off):Promise<any> {
+        try {
+            let service = await dataSource;
+            const check_table = await service.manager.find(Table_Billiard, {
+                where: {
+                    id_table: this.id_table
+                }
+            });
+
+            const check_booking = await service.manager.find(Booking, {
+                where: {
+                    id_booking: data_booking.id_booking
+                }
+            });
+
+            if (check_table.length !== 0 && check_booking.length !== 0) {
+                const update_table = await service.manager.createQueryBuilder().update(Table_Billiard).set({
+                    status: "not_active",
+                    id_booking: "",
+                    durasi: 0
+                }).where('id_table = :id', {id: this.id_table}).execute();
+
+                if (update_table) {
+                    const update_booking = await service.manager.createQueryBuilder().update(Booking).set({
+                        status_booking: 'reset'
+                    }).where('id_booking = :id', {id: data_booking.id_booking}).execute();
+
+                    if (update_booking) {
+                        const update_detail = await service.manager.createQueryBuilder().update(Detail_Booking).set({
+                            status: 'reset'
+                        }).where('id_booking = :id', {id: data_booking.id_booking}).execute();
+                        if (update_detail) {
+                            this.stopTimer(table_timer, turn_off)
+                            return this.table_timer_2;
+                        }
+                    }
+                }
+            } else {
+                console.log('not found')
+            }
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     async stopTimer(table_timer:any, turn_off:boolean):Promise<any> {

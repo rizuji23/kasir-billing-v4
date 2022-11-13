@@ -54,7 +54,8 @@ class BillingOperation {
 
     async inputPrice(data_booking:any):Promise<any> {
         try {
-            const data_price:any = this.checkHarga(1);
+            const date_now =  moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss")
+            const data_price:any = await this.checkHarga(1);
             let service = await dataSource;
             const check_booking = await service.manager.find(Booking, {
                 where: {
@@ -62,15 +63,19 @@ class BillingOperation {
                 }
             });
 
+
             if (check_booking.length !== 0) {
-                    const date_now =  moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss")
                     const harga:number = check_booking[0].total_harga + data_price.total_harga;
+                    const durasi:number = check_booking[0].durasi_booking + 1;
                     const input_price = await service.manager.createQueryBuilder().update(Booking).set({
+                        durasi_booking: durasi,
                         total_harga: harga,
+                        updated_at: date_now
                     }).where('id_booking = :id', {id: data_booking.id_booking}).execute();
 
                     if (input_price) {
                         const id_detail_booking = shortid.generate();
+                        console.log(id_detail_booking);
                         const input_detail = await service.manager.createQueryBuilder().insert().into(Detail_Booking).values({
                             id_detail_booking: id_detail_booking,
                             id_booking: data_booking.id_booking,
@@ -86,6 +91,9 @@ class BillingOperation {
                             return {'response': true, 'data': 'data is saved'};
                         }
                     }
+            } else {
+                return {'response': false, 'data': 'data not found'};
+
             }
         } catch (err) {
             console.log(err)
@@ -109,11 +117,11 @@ class BillingOperation {
                 });
 
 
-                if (search_booking.length !== 0) {
-                    return {'response': true, data: search_booking}
-                } else {
-                    return {'response': false, data: "data empty"}
-                }
+                    if (search_booking.length !== 0) {
+                        return {'response': true, data: search_booking}
+                    } else {
+                        return {'response': false, data: "data empty"}
+                    }
 
             } else {
                 return {'response': false, data: "data empty"}

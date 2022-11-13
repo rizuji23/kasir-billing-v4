@@ -67,11 +67,14 @@
     "electron-rebuild": "^3.2.9",
     "keyv": "^4.5.1",
     "react-bootstrap": "^2.6.0",
+    "react-data-table-component": "^7.5.3",
     "serialport": "^10.4.0",
     "shortid": "^2.2.16",
     "sqlite3": "^5.1.2",
+    "styled-components": "^5.3.6",
     "sweetalert": "^2.1.2",
     "ts-loader": "^9.4.1",
+    "ts-node": "^10.9.1",
     "typeorm": "^0.3.10",
     "wait-on": "^6.0.1"
   }
