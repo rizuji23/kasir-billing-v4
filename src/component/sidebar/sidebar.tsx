@@ -21,15 +21,18 @@ class Sidebar extends React.Component<any, any> {
                         <i className='bx bx-home-alt nav_icon'></i>
                         <span className="nav_name">Waiting List</span>
                     </NavLink>
+
                     <NavLink to="/member" className={({isActive}) => isActive ? "nav_link active": "nav_link" }>
                         <i className='bx bx-user-plus nav_icon'></i>
                         <span className="nav_name">Member</span>
                     </NavLink>
-                    
-                    <a href="javascript:void(0)" className="nav_link" title="Menu Makanan">
+
+                    <NavLink to="/menu-makanan" className={({isActive}) => isActive ? "nav_link active": "nav_link" }>
                         <i className='bx bx-bowl-rice nav_icon'></i>
                         <span className="nav_name">Menu Makanan</span>
-                    </a>
+                    </NavLink>
+                    
+                   
                     <a href="javascript:void(0)" className="nav_link" title="Menu Cafe">
                         <i className='bx bx-baguette nav_icon'></i>
                         <span className="nav_name">Menu Cafe</span>
@@ -39,10 +42,12 @@ class Sidebar extends React.Component<any, any> {
                         <span className="nav_name">Manual Lampu</span>
                     </a>
 
-                    <a href="javascript:void(0)" className="nav_link" title="Pengaturan">
+                    <NavLink to="/pengaturan" className={({isActive}) => isActive ? "nav_link active": "nav_link" }>
                         <i className='bx bx-cog nav_icon'></i>
                         <span className="nav_name">Pengaturan</span>
-                    </a>
+                    </NavLink>
+
+                    
                 </div>
             </div>
             <a href="javascript:void(0)" className="nav_link" title="Logout" id="logout-side">

@@ -18,6 +18,10 @@ class DotAdded {
     decode(str:string) {
         return parseInt(str.split('.').join(''));
     }
+
+    isNegative(number:number) {
+        return !Object.is(Math.abs(number), +number); 
+    }
 }
 
 // const dot = new DotAdded();

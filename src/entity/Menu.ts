@@ -15,7 +15,7 @@ export class Menu {
     nama_menu:string
 
     @Column()
-    harga_menu:string
+    harga_menu:number
 
     @Column()
     kategori_menu:string

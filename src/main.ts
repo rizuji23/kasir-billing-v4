@@ -7,6 +7,8 @@ import Auth from './system/Auth';
 import BillingOperation from './system/BillingOpration'
 import WaitingListSystem from './system/WaitingListSystem'
 import MemberSystem from './system/MemberSystem'
+import MenuSystem from './system/MenuSystem'
+import KategoriMenuSystem from './system/KategoriMenuSystem'
 
 
 // AppDataSource.initialize().then(async () => {
@@ -179,6 +181,34 @@ ipcMain.handle("member", async (event, get_data, get_price, add_new, delete_memb
         return await MemberSystem.getDataById(data_member);
     } else {
         return {response: false, data: "error brow"};
+    }
+});
+
+ipcMain.handle("menu", async (event, get_all, add_new, edit_menu, delete_menu, data_menu) => {
+    if (add_new === true) {
+        return MenuSystem.addMenu(data_menu);
+    } else if (edit_menu === true) {
+        return MenuSystem.editMenu(data_menu);
+    } else if (delete_menu === true) {
+        return MenuSystem.deleteMenu(data_menu);
+    } else if (get_all === true) {
+        return MenuSystem.getDataMenu();
+    } else {
+        return {response: false, data: "data is not availabe"};
+    }
+});
+
+ipcMain.handle("kategori_menu", async (event, get_all, add_new, edit_kategori, delete_kategori, data_kategori) => {
+    if (add_new === true) {
+        return KategoriMenuSystem.addKategoriMenu(data_kategori);
+    } else if (edit_kategori === true) {
+        return KategoriMenuSystem.editKategoriMenu(data_kategori);
+    } else if (delete_kategori === true) {
+        return KategoriMenuSystem.deleteKategoriMenu(data_kategori);
+    } else if (get_all === true) {
+        return KategoriMenuSystem.getKategoriMenu();
+    } else {
+        return {response: false, data: "data is not available"};
     }
 });
 //endopration

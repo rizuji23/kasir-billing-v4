@@ -21,6 +21,18 @@ class Login extends React.Component<any, any> {
         this.handleUsername = this.handleUsername.bind(this)
         this.handlePassword = this.handlePassword.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
+        this.clearState = this.clearState.bind(this)
+    }
+
+    clearState() {
+        this.setState({
+            username: "",
+            password: "",
+            isLogging: false,
+            error: "",
+            isError: false,
+            disabled: false
+        })
     }
 
     handleUsername(e) {
@@ -64,7 +76,7 @@ class Login extends React.Component<any, any> {
                     if (this.state.isError) {
                         toast(this.state.error)
                         this.setState({'disabled': false});
-
+                        this.clearState();
                     }
                 }, 1000)
                 
@@ -114,11 +126,11 @@ class Login extends React.Component<any, any> {
                         <div className="">
                             <div className="form-group">
                                 <label>Username</label>
-                                <input type="text" className="form-control custom-input" onChange={this.handleUsername} id="username"/>
+                                <input type="text" className="form-control custom-input" value={this.state.username} onChange={this.handleUsername} id="username"/>
                             </div>
                             <div className="form-group mt-2">
                                 <label>Password</label>
-                                <input type="password" className="form-control custom-input" onChange={this.handlePassword} id="password"/>
+                                <input type="password" className="form-control custom-input" value={this.state.password} onChange={this.handlePassword} id="password"/>
                             </div>
     
                         </div>
