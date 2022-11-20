@@ -7,6 +7,7 @@ import 'moment-timezone';
 import moment from "moment";
 import DotAdded from "./DotAdded";
 import BillingOperation from "./BillingOpration";
+import { Struk } from "../entity/Struk";
 
 
 class TableRegular {
@@ -98,9 +99,26 @@ class TableRegular {
             arr_detail_harga.push({id_detail_booking: id_detail_booking, id_booking: id_booking, harga:element.harga, durasi:element.durasi, status:"active", start_duration:element.start_duration, end_duration:element.end_duration, created_at: this.date_now, updated_at: this.date_now});
         });
 
+
         console.log(arr_detail_harga);
 
         (await dataSource).createQueryBuilder().insert().into(Detail_Booking).values(arr_detail_harga).execute();
+
+        const id_struk = shortid.generate();
+        (await dataSource).createQueryBuilder().insert().into(Struk).values({
+            id_struk: id_struk,
+            id_pesanan: '',
+            id_booking: id_booking,
+            nama_customer: data_booking.nama,
+            total_struk: dot.decode(data_booking.total_harga),
+            cash_struk: 0,
+            kembalian_struk: 0,
+            status_struk: 'belum lunas',
+            type_struk: 'table',
+            user_in: data_booking.user_in,
+            created_at: this.date_now,
+            updated_at: this.date_now,
+        }).execute();
 
         this.timerInit(diff, duration, start)
         this.table_timer = setInterval(this.table_timer, 1000);
@@ -130,16 +148,20 @@ class TableRegular {
             }
         });
 
-        console.log(check_booking)
+        const check_struk = await service.manager.find(Struk, {
+            where: {
+                id_booking: data_booking.id_booking
+            }
+        })
 
-        if (check_table.length !== 0 && check_booking.length !== 0) {
+
+        if (check_table.length !== 0 && check_booking.length !== 0 && check_struk.length !== 0) {
             const durasi_add = check_table[0].durasi + parseInt(data_booking.durasi_booking)
             const update_table = await service.manager.createQueryBuilder().update(Table_Billiard).set({
                 id_booking: data_booking.id_booking,
                 durasi: durasi_add,
                 status: "active",
             }).where('id_table = :id', {id: this.id_table}).execute();
-            console.log(durasi_add)
 
             if (update_table) {
                 const total_harga = check_booking[0].total_harga + dot.decode(data_booking.total_harga);
@@ -147,8 +169,8 @@ class TableRegular {
                 const update_booking = await service.manager.createQueryBuilder().update(Booking).set({
                     durasi_booking: durasi_booking,
                     total_harga: total_harga,
+                    updated_at: this.date_now
                 }).where('id_booking = :id', {id: data_booking.id_booking}).execute();
-                console.log({durasi_booking, total_harga})
 
                 if (update_booking) {
                     const data = data_booking.raw_detail_h;
@@ -160,13 +182,22 @@ class TableRegular {
 
                     const insert_detail = await service.manager.createQueryBuilder().insert().into(Detail_Booking).values(arr_detail_harga).execute();
                     if (insert_detail) {
-                        this.timerInit(diff, duration, start);
-                        this.table_timer = setInterval(this.table_timer, 1000);
-                        this.port.write(`on ${this.table_number}`);
-                        return this.table_timer;
+                        const total_struk = check_struk[0].total_struk + dot.decode(data_booking.total_harga);
+                        const update_struk = await service.manager.createQueryBuilder().update(Struk).set({
+                            total_struk: total_struk,
+                            updated_at: this.date_now
+                        }).where('id_booking = :id', {id: data_booking.id_booking}).execute();
+                        if (update_struk) {
+                            this.timerInit(diff, duration, start);
+                            this.table_timer = setInterval(this.table_timer, 1000);
+                            this.port.write(`on ${this.table_number}`);
+                            return this.table_timer;
+                        } 
                     }
                 }
             }
+        } else {
+            return {response: false, data: 'data tidak complite'};
         }
     }
 
@@ -213,7 +244,13 @@ class TableRegular {
                 }
             });
 
-            if (check_table.length !== 0 && check_booking.length !== 0) {
+            const check_struk = await service.manager.find(Struk, {
+                where: {
+                    id_booking: data_booking.id_booking
+                }
+            })
+
+            if (check_table.length !== 0 && check_booking.length !== 0 && check_struk.length !== 0) {
                 const update_table = await service.manager.createQueryBuilder().update(Table_Billiard).set({
                     status: "not_active",
                     id_booking: "",
@@ -230,6 +267,11 @@ class TableRegular {
                             status: 'reset'
                         }).where('id_booking = :id', {id: data_booking.id_booking}).execute();
                         if (update_detail) {
+                            if (check_struk[0].id_pesanan === '') {
+                                await service.manager.createQueryBuilder().update(Struk).set({
+                                    status_struk: 'reset',
+                                }).where('id_booking = :id', {id: data_booking.id_booking}).execute();
+                            }
                             this.stopTimer(table_timer, turn_off)
                             return this.table_timer;
                         }
@@ -354,6 +396,22 @@ class TablePersonal extends TableRegular {
             created_at: this.date_now,
             updated_at: this.date_now
         }).execute();
+
+        const id_struk = shortid.generate();
+        (await dataSource).createQueryBuilder().insert().into(Struk).values({
+            id_struk: id_struk,
+            id_pesanan: '',
+            id_booking: id_booking,
+            nama_customer: data_booking.nama,
+            total_struk: harga.total_harga,
+            cash_struk: 0,
+            kembalian_struk: 0,
+            status_struk: 'belum lunas',
+            type_struk: 'table',
+            user_in: data_booking.user_in,
+            created_at: this.date_now,
+            updated_at: this.date_now,
+        }).execute();
        
         this.timerInit();
         this.table_timer_2 = setInterval(this.table_timer_2, 1000);
@@ -376,6 +434,12 @@ class TablePersonal extends TableRegular {
                 }
             });
 
+            const check_struk = await service.manager.find(Struk, {
+                where: {
+                    id_booking: data_booking.id_booking
+                }
+            })
+
             if (check_table.length !== 0 && check_booking.length !== 0) {
                 const update_table = await service.manager.createQueryBuilder().update(Table_Billiard).set({
                     status: "not_active",
@@ -393,6 +457,11 @@ class TablePersonal extends TableRegular {
                             status: 'reset'
                         }).where('id_booking = :id', {id: data_booking.id_booking}).execute();
                         if (update_detail) {
+                            if (check_struk[0].id_pesanan === '') {
+                                await service.manager.createQueryBuilder().update(Struk).set({
+                                    status_struk: 'reset',
+                                }).where('id_booking = :id', {id: data_booking.id_booking}).execute();
+                            }
                             this.stopTimer(table_timer, turn_off)
                             return this.table_timer_2;
                         }
@@ -418,8 +487,6 @@ class TablePersonal extends TableRegular {
           );
         console.log("Timer is stoped");
     }
-
-
 }
 
 

@@ -11,7 +11,7 @@ class Loading extends React.Component<any, any> {
     render(): React.ReactNode {
         return (
             <>
-                <div className="overlay">
+                <div className="overlay" style={this.props.loading === true ? {display: 'block'} : {display: 'none'}}>
                     <div className="overlay__inner">
                         <div className="overlay__content text-center"><img src="assets/img/logo-login.png" alt=""/>
                             <h3>{this.props.title}</h3>

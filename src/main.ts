@@ -9,6 +9,7 @@ import WaitingListSystem from './system/WaitingListSystem'
 import MemberSystem from './system/MemberSystem'
 import MenuSystem from './system/MenuSystem'
 import KategoriMenuSystem from './system/KategoriMenuSystem'
+import CartSystem from './system/CartSystem'
 
 
 // AppDataSource.initialize().then(async () => {
@@ -209,6 +210,26 @@ ipcMain.handle("kategori_menu", async (event, get_all, add_new, edit_kategori, d
         return KategoriMenuSystem.getKategoriMenu();
     } else {
         return {response: false, data: "data is not available"};
+    }
+});
+
+ipcMain.handle("pesanan", async (event, get_cart, add_cart, edit_cart, delete_cart, cancel_cart, addPesananCafeOnly, addPesananTable, data_cart) => {
+    if (get_cart === true) {
+        return await CartSystem.getCart();
+    } else if (add_cart === true) {
+        return await CartSystem.addCart(data_cart);
+    } else if (edit_cart === true) {
+        return await CartSystem.editCart(data_cart);
+    } else if (delete_cart === true) {
+        return await CartSystem.deleteCart(data_cart);
+    } else if (cancel_cart === true) {
+        return await CartSystem.cancelPesanan();
+    } else if (addPesananCafeOnly === true) {
+        return await CartSystem.addPesananCafeOnly(data_cart);
+    } else if (addPesananTable === true) {
+        return await CartSystem.addPesananTable(data_cart);
+    } else {
+        return {response:false, data: 'paramater is not valid'};
     }
 });
 //endopration

@@ -726,7 +726,7 @@ label {
 }
 
 .container-biliiard {
-    margin-top: 10px;
+    margin-top: 0px;
 }
 
 .btn-home-top img {
@@ -883,6 +883,7 @@ label {
     height: 75px;
     width: 75px;
     object-fit: cover;
+    
 }
 
 .menu-img {
@@ -905,7 +906,7 @@ label {
 
 }
 
-.sub-item-text h4 {
+.sub-item-text h5 {
     font-family: 'Inter-Bold';
     margin-bottom: 0px;
     color: #FF8A00;
@@ -930,7 +931,14 @@ label {
 }
 
 .overflow-checkout {
-    height: 500px;
+    height: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+}
+
+.overflow-menu {
+    height: 810px;
     overflow-x: hidden;
     overflow-y: auto;
 }

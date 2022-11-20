@@ -137,14 +137,26 @@ class List_Menu extends React.Component<any, any> {
     }
 
     validate() {
-        this.setState({text_submit: 'Checking data...'})
-        setTimeout(() => {
-            if (this.isObjectEmpty(this.state.data_menu)) {
-                this.setState({disabled: false, text_submit: 'Buat Sekarang'});
-            } else {
-                this.setState({disabled: true, text_submit: 'Buat Sekarang'});
-            }
-        }, 1000)
+        this.setState({text_submit: 'Checking data...'});
+        console.log(this.state.disabled_opsi)
+        if (this.state.disabled_opsi !== false) {
+            setTimeout(() => {
+                if (this.isObjectEmpty(this.state.data_menu)) {
+                    this.setState({disabled: false, text_submit: 'Buat Sekarang'});
+                } else {
+                    this.setState({disabled: true, text_submit: 'Buat Sekarang'});
+                }
+            }, 1000)
+        } else {
+            setTimeout(() => {
+                if (this.isObjectEmpty(this.state.data_menu)) {
+                    this.setState({disabled: false, text_submit: 'Edit Sekarang'});
+                } else {
+                    this.setState({disabled: true, text_submit: 'Edit Sekarang'});
+                }
+            }, 1000)
+        }
+        
     }
 
     handleNama(e) {
@@ -206,6 +218,7 @@ class List_Menu extends React.Component<any, any> {
             }))
             this.validate()
         }
+
     }
 
     handleGambar(e) {
@@ -360,12 +373,6 @@ class List_Menu extends React.Component<any, any> {
     getSelectKategori() {
         ipcRenderer.invoke("kategori_menu", true, false, false, false, []).then((result) => {
             if (result.response === true) {
-                var data_kategori = Array<any>();
-                // data_kategori += `<option value="">Pilih Kategori Menu</option>`;
-                // result.data.forEach(el => {
-                //     data_kategori += `<option value="${el.id_kategori_menu}">${el.nama_kategori}</option>`;
-                // });
-
                 const data_ = result.data.map((el, i) => {
                     return (
                         <>
@@ -529,7 +536,7 @@ class List_Menu extends React.Component<any, any> {
                                         </div>
                                         <div className="form-group mt-3">
                                             <label htmlFor="usr">Kategori</label>
-                                            <select value={this.state.name_kategori} className="form-control custom-input" onChange={this.handleKategori}>
+                                            <select className="form-control custom-input" onChange={this.handleKategori}>
                                                 {this.state.data_menu.kategori === '' ? '' : <option value={this.state.data_menu.kategori} defaultChecked>{this.state.name_kategori}</option>}
                                                 <option value="">Pilih Kategori</option>
                                                 {this.state.kategori_menu}

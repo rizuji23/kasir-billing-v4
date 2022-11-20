@@ -221,6 +221,8 @@ class KategoriMenu extends React.Component<any, any> {
                 disabled_opsi: false,
                 text_submit: 'Edit Sekarang',
             }));
+        } else {
+            this.clearState();
         }
     }
 

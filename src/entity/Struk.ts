@@ -15,6 +15,9 @@ export class Struk {
     id_pesanan:string
 
     @Column()
+    id_booking:string
+
+    @Column()
     nama_customer:string
 
     @Column()
@@ -27,10 +30,13 @@ export class Struk {
     kembalian_struk:number
 
     @Column()
-    status_struk:number
+    status_struk:string
 
     @Column()
     user_in:string
+
+    @Column()
+    type_struk:string
 
     @Column()
     created_at: string
