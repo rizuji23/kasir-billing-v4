@@ -1,0 +1,236 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/plain; charset=utf-8" />
+    <style>
+        h2 {
+            font-size: 18px;
+        }
+
+        body {
+            font-family: monospace;
+            width: 210px;
+            margin: 0;
+            padding: 0;
+            font-weight: bolder;
+        }
+
+        @media print {
+
+
+            h2 {
+                font-size: 18px;
+            }
+
+            body {
+                font-family: monospace;
+                width: 219px;
+
+
+            }
+        }
+
+        p {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root_struk">
+
+    </div>
+    <!-- <script>
+		alert('Hallo Welt');
+	</script> -->
+    <h2 align="center"><img src="assets/img/logo-print.png" width="150" alt=""></h2>
+    <p class="normal-space" align="center">Jl. Papandayan No.110 (Basement Upnormal), Kota Kulon, Kec.
+        Garut
+        Kota, Kabupaten
+        Garut, Jawa Barat
+        44114
+
+    </p>
+    <p align="center">08987395378</p>
+    <p>----------------------------</p>
+    <table>
+        <tbody>
+            <tr>
+                <td><span id="date">23-05-2022</span>
+                </td>
+                <td align="right"><span align="right" id="time">18:59</span></td>
+            </tr>
+            <tr>
+                <td>Order ID:
+                </td>
+                <td align="right"><span align="right" id="order_id">testing123</span></td>
+            </tr>
+            <tr>
+                <td>Collected By:
+                </td>
+                <td align="right"><span align="right" id="collected_at">Kasir</span></td>
+            </tr>
+            <tr>
+                <td>Customer Name:
+                </td>
+                <td align="right"><span align="right" id="customer_name">Aye Shabira</span></td>
+            </tr>
+            <tr>
+                <td>Table Name:
+                </td>
+                <td align="right"><span align="right" id="table_name"></span></td>
+            </tr>
+            <tr>
+                <td><span id="start_time"></span></td>
+                <td align="right"><span align="right" id="end_time"></span></td>
+            </tr>
+        </tbody>
+    </table>
+    <p>----------------------------</p>
+    <h4 align="center" style="margin: 0;">*Item*</h4>
+    <table>
+        <tbody id="item">
+            <!-- <tr>
+                <td>
+                    <p>Billing Billiard</p>
+                    1 @50.000 = 50.000
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Nasi Goreng</p>
+                    1 @50.000 = 50.000
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Nasi Goreng</p>
+                    1 @50.000 = 50.000
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Nasi Goreng</p>
+                    1 @50.000 = 50.000
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Nasi Goreng</p>
+                    1 @50.000 = 50.000
+                </td>
+            </tr> -->
+        </tbody>
+    </table>
+
+    <p>----------------------------</p>
+    <table class="address">
+       
+        <tr>
+            <td align="left">
+                Subtotal&nbsp; = &nbsp;
+            </td>
+            <td align="left">
+                <span id="subtotal"></span>
+            </td>
+        </tr>
+        <tr>
+            <td align="left">
+                Total&nbsp;&nbsp;&nbsp;&nbsp; = &nbsp;
+            </td>
+            <td align="left">
+                <span id="total"></span>
+            </td>
+        </tr>
+    </table>
+    <p>----------------------------</p>
+    <table class="address">
+      
+        <tr>
+            <td align="left">
+
+                Cash&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = &nbsp;
+
+            </td>
+            <td align="left">
+                <span id="cash"></span>
+            </td>
+        </tr>
+        <tr>
+            <td align="left">
+                Change&nbsp;&nbsp;&nbsp;&nbsp;= &nbsp;
+            </td>
+            <td align="left">
+                <span id="change"></span>
+            </td>
+        </tr>
+    </table>
+    ----------------------------
+    <p align="center">Thank for coming!</p>
+    <br>
+    <br><br><br>
+    <script>
+        if (typeof module === 'object') {
+            window.module = module;
+            module = undefined;
+        }
+    </script>
+    <script src="assets/js/jquery-3.6.0.min.js"></script>
+    <script>
+        if (window.module) module = window.module;
+    </script>
+    <script type="module">
+        const { ipcRenderer } = require("electron");
+        const parse_to_rp = (rp) => {
+            var number_string = rp.toString().replace(/[^,\d]/g, ""),
+            split = number_string.split(","),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            if (ribuan) {
+                var separator = sisa ? "." : "";
+                rupiah += separator + ribuan.join(".");
+            }
+
+            rupiah = split[1] != undefined ? rupiah + "," + split[1] : rupiah;
+            return rupiah;
+        }
+
+        ipcRenderer.on('message', (event, message) => {
+            console.log(message); // logs out "Hello second window!"
+            const data = JSON.parse(message);
+                console.log(data);
+                const date_now = data.struk[0].created_at.split(' ')
+                const time_now = date_now[1].split(':')
+                const data_item = data.cart.map((el, i) => {
+                    return `<tr>
+                                <td>
+                                    <p>${el.nama_menu}</p>
+                                    ${el.qty} @${parse_to_rp(el.harga_menu)} = ${parse_to_rp(el.sub_total)}
+                                </td>
+                            </tr>`
+                });
+                $("#item").html(data_item);
+                $("#date").html(date_now[0]);
+                $("#time").html(`${time_now[0]}:${time_now[1]}`);
+                $("#order_id").html(data.struk[0].id_struk);
+                $("#customer_name").html(data.struk[0].user_in);
+                if (data.struk[0].type_struk === 'cafe only') {
+                    $("#table_name").html(data.struk[0].type_struk);
+                } else if (data.struk[0].type_struk === 'table') {
+                    $("#table_name").html(data.struk[0].id_booking[0].table_name);
+                }
+                $("#subtotal").html(parse_to_rp(data.struk[0].total_struk));
+                $("#total").html(parse_to_rp(data.struk[0].total_struk));
+                $("#cash").html(parse_to_rp(data.struk[0].cash_struk));
+                $("#change").html(parse_to_rp(data.struk[0].kembalian_struk));
+        });
+
+        
+    </script>
+</body>
+
+</html>

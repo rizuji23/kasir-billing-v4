@@ -9,6 +9,7 @@ import { Pesanan } from "../entity/Pesanan";
 import { Cart } from "../entity/Cart";
 import { Menu } from "electron";
 import shortid from 'shortid'
+import { Struk } from "../entity/Struk";
 
 class BillingOperation {
     async checkHarga(durasi:number):Promise<any> {
@@ -16,31 +17,38 @@ class BillingOperation {
             let service = await dataSource;
             const jam = moment().tz("Asia/Jakarta");
             const jam_sekarang = jam.format("HH:mm:ss");
-    
+            const data_durasi = jam.format("HH:mm:ss").split(':');
+
             const harga_detail = [];
             var total_harga = 0;
     
                 for (var i = 0; i<durasi; i++) {
-                    const jam_estimasi = moment().tz("Asia/Jakarta").set('minute', i * 60).format('HH');
-                    const jam_full = moment().tz("Asia/Jakarta").set('minute', i * 60).format('HH:mm:ss');
+                    const jam_estimasi = moment().tz("Asia/Jakarta").set('minutes', i * 60).format('HH');
+                    const jam_full = moment().tz("Asia/Jakarta").set('minutes', i * 60).format('HH:mm:ss');
+                    const split_jam = jam_full.split(':')
+                    split_jam[1] = data_durasi[1];
+                    split_jam[2] = data_durasi[2];
+                    const jam_all = `${split_jam[0]}:${split_jam[1]}:${split_jam[2]}`;
+
+                    console.log(jam_all)
     
-                    if (jam_estimasi <= '17') {
+                    if (jam_estimasi <= '16') {
                         const result = await service.manager.find(Harga_Billing, {
                             where: {
                                 tipe_durasi: "Siang"
                             }
                         });
     
-                        harga_detail.push({'tipe': "Siang", harga: result[0].harga, durasi: 1, start_duration: jam_sekarang, end_duration: jam_full})
+                        harga_detail.push({'tipe': "Siang", harga: result[0].harga, durasi: 1, start_duration: jam_sekarang, end_duration: jam_all})
                         total_harga += result[0].harga;
-                    } else if (jam_estimasi >= '17') {
+                    } else if (jam_estimasi >= '16') {
                         const result = await service.manager.find(Harga_Billing, {
                             where: {
                                 tipe_durasi: "Malam"
                             }
                         })
     
-                        harga_detail.push({'tipe': "Malam", harga: result[0].harga, durasi: 1, start_duration: jam_sekarang, end_duration: jam_full})
+                        harga_detail.push({'tipe': "Malam", harga: result[0].harga, durasi: 1, start_duration: jam_sekarang, end_duration: jam_all})
                         total_harga += result[0].harga;
     
                     }
@@ -160,28 +168,32 @@ class BillingOperation {
         try {
             let service = await dataSource;
 
-            var get_detail_pesanan = await service.manager.find(Pesanan, {
+            var get_detail_struk = await service.manager.find(Struk, {
                 where: {
                     id_booking: id_booking,
                 }
             });
+
     
-            if (get_detail_pesanan.length !== 0) {
-                // var get_detail_cafe = await service.manager.find(Cart, {
-                //     where: {
-                //         id_pesanan: get_detail_pesanan[0].id_pesanan,
-                //     }
-                // });
+            if (get_detail_struk.length !== 0) {
+                var get_detail_pesanan = await service.manager.find(Pesanan, {
+                    where: {
+                        id_pesanan: get_detail_struk[0].id_pesanan,
+                    }
+                });
     
-                var get_detail_cafe = await service.manager.createQueryBuilder().select('cart').from(Cart, 'cart').leftJoinAndMapOne('cart.id_menu', Menu, 'menu', 'menu.id_menu = cart.id_menu').where('cart.id_pesanan = :id_pesanan', {id_pesanan: get_detail_pesanan[0].id_pesanan}).getMany();
+                var get_detail_cafe = await service.manager.query("SELECT * FROM cart LEFT OUTER JOIN menu ON cart.id_menu = menu.id_menu WHERE cart.id_pesanan=? ORDER BY id DESC", [get_detail_struk[0].id_pesanan]);
+
+                console.log(get_detail_struk[0].id_pesanan);
+                console.log(get_detail_pesanan)
     
-                if (get_detail_cafe.length !== 0) {
-                    return {'response': true, 'data_pesanan': get_detail_pesanan, 'data_cafe': get_detail_cafe};
+                if (get_detail_cafe.length !== 0 && get_detail_struk.length !== 0 && get_detail_pesanan.length !== 0) {
+                    return {'response': true, 'data_struk': get_detail_struk, 'data_cafe': get_detail_cafe, 'data_pesanan': get_detail_pesanan};
                 } else {
-                    return {'response': false, 'data_pesanan': 'data empty', 'data_cafe': 'data empty'}
+                    return {'response': false, 'data_struk': 'data empty', 'data_cafe': 'data empty', 'data_pesanan': 'data empty'}
                 }
             } else {
-                return {'response': false, 'data_pesanan': 'data empty', 'data_cafe': 'data empty'}
+                return {'response': false, 'data_struk': 'data empty', 'data_cafe': 'data empty', 'data_pesanan': 'data empty'}
             }
         } catch (err) {
             console.log(err)
@@ -215,6 +227,25 @@ class BillingOperation {
             return {'response': false, data: err}
         }
 
+    }
+
+    static async getActiveTable():Promise<any> {
+        try {
+            let service = await dataSource;
+            const table = await service.manager.find(Table_Billiard, {
+                where: {
+                    status: 'active',
+                }
+            });
+
+            if (table.length !== 0) {
+                return {response: true, data: table};
+            } else {
+                return {response: false, data: 'data table empty'};
+            }
+        } catch (err) {
+            console.log(err);
+        }
     }
 
 }

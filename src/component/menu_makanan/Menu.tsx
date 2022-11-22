@@ -7,6 +7,9 @@ import Loading from "../Loading";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import swal from 'sweetalert';
+import moment from "moment";
+import 'moment-timezone';
+
 
 class Menu extends React.Component<any, any> {
     constructor(props) {
@@ -16,17 +19,109 @@ class Menu extends React.Component<any, any> {
             loading_menu: false,
             data_cart: [],
             total_harga: '',
+            date_now: moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss"),
+            disabled: true,
+            disabled_batal: true,
+            type_pemesanan: '',
+            select_container: '',
+            data_cafe: {
+
+                uang_cash: '',
+                kembalian: '',
+            },
+            text_submit: 'Pesan',
+            user_in: sessionStorage.getItem('username'),
+            data_table: {
+                table_booking: ''
+            }
         }
         this.getMenu = this.getMenu.bind(this);
         this.handleTambahKeranjang = this.handleTambahKeranjang.bind(this);
         this.getCart = this.getCart.bind(this);
         this.handleDeleteCart = this.handleDeleteCart.bind(this);
         this.handleEditCart = this.handleEditCart.bind(this);
+        this.handleTypePemesanan = this.handleTypePemesanan.bind(this);
+        this.handleUangCash = this.handleUangCash.bind(this);
+        this.validate = this.validate.bind(this);
+        this.handleBatal = this.handleBatal.bind(this);
+        this.handleSimpan = this.handleSimpan.bind(this);
+        this.handleTable = this.handleTable.bind(this);
     }
 
     componentDidMount(): void {
         this.getMenu();
         this.getCart();
+
+    }
+
+    clearState() {
+        this.setState(prevState => ({
+            loading_menu: false,
+            data_cart: [],
+            total_harga: '',
+            date_now: moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss"),
+            disabled: true,
+            disabled_batal: true,
+            type_pemesanan: '',
+            select_container: '',
+            ...prevState.data_cafe,
+            data_cafe: {
+                uang_cash: '',
+                kembalian: '',
+            },
+            text_submit: 'Pesan',
+            ...prevState.data_table,
+            data_table: {
+                table_booking: ''
+            }
+
+        }))
+    }
+
+    isObjectEmpty(value) {
+        return Object.values(value).every(x => x !== '');
+    }
+
+    validate() {
+        this.setState({ text_submit: 'Checking data...' });
+        setTimeout(() => {
+            if (this.state.type_pemesanan === 'Cafe Only') {
+                if (this.isObjectEmpty(this.state.data_cafe)) {
+                    this.setState({ disabled: false, text_submit: 'Pesan' });
+                } else {
+                    this.setState({ disabled: true, text_submit: 'Pesan' });
+                }
+            } else if (this.state.type_pemesanan === 'With Table') {
+                if (this.isObjectEmpty(this.state.data_table)) {
+                    this.setState({ disabled: false, text_submit: 'Pesan' });
+                } else {
+                    this.setState({ disabled: true, text_submit: 'Pesan' });
+                }
+                console.log(this.state.data_table.table_booking)
+
+            }
+        }, 1000)
+    }
+
+    handleTable(e) {
+        if (e.target.value.length === 0) {
+            toast.error("Table harus diisi");
+            this.setState(prevState => ({
+                ...prevState.data_table,
+                data_table: {
+                    table_booking: '',
+                }
+            }))
+        } else {
+            this.setState(prevState => ({
+                ...prevState.data_table,
+                data_table: {
+                    table_booking: e.target.value,
+                }
+            }))
+
+            this.validate();
+        }
     }
 
     handleDeleteCart(menu) {
@@ -54,13 +149,12 @@ class Menu extends React.Component<any, any> {
     }
 
     handleEditCart(menu) {
-        console.log(menu)
         swal({
-            text: "Masukan Qty Untuk Produk",
+            text: "Masukan Qty untuk produk",
             content: {
                 element: "input",
                 attributes: {
-                    placeholder: "Masukan Qty",
+                    placeholder: "Qty",
                     type: "number",
                     value: menu.qty
                 },
@@ -77,7 +171,7 @@ class Menu extends React.Component<any, any> {
                     const data_cart = {
                         qty: value,
                         sub_total: total_new,
-                        user_in: sessionStorage.getItem('username'),
+                        user_in: this.state.user_in,
                         id_cart: menu.id_cart
                     }
 
@@ -117,6 +211,170 @@ class Menu extends React.Component<any, any> {
                 this.getCart();
             }
         })
+    }
+
+    handleTypePemesanan(e) {
+        if (e.target.value === '') {
+            toast.error("Tipe Pemesanan Wajib Diisi");
+            this.setState({
+                type_pemesanan: '',
+            })
+            this.validate()
+        } else {
+            if (e.target.value === 'Cafe Only') {
+                this.setState({
+                    type_pemesanan: e.target.value,
+                    select_container: true
+                })
+
+            } else if (e.target.value === 'With Table') {
+                var data_;
+                ipcRenderer.invoke("getActiveTable").then((result) => {
+                    if (result.response === true) {
+                        data_ = result.data.map((el, i) => {
+                            return (
+                                <option value={el.id_booking}>{el.nama_table}</option>
+                            )
+                        });
+                        this.setState({
+                            type_pemesanan: e.target.value,
+                            select_container: <>
+                                <div className="mt-2 label-custom mb-3">
+                                    <label>Pilih Table</label>
+                                    <select onChange={this.handleTable} className="form-control custom-input mt-2">
+                                        <option value="">Pilih Table</option>
+                                        {data_}
+                                    </select>
+                                </div>
+                            </>
+                        })
+
+                    } else {
+                        toast.error("Table tidak ada yang aktif");
+                    }
+                });
+            }
+            this.validate()
+        }
+    }
+
+    handleUangCash(e) {
+        if (e.target.value.length === 0) {
+            toast.error("Uang Cash wajib diisi");
+            this.setState(prevState => ({
+                ...prevState.data_cafe,
+                data_cafe: {
+                    uang_cash: '',
+                    kembalian: ''
+                }
+            }));
+            this.validate()
+
+        } else {
+
+            const dot = new DotAdded();
+            const kembalian = dot.decode(e.target.value) - dot.decode(this.state.total_harga)
+
+            if (dot.isNegative(kembalian)) {
+                this.setState(prevState => ({
+                    ...prevState.data_cafe,
+                    data_cafe: {
+                        uang_cash: dot.parse(e.target.value),
+                        kembalian: ''
+                    }
+                }))
+            } else {
+                this.setState(prevState => ({
+                    ...prevState.data_cafe,
+                    data_cafe: {
+                        uang_cash: dot.parse(e.target.value),
+                        kembalian: dot.parse(kembalian)
+                    }
+                }))
+            }
+            this.validate()
+
+        }
+    }
+
+    handleBatal() {
+        swal({
+            title: "Apa kamu yakin?",
+            text: "Pesanan akan dibatalkan!",
+            icon: "warning",
+            buttons: ["Batal", true],
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    ipcRenderer.invoke("pesanan", false, false, false, false, true, false, false, []).then((result) => {
+                        console.log(result);
+                        if (result.response === true) {
+                            toast.success("Pesanan berhasil dibatalkan");
+                            this.clearState();
+                        } else {
+                            toast.error("Pesanan gagal dibatalkan");
+                            this.clearState();
+                        }
+                    })
+                }
+            });
+
+    }
+
+    handleSimpan() {
+        swal({
+            title: "Apa kamu yakin?",
+            text: "Pesanan tidak bisa dibatalkan!",
+            icon: "warning",
+            buttons: ["Batal", true],
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    const dot = new DotAdded();
+                    if (this.state.type_pemesanan === 'Cafe Only') {
+                        const data_cart = {
+                            total: dot.decode(this.state.total_harga),
+                            uang_cash: dot.decode(this.state.data_cafe.uang_cash),
+                            uang_kembalian: dot.decode(this.state.data_cafe.kembalian),
+                            user_in: this.state.user_in
+                        }
+
+                        ipcRenderer.invoke("pesanan", false, false, false, false, false, true, false, data_cart).then((result) => {
+                            console.log(result);
+
+                            if (result.response === true) {
+                                toast.success("Pesanan berhasil dilakukan");
+                                this.clearState();
+                            } else {
+                                toast.error("Pesanan gagal dilakukan");
+                                this.clearState();
+                            }
+                        });
+                    } else if (this.state.type_pemesanan === 'With Table') {
+                        const data_cart = {
+                            total_harga: this.state.total_harga,
+                            id_booking: this.state.data_table.table_booking,
+                            user_id: this.state.user_in
+                        }
+
+                        ipcRenderer.invoke("pesanan", false, false, false, false, false, false, true, data_cart).then((result) => {
+                            console.log(result);
+
+                            if (result.response === true) {
+                                toast.success("Pesanan berhasil dilakukan");
+                                this.clearState();
+                            } else {
+                                toast.error("Pesanan gagal dilakukan");
+                                this.clearState();
+                            }
+                        });
+                    }
+
+                }
+            });
+
     }
 
     getMenu() {
@@ -213,12 +471,37 @@ class Menu extends React.Component<any, any> {
                         </>
                     )
                 });
+
                 setTimeout(() => {
                     const total_harga = result.data.reduce((total, arr) => {
                         return total + arr.sub_total;
                     }, 0);
-                    this.setState({ data_cart: data_, total_harga: new DotAdded().parse(total_harga) });
-                }, 1000);
+
+                    this.setState(prevState => ({
+                        ...prevState.data_cafe,
+                        data_cafe: {
+                            uang_cash: '',
+                            kembalian: ''
+                        },
+                        data_cart: data_,
+                        total_harga: new DotAdded().parse(total_harga),
+                        disabled_batal: false
+                    }));
+
+
+                }, 500);
+
+            } else {
+                this.setState(prevState => ({
+                    ...prevState.data_cafe,
+                    data_cafe: {
+                        uang_cash: '',
+                        kembalian: ''
+                    },
+                    data_cart: [],
+                    total_harga: 0,
+                    disabled_batal: true
+                }));
             }
         })
     }
@@ -269,16 +552,32 @@ class Menu extends React.Component<any, any> {
                                             <div className="mt-3">
                                                 <div className="box-check-total-content">
                                                     <h4>Detail Pembayaran:</h4>
-                                                    <small>Tanggal Pembelian: <span id="date_now"></span></small>
+                                                    <small>Tanggal Pembelian: <span>{this.state.date_now}</span></small>
                                                     <div className="mt-2 label-custom mb-3">
-                                                        <label>Pilih Table</label>
-                                                        <select name="" className="form-control custom-input mt-2" id="table_cart">
-
+                                                        <label>Pilih Tipe Pemesanan</label>
+                                                        <select className="form-control custom-input mt-2" onChange={this.handleTypePemesanan}>
+                                                            <option value="">Pilih Pemesanan</option>
+                                                            <option value="Cafe Only">Cafe Only</option>
+                                                            <option value="With Table">With Table</option>
                                                         </select>
                                                     </div>
                                                     <div className="hr-white"></div>
-                                                    <div className="list-container-total" id="list-total-cart">
-                                                    </div>
+                                                    {this.state.select_container === true ?
+                                                        <>
+                                                            <div className="box-kembalian mb-3">
+                                                                <label style={{ 'color': '#fff' }}>Uang Cash</label>
+                                                                <div className="input-group mt-2">
+                                                                    <span className="input-group-text" id="inputGroup-sizing-default">Rp.</span>
+                                                                    <input type="text" className="form-control group-input-custom" aria-label="Sizing example input" id="uang_cash_cafe" aria-describedby="inputGroup-sizing-default" onChange={this.handleUangCash} value={this.state.data_cafe.uang_cash} />
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="total-all mb-3 mt-3">
+                                                                <h6>Kembalian: </h6>
+                                                                <h4>Rp. <span id="kembalian_cafe">{this.state.data_cafe.kembalian}</span></h4>
+                                                            </div>
+                                                        </> : this.state.select_container}
+
                                                     <div className="hr-white"></div>
                                                     <div className="total-all">
                                                         <h6>Total Harga: </h6>
@@ -286,10 +585,10 @@ class Menu extends React.Component<any, any> {
                                                     </div>
                                                     <input type="hidden" id="total_menu_val" />
                                                     <div className="d-grid mt-2">
-                                                        <button className="btn btn-primary btn-primary-cozy" id="checkout_cart">Simpan</button>
+                                                        <button className="btn btn-primary btn-primary-cozy" onClick={this.handleSimpan} disabled={this.state.disabled} id="checkout_cart">{this.state.text_submit}</button>
                                                     </div>
                                                     <div className="d-grid mt-2">
-                                                        <button className="btn btn-primary btn-primary-cozy-dark" id="batal_cart">Batal</button>
+                                                        <button className="btn btn-primary btn-primary-cozy-dark" disabled={this.state.disabled_batal} onClick={this.handleBatal} id="batal_cart">Batal</button>
                                                     </div>
                                                 </div>
                                             </div>

@@ -10,6 +10,7 @@ import MemberSystem from './system/MemberSystem'
 import MenuSystem from './system/MenuSystem'
 import KategoriMenuSystem from './system/KategoriMenuSystem'
 import CartSystem from './system/CartSystem'
+import StrukSystem from './system/StrukSystem'
 
 
 // AppDataSource.initialize().then(async () => {
@@ -156,6 +157,10 @@ ipcMain.handle("inputPrice", async (event, data_booking) => {
     return await bill.inputPrice(data_booking);
 });
 
+ipcMain.handle("getActiveTable", async (event) => {
+    return await BillingOperation.getActiveTable();
+})
+
 
 ipcMain.handle("waitinglist", async (event, get_data, add_new, delete_waiting, id_waiting, data_waiting) => {
     if (add_new === true) {
@@ -232,4 +237,16 @@ ipcMain.handle("pesanan", async (event, get_cart, add_cart, edit_cart, delete_ca
         return {response:false, data: 'paramater is not valid'};
     }
 });
+
+ipcMain.handle("pesanan_edit", async (event, edit_cart, delete_cart, data_cart) => {
+    if (edit_cart === true) {
+        return CartSystem.editCartTable(data_cart);
+    } else if (delete_cart === true) {
+        return CartSystem.deleteCartTable(data_cart);
+    }
+})
+
+// ipcMain.handle("print-data", async (event, id_struk) => {
+//     return StrukSystem.getPrintData(id_struk);
+// })
 //endopration

@@ -6,6 +6,8 @@ import moment from "moment";
 import { Pesanan } from "../entity/Pesanan";
 import { Struk } from "../entity/Struk";
 import DotAdded from "./DotAdded";
+import StrukSystem from "./StrukSystem";
+import { Booking } from "../entity/Booking";
 
 const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
 
@@ -135,7 +137,7 @@ class CartSystem {
                     id_struk: id_struk,
                     id_pesanan: id_pesanan,
                     id_booking: '',
-                    nama_customer: data_cart.nama_customer,
+                    nama_customer: 'Cafe',
                     total_struk: data_cart.total,
                     cash_struk: data_cart.uang_cash,
                     kembalian_struk: data_cart.uang_kembalian,
@@ -153,6 +155,7 @@ class CartSystem {
                     }).where('status = :status', {status: 'active'}).execute();
 
                     if (cart) {
+                        StrukSystem.print(id_struk);
                         return {response: true, data: 'pesanan selesai'};
                     } else {
                         return {response: false, data: 'pesanan gagal'};
@@ -185,33 +188,50 @@ class CartSystem {
             })
 
             if (check_pesanan.length !== 0) {
-                const total_new = check_pesanan[0].total + dot.decode(data_cart.total_harga);
-                const update_pesanan = await service.manager.createQueryBuilder().update(Pesanan).set({
-                    total: total_new,
-                    updated_at: date_now,
-                }).where('id_booking = :id', {id: data_cart.id_booking}).execute();
-                if (update_pesanan) {
-                    const total_harga = check_struk[0].total_struk + total_new;
-                    const update_struk = await service.manager.createQueryBuilder().update(Struk).set({
-                        total_struk: total_harga,
-                        updated_at: date_now
+                const cart = await service.manager.createQueryBuilder().update(Cart).set({
+                    id_pesanan: check_pesanan[0].id_pesanan,
+                    status: 'not active',
+                }).where('status = :status', {status: 'active'}).execute();
+
+                if (cart) {
+                    const check_cart = await service.manager.find(Cart, {
+                        where: {
+                            id_pesanan: check_pesanan[0].id_pesanan
+                        }
+                    });
+
+                    const dd:any = check_cart;
+                    const total_new = dd.reduce((total, arr) => {
+                        return total + arr.sub_total;
+                    }, 0);
+
+                    const update_pesanan = await service.manager.createQueryBuilder().update(Pesanan).set({
+                        total: total_new,
+                        updated_at: date_now,
                     }).where('id_booking = :id', {id: data_cart.id_booking}).execute();
 
-                    if (update_struk) {
-                        const cart = await service.manager.createQueryBuilder().update(Cart).set({
-                            id_pesanan: check_pesanan[0].id_pesanan,
-                            status: 'not active',
-                        }).where('status = :status', {status: 'active'}).execute();
+                    if (update_pesanan) {
+                        const check_booking = await service.manager.find(Booking, {
+                            where: {
+                                id_booking: data_cart.id_booking
+                            }
+                        });
 
-                        if (cart) {
-                            return {response: true, data: 'pesanan selesai'};
-                        } else {
-                            return {response: false, data: 'pesanan is not complite'};
-                        }
-                    } else {
-                        return {response: false, data: 'pesanan is not complite'};
+                        const total_struk = check_booking[0].total_harga + total_new;
+                        const update_struk = await service.manager.createQueryBuilder().update(Struk).set({
+                            total_struk: total_struk,
+                            updated_at: date_now
+                        }).where('id_booking = :id', {id: data_cart.id_booking}).execute();
+
+                            if (update_struk && check_booking) {
+                                return {response: true, data: 'pesanan selesai'};
+                            } else {
+                                return {response: false, data: 'pesanan is not complite'};
+                            }
+
                     }
                 }
+                
             } else {
                 const id_pesanan = shortid.generate();
                 const insert_pesanan = await service.manager.getRepository(Pesanan).createQueryBuilder().insert().values({
@@ -230,13 +250,14 @@ class CartSystem {
                 if (insert_pesanan) {
                     const total_new = check_struk[0].total_struk + dot.decode(data_cart.total_harga);
                     const update_struk = await service.manager.createQueryBuilder().update(Struk).set({
+                        id_pesanan: id_pesanan,
                         total_struk: total_new,
                         updated_at: date_now
                     }).where('id_booking = :id', {id: data_cart.id_booking}).execute();
 
                     if (update_struk) {
                         const cart = await service.manager.createQueryBuilder().update(Cart).set({
-                            id_pesanan: check_pesanan[0].id_pesanan,
+                            id_pesanan: id_pesanan,
                             status: 'not active',
                         }).where('status = :status', {status: 'active'}).execute();
                         
@@ -258,11 +279,7 @@ class CartSystem {
     static async cancelPesanan():Promise<any> {
         try {
             let service = await dataSource;
-            const delete_all = await service.manager.delete(Cart, {
-                where: {
-                    status: 'active',
-                }
-            });
+            const delete_all = await service.manager.createQueryBuilder().delete().from(Cart).where('status = :status', {status: 'active'}).execute();
 
             if (delete_all) {
                 return {response: true, data: 'cart is empty'};
@@ -273,6 +290,127 @@ class CartSystem {
             console.log(err);
         }
     }
+
+    static async deleteCartTable(data_cart):Promise<any> {
+        try {
+            let service = await dataSource;
+            const check_pesanan = await service.manager.find(Pesanan, {
+                where: {
+                    id_booking: data_cart.id_booking
+                }
+            });
+
+            if (check_pesanan.length !== 0) {
+                const delete_cart = await service.manager.getRepository(Cart).delete({id_cart: data_cart.id_cart});
+                if (delete_cart) {
+                    const check_cart = await service.manager.find(Cart, {
+                        where: {
+                            id_pesanan: check_pesanan[0].id_pesanan
+                        }
+                    });
+
+                    if (check_cart.length !== 0) {
+                        const dd:any = check_cart;
+                        const total_cart = dd.reduce((total, arr) => {
+                            return total + arr.sub_total;
+                        }, 0);
+
+                        const check_booking = await service.manager.find(Booking, {
+                            where: {
+                                id_booking: data_cart.id_booking
+                            }
+                        });
+
+                        const update_pesanan = await service.manager.createQueryBuilder().update(Pesanan).set({
+                            total: total_cart,
+                            updated_at: date_now
+                        }).where('id_pesanan = :id', {id: check_pesanan[0].id_pesanan}).execute()
+
+                        console.log(total_cart)
+
+                        const total_struk = check_booking[0].total_harga + total_cart;
+                        const update_struk = await service.manager.createQueryBuilder().update(Struk).set({
+                            total_struk: total_struk,
+                            updated_at: date_now
+                        }).where('id_booking = :id', {id: data_cart.id_booking}).execute();
+
+                        if (update_struk && update_pesanan) {
+                            return {response: true, data: 'data is deleted'};
+                        } else {
+                            return {response: false, data: 'data is not deleted'};
+                        }
+                } else {
+                    return {response: false, data: 'data is not deleted'};
+                }
+            }
+        }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async editCartTable(data_cart):Promise<any> {
+        try {
+            let service = await dataSource;
+            const check_pesanan = await service.manager.find(Pesanan, {
+                where: {
+                    id_booking: data_cart.id_booking
+                }
+            });
+
+            if (check_pesanan.length !== 0) {
+                const edit_cart = await service.manager.createQueryBuilder().update(Cart).set({
+                    qty: data_cart.qty,
+                    sub_total: data_cart.sub_total,
+                    user_id: data_cart.user_id,
+                    updated_at: date_now
+                }).where('id_cart = :id', {id: data_cart.id_cart}).execute();
+                console.log(edit_cart)
+                if (edit_cart) {
+                    const check_cart = await service.manager.find(Cart, {
+                        where: {
+                            id_pesanan: check_pesanan[0].id_pesanan
+                        }
+                    });
+
+                    if (check_cart.length !== 0) {
+                        const dd:any = check_cart;
+                        const total_cart = dd.reduce((total, arr) => {
+                            return total + arr.sub_total;
+                        }, 0);
+
+                        console.log(total_cart)
+
+                        const update_pesanan = await service.manager.createQueryBuilder().update(Pesanan).set({
+                            total: total_cart,
+                            updated_at: date_now
+                        }).where('id_pesanan = :id', {id: check_pesanan[0].id_pesanan}).execute()
+
+                        const check_booking = await service.manager.find(Booking, {
+                            where: {
+                                id_booking: data_cart.id_booking
+                            }
+                        });
+
+                        const total_struk = check_booking[0].total_harga + total_cart;
+                        const update_struk = await service.manager.createQueryBuilder().update(Struk).set({
+                            total_struk: total_struk,
+                            updated_at: date_now
+                        }).where('id_booking = :id', {id: data_cart.id_booking}).execute();
+
+                        if (update_struk && update_pesanan) {
+                            return {response: true, data: 'data is saved'};
+                        } else {
+                            return {response: false, data: 'data is not saved'};
+                        }
+                    }
+                }   
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
 }
 
 export default CartSystem;
