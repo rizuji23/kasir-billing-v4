@@ -312,7 +312,7 @@ class TablePersonal extends TableRegular {
         this.port = port;
         this.win = win;
         this.table_number = this.id_table.split('table0').join('');
-        this.date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss")
+        this.date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
     }
 
     timerInit(): void {

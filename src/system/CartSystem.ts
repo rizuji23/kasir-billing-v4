@@ -190,13 +190,14 @@ class CartSystem {
             if (check_pesanan.length !== 0) {
                 const cart = await service.manager.createQueryBuilder().update(Cart).set({
                     id_pesanan: check_pesanan[0].id_pesanan,
-                    status: 'not active',
+                    status: 'belum dibayar',
                 }).where('status = :status', {status: 'active'}).execute();
 
                 if (cart) {
                     const check_cart = await service.manager.find(Cart, {
                         where: {
-                            id_pesanan: check_pesanan[0].id_pesanan
+                            id_pesanan: check_pesanan[0].id_pesanan,
+                            status: 'belum dibayar',
                         }
                     });
 
@@ -258,7 +259,7 @@ class CartSystem {
                     if (update_struk) {
                         const cart = await service.manager.createQueryBuilder().update(Cart).set({
                             id_pesanan: id_pesanan,
-                            status: 'not active',
+                            status: 'belum dibayar',
                         }).where('status = :status', {status: 'active'}).execute();
                         
                         if (cart) {
@@ -301,15 +302,19 @@ class CartSystem {
             });
 
             if (check_pesanan.length !== 0) {
-                const delete_cart = await service.manager.getRepository(Cart).delete({id_cart: data_cart.id_cart});
+                const delete_cart = await service.manager.getRepository(Cart).delete({id_cart: data_cart.id_cart, status: 'belum dibayar'});
                 if (delete_cart) {
                     const check_cart = await service.manager.find(Cart, {
                         where: {
-                            id_pesanan: check_pesanan[0].id_pesanan
+                            id_pesanan: check_pesanan[0].id_pesanan,
                         }
                     });
 
-                    if (check_cart.length !== 0) {
+                    console.log("Check Cart: ", check_cart);
+                    console.log("Check Pesanan: ", check_pesanan);
+
+
+                    if (check_cart) {
                         const dd:any = check_cart;
                         const total_cart = dd.reduce((total, arr) => {
                             return total + arr.sub_total;
@@ -325,14 +330,17 @@ class CartSystem {
                             total: total_cart,
                             updated_at: date_now
                         }).where('id_pesanan = :id', {id: check_pesanan[0].id_pesanan}).execute()
-
-                        console.log(total_cart)
-
+                        console.log("Total Cart : ", total_cart)
+                        
                         const total_struk = check_booking[0].total_harga + total_cart;
+                        console.log("Total Struk : ", total_struk)
+
                         const update_struk = await service.manager.createQueryBuilder().update(Struk).set({
                             total_struk: total_struk,
                             updated_at: date_now
                         }).where('id_booking = :id', {id: data_cart.id_booking}).execute();
+                        console.log(update_struk)
+                        console.log(update_pesanan)
 
                         if (update_struk && update_pesanan) {
                             return {response: true, data: 'data is deleted'};
@@ -364,12 +372,13 @@ class CartSystem {
                     sub_total: data_cart.sub_total,
                     user_id: data_cart.user_id,
                     updated_at: date_now
-                }).where('id_cart = :id', {id: data_cart.id_cart}).execute();
+                }).where('id_cart = :id', {id: data_cart.id_cart}).andWhere('status = :status', {status: 'belum dibayar'}).execute();
                 console.log(edit_cart)
                 if (edit_cart) {
                     const check_cart = await service.manager.find(Cart, {
                         where: {
-                            id_pesanan: check_pesanan[0].id_pesanan
+                            id_pesanan: check_pesanan[0].id_pesanan,
+                            status: 'belum dibayar'
                         }
                     });
 

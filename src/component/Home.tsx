@@ -106,25 +106,14 @@ class Home extends React.Component<any, any> {
                         <div className="col-sm">
                             <div className="d-flex mb-2">
                                 <div className="p-1">
-                                    <a href="home.html"
+                                    <a href="javascript:void(0)"
                                         className="btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10">Home</a>
                                 </div>
 
                                 <div className="p-1">
-                                    <a href="list_member.html"
-                                        className="btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10">List
-                                        Member</a>
-                                </div>
-
-                                <div className="p-1">
-                                    <a href="list_transaksi.html"
+                                    <a href="javascript:void(0)"
                                         className="btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10">List
                                         Transaksi</a>
-                                </div>
-                                <div className="p-1">
-                                    <a href="billing_terminal.html"
-                                        className="btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10">Billing
-                                        Terminal</a>
                                 </div>
                             </div>
                         </div>

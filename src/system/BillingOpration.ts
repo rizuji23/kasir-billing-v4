@@ -187,7 +187,7 @@ class BillingOperation {
                 console.log(get_detail_struk[0].id_pesanan);
                 console.log(get_detail_pesanan)
     
-                if (get_detail_cafe.length !== 0 && get_detail_struk.length !== 0 && get_detail_pesanan.length !== 0) {
+                if (get_detail_cafe.length !== 0 || get_detail_struk.length !== 0 || get_detail_pesanan.length !== 0) {
                     return {'response': true, 'data_struk': get_detail_struk, 'data_cafe': get_detail_cafe, 'data_pesanan': get_detail_pesanan};
                 } else {
                     return {'response': false, 'data_struk': 'data empty', 'data_cafe': 'data empty', 'data_pesanan': 'data empty'}

@@ -168,17 +168,122 @@ class ModalBookingActive extends React.Component<any, any> {
             total_all: 0,
             isOpen: false,
             total_billing: 0,
+            data_split_billing: [],
+            data_split_menu: [],
+            disabled_split: true,
+            text_split: 'Split Bill',
         }
 
         this.getAllTable = this.getAllTable.bind(this);
         this.handleEditMenu = this.handleEditMenu.bind(this);
         this.handleDeleteMenu = this.handleDeleteMenu.bind(this);
+        this.handleSplitBill = this.handleSplitBill.bind(this);
+        this.handleCheckSplit = this.handleCheckSplit.bind(this);
     }
 
 
     close() {
         document.getElementById('close-modal-active').click()
-        console.log("HELLO")
+    }
+
+    handleCheckSplit(data, e) {
+        if (e.target.checked) {
+            if (data.id_detail_booking) {
+                if (this.state.data_split_billing.length !== 0) {
+                    const checkForId = this.state.data_split_billing.map(el => {
+                        return el.id_detail_booking
+                    }).includes(data.id_detail_booking);
+
+                    if (!checkForId) {
+                        this.setState({
+                            data_split_billing: this.state.data_split_billing.concat(data),
+                        })
+                    }
+
+                } else {
+                    this.setState({
+                        data_split_billing: this.state.data_split_billing.concat(data),
+                    })
+                }
+
+
+            } else {
+                if (this.state.data_split_menu.length !== 0) {
+                    const checkForId = this.state.data_split_menu.map(el => {
+                        return el.id_cart
+                    }).includes(data.id_cart);
+
+                    if (!checkForId) {
+                        this.setState({
+                            data_split_menu: this.state.data_split_menu.concat(data),
+                        })
+                    }
+
+                } else {
+                    this.setState({
+                        data_split_menu: this.state.data_split_menu.concat(data),
+                    })
+                }
+            }
+        } else {
+            const removeElement = (arr, i) => [...arr.slice(0, i), ...arr.slice(i + 1)];
+
+            if (data.id_detail_booking) {
+                const removeItemArr = this.state.data_split_billing.findIndex((el) => {
+                    return el.id_detail_booking === data.id_detail_booking;
+                });
+
+                if (removeItemArr !== -1) {
+                    this.setState({
+                        data_split_billing: removeElement(this.state.data_split_billing, removeItemArr),
+                    })
+                }
+
+            } else {
+                const removeItemArr = this.state.data_split_menu.findIndex((el) => {
+                    return el.id_cart === data.id_cart;
+                });
+
+                if (removeItemArr !== -1) {
+                    this.setState({
+                        data_split_menu: removeElement(this.state.data_split_menu, removeItemArr),
+                    })
+                }
+            }
+        }
+
+        this.setState({
+            text_split: 'Checking data...'
+        })
+
+        setTimeout(() => {
+            if (this.validate_split(this.state.data_split_billing, this.state.data_split_menu)) {
+                this.setState({
+                    disabled_split: false,
+                    text_split: 'Split Bill'
+
+                });
+            } else {
+                this.setState({
+                    disabled_split: true,
+                    text_split: 'Split Bill'
+
+                });
+            }
+        }, 1000)
+    }
+
+    validate_split(arr_bill, arr_menu) {
+        if (arr_bill.length === 0 && arr_menu.length === 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    handleSplitBill() {
+        console.log(this.state.data_split_billing);
+        console.log(this.state.data_split_menu);
     }
 
     handleEditMenu(menu) {
@@ -280,14 +385,21 @@ class ModalBookingActive extends React.Component<any, any> {
                 const data_ = result.data.map((el, i) => {
                     return (
                         <>
-                            <li>{el.end_duration} = Rp. {dot.parse(el.harga)}</li>
+                            <div className="mb-3 form-check">
+                                <input type="checkbox" onClick={(e) => this.handleCheckSplit(el, e)} className="form-check-input" />
+                                <label className="form-check-label">
+                                    {el.end_duration} = Rp. {dot.parse(el.harga)} {el.status === 'active' ? <span className="badge rounded-pill text-bg-danger">Belum Dibayar</span> : <span className="badge rounded-pill text-bg-success">Sudah Dibayar</span>}
+                                </label>
+                            </div>
                         </>
                     )
                 });
 
                 const sum_ = result.data.reduce((total, arr) => {
                     return total + arr.harga
-                }, 0)
+                }, 0);
+
+                console.log(result)
 
                 this.setState({ list_billing: data_, start_time: result.data[0].created_at, total_billing: dot.parse(sum_) });
 
@@ -303,14 +415,20 @@ class ModalBookingActive extends React.Component<any, any> {
                     const data_ = result.data_cafe.map((el, i) => {
                         return (
                             <>
-                                <li>{el.nama_menu} @{el.qty} = Rp. {dot.parse(el.sub_total)} (<a href="javascript:void(0)" onClick={() => this.handleEditMenu(el)} className="text-info">Edit</a> | <a className="text-danger" onClick={() => this.handleDeleteMenu(el)} href="javascript:void(0)">Delete</a>)</li>
+                                <div className="mb-3 form-check">
+                                    <input type="checkbox" onClick={(e) => this.handleCheckSplit(el, e)} className="form-check-input" />
+                                    <label className="form-check-label">{el.nama_menu} @{el.qty} = Rp. {dot.parse(el.sub_total)}
+                                        {
+                                            el.status === 'belum dibayar' ? <> (<a href="javascript:void(0)" onClick={() => this.handleEditMenu(el)} className="text-info">Edit</a> | <a className="text-danger" onClick={() => this.handleDeleteMenu(el)} href="javascript:void(0)">Delete</a>) <span className="badge rounded-pill text-bg-danger">Belum Dibayar</span></> : <><span className="badge rounded-pill text-bg-sucess">Sudah Dibayar</span></>
+                                        }</label>
+                                </div>
                             </>
                         )
                     });
-                    console.log(data_)
+                    console.log(result)
                     this.setState({
                         list_menu: data_,
-                        total_pesanan: dot.parse(result.data_pesanan[0].total),
+                        total_pesanan: result.data_cafe.length === 0 ? 0 : dot.parse(result.data_pesanan[0].total),
                         total_all: dot.parse(result.data_struk[0].total_struk)
                     });
                 } else {
@@ -320,7 +438,6 @@ class ModalBookingActive extends React.Component<any, any> {
                         total_all: 0
                     });
                 }
-                console.log(result)
             })
         }
     }
@@ -526,7 +643,9 @@ class ModalBookingActive extends React.Component<any, any> {
                                         Rp. {this.state.total_billing}
                                     </li>
                                 </ul>
-
+                                <div className="mt-2 float-end">
+                                    <button className="btn btn-primary btn-primary-cozy btn-sm" disabled={this.state.disabled_split} onClick={this.handleSplitBill}>{this.state.text_split}</button>
+                                </div>
                                 <div className="total-all mt-3">
                                     <h6>Total Harga Semua: </h6>
                                     <h4>Rp. <span id="total_struk_active">{this.state.total_all}</span></h4>

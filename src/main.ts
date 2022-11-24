@@ -11,6 +11,7 @@ import MenuSystem from './system/MenuSystem'
 import KategoriMenuSystem from './system/KategoriMenuSystem'
 import CartSystem from './system/CartSystem'
 import StrukSystem from './system/StrukSystem'
+import SplitBillSystem from './system/SplitBillSystem'
 
 
 // AppDataSource.initialize().then(async () => {
@@ -240,10 +241,14 @@ ipcMain.handle("pesanan", async (event, get_cart, add_cart, edit_cart, delete_ca
 
 ipcMain.handle("pesanan_edit", async (event, edit_cart, delete_cart, data_cart) => {
     if (edit_cart === true) {
-        return CartSystem.editCartTable(data_cart);
+        return await CartSystem.editCartTable(data_cart);
     } else if (delete_cart === true) {
-        return CartSystem.deleteCartTable(data_cart);
+        return await CartSystem.deleteCartTable(data_cart);
     }
+});
+
+ipcMain.handle("split_bill", async (event, data_bill) => {
+    return await SplitBillSystem.addSplit(data_bill);
 })
 
 // ipcMain.handle("print-data", async (event, id_struk) => {
