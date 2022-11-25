@@ -17,6 +17,8 @@ import { Table_Billiard } from "../entity/Table_Billiard"
 import { Waiting_List } from "../entity/Waiting_List"
 import { Harga_Member } from "../entity/Harga_Member"
 import { Member } from "../entity/Member"
+import { Split_Bill } from "../entity/Split_Bill"
+import { Split_Bill_Detail } from "../entity/Split_Bill_Detail"
 
 const AppDataSource = async () => {
     const dataSourceConn = new DataSource({
@@ -42,7 +44,9 @@ const AppDataSource = async () => {
             Table_Billiard,
             Waiting_List,
             Harga_Member,
-            Member
+            Member,
+            Split_Bill,
+            Split_Bill_Detail,
         ],
         migrations: [
             "./src/migrations/**/*.ts"

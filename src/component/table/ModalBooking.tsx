@@ -5,6 +5,7 @@ import { Modal, Alert } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import swal from 'sweetalert';
+import ModalSplitBill from "./ModalSplitBill";
 
 class ModalBooking extends React.Component<any, any> {
     constructor(props) {
@@ -44,9 +45,6 @@ class ModalBooking extends React.Component<any, any> {
         if (this.props.harga_detail !== prevProps.harga_detail) {
             console.log(this.props.harga_detail)
         }
-
-
-
     }
 
     render(): React.ReactNode {
@@ -172,6 +170,7 @@ class ModalBookingActive extends React.Component<any, any> {
             data_split_menu: [],
             disabled_split: true,
             text_split: 'Split Bill',
+            isOpenSplit: false,
         }
 
         this.getAllTable = this.getAllTable.bind(this);
@@ -179,6 +178,7 @@ class ModalBookingActive extends React.Component<any, any> {
         this.handleDeleteMenu = this.handleDeleteMenu.bind(this);
         this.handleSplitBill = this.handleSplitBill.bind(this);
         this.handleCheckSplit = this.handleCheckSplit.bind(this);
+        this.closeModal = this.closeModal.bind(this);
     }
 
 
@@ -282,6 +282,7 @@ class ModalBookingActive extends React.Component<any, any> {
     }
 
     handleSplitBill() {
+        this.openModal();
         console.log(this.state.data_split_billing);
         console.log(this.state.data_split_menu);
     }
@@ -386,7 +387,7 @@ class ModalBookingActive extends React.Component<any, any> {
                     return (
                         <>
                             <div className="mb-3 form-check">
-                                <input type="checkbox" onClick={(e) => this.handleCheckSplit(el, e)} className="form-check-input" />
+                                {el.status === 'active' ? <input type="checkbox" onClick={(e) => this.handleCheckSplit(el, e)} className="form-check-input" /> : ''}
                                 <label className="form-check-label">
                                     {el.end_duration} = Rp. {dot.parse(el.harga)} {el.status === 'active' ? <span className="badge rounded-pill text-bg-danger">Belum Dibayar</span> : <span className="badge rounded-pill text-bg-success">Sudah Dibayar</span>}
                                 </label>
@@ -395,11 +396,11 @@ class ModalBookingActive extends React.Component<any, any> {
                     )
                 });
 
-                const sum_ = result.data.reduce((total, arr) => {
+                const arr_bill_not_lunas = result.data.filter(item => !item.status.includes('lunas'));
+                console.log(arr_bill_not_lunas)
+                const sum_ = arr_bill_not_lunas.reduce((total, arr) => {
                     return total + arr.harga
                 }, 0);
-
-                console.log(result)
 
                 this.setState({ list_billing: data_, start_time: result.data[0].created_at, total_billing: dot.parse(sum_) });
 
@@ -416,10 +417,13 @@ class ModalBookingActive extends React.Component<any, any> {
                         return (
                             <>
                                 <div className="mb-3 form-check">
-                                    <input type="checkbox" onClick={(e) => this.handleCheckSplit(el, e)} className="form-check-input" />
+                                    {
+                                        el.status === 'belum dibayar' ? <input type="checkbox" onClick={(e) => this.handleCheckSplit(el, e)} className="form-check-input" /> : ''
+                                    }
+
                                     <label className="form-check-label">{el.nama_menu} @{el.qty} = Rp. {dot.parse(el.sub_total)}
                                         {
-                                            el.status === 'belum dibayar' ? <> (<a href="javascript:void(0)" onClick={() => this.handleEditMenu(el)} className="text-info">Edit</a> | <a className="text-danger" onClick={() => this.handleDeleteMenu(el)} href="javascript:void(0)">Delete</a>) <span className="badge rounded-pill text-bg-danger">Belum Dibayar</span></> : <><span className="badge rounded-pill text-bg-sucess">Sudah Dibayar</span></>
+                                            el.status === 'belum dibayar' ? <> (<a href="javascript:void(0)" onClick={() => this.handleEditMenu(el)} className="text-info">Edit</a> | <a className="text-danger" onClick={() => this.handleDeleteMenu(el)} href="javascript:void(0)">Delete</a>) <span className="badge rounded-pill text-bg-danger">Belum Dibayar</span></> : <><span className="badge rounded-pill text-bg-success">Sudah Dibayar</span></>
                                         }</label>
                                 </div>
                             </>
@@ -491,6 +495,14 @@ class ModalBookingActive extends React.Component<any, any> {
         }
 
 
+    }
+
+    openModal(): any {
+        this.setState({ isOpenSplit: true });
+    }
+
+    closeModal() {
+        this.setState({ isOpenSplit: false });
     }
 
 
@@ -674,6 +686,7 @@ class ModalBookingActive extends React.Component<any, any> {
                     </Modal.Footer>
                 </Modal>
                 {/* <div className="modal-backdrop fade show"></div> */}
+                <ModalSplitBill isOpenSplit={this.state.isOpenSplit} closeModalSplit={this.closeModal} data_split_billing={this.state.data_split_billing} data_split_menu={this.state.data_split_menu} />
             </>
         )
     }

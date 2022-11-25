@@ -106,6 +106,11 @@ class Home extends React.Component<any, any> {
                         <div className="col-sm">
                             <div className="d-flex mb-2">
                                 <div className="p-1">
+                                    <div className="title-header-box">
+                                        <h3>Table List</h3>
+                                    </div>
+                                </div>
+                                {/* <div className="p-1">
                                     <a href="javascript:void(0)"
                                         className="btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10">Home</a>
                                 </div>
@@ -114,7 +119,7 @@ class Home extends React.Component<any, any> {
                                     <a href="javascript:void(0)"
                                         className="btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10">List
                                         Transaksi</a>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                         <div className="col-sm">

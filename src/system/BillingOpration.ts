@@ -147,7 +147,7 @@ class BillingOperation {
             var get_detail;
             get_detail = await service.manager.find(Detail_Booking, {
                 where: {
-                    id_booking: id_booking
+                    id_booking: id_booking,
                 }
             });
     
