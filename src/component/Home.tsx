@@ -7,21 +7,28 @@ import TimeConvert from '../system/TimeConvert';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import Table_01 from './table/Table_01';
+import { Table_01, Table_02 } from './table/Tables';
 import Loading from "./Loading";
 
 async function turnon(id) {
     return new Promise(res => {
         setTimeout(() => {
-            console.log(id.table);
-            const id_table = id.table;
-            const ms = id.milliseconds;
-            console.log(ms)
+            if (id.mode === 'Regular') {
+                const id_table = id.table;
+                const ms = id.milliseconds;
 
-            ipcRenderer.invoke('start', id_table, ms, 0, true, false, false, 0, 0, {}, true, false).then((result) => {
-                console.log("called")
-                res(result)
-            });
+                ipcRenderer.invoke('start', id_table, ms, 0, true, false, false, 0, 0, {}, true, false).then((result) => {
+                    console.log("called regular")
+                    res(result)
+                });
+            } else if (id.mode === 'Loss') {
+                const id_table = id.table;
+
+                ipcRenderer.invoke("start_loss", id_table, false, false, id, false, true).then((result) => {
+                    console.log("called loss")
+                    res(result)
+                });
+            }
         }, 1000);
     });
 }
@@ -66,7 +73,7 @@ class Home extends React.Component<any, any> {
                                 if (data[2] === ' Regular') {
                                     arr_fine_regular.push(TimeConvert.textToMS(data, el));
                                 } else {
-                                    console.log("nyusul")
+                                    arr_fine_regular.push(TimeConvert.textToTime(data, el));
                                 }
                             }
                         } else {
@@ -143,6 +150,7 @@ class Home extends React.Component<any, any> {
                     </div>
                     <div className="row row-cols-1 row-cols-sm-3 g-4" id="table_billiard">
                         <Table_01 />
+                        <Table_02 />
                         {/* <Table_02/>
                     <Table_03/>
                     <Table_04/>

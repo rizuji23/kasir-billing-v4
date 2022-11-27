@@ -32,9 +32,9 @@ class Sidebar extends React.Component<any, any> {
                                 <span className="nav_name">Menu</span>
                             </NavLink>
 
-                            <NavLink to="/menu-makanan" className={({ isActive }) => isActive ? "nav_link active" : "nav_link"}>
+                            <NavLink to="/keuangan" className={({ isActive }) => isActive ? "nav_link active" : "nav_link"}>
                                 <i className='bx bx-money nav_icon'></i>
-                                <span className="nav_name">Keuangan</span>
+                                <span className="nav_name">Laporan</span>
                             </NavLink>
 
                             <a href="javascript:void(0)" className="nav_link" title="Manual">

@@ -1,14 +1,14 @@
 import React from "react";
-import { ModalBooking, ModalBookingActive } from "./ModalBooking";
+import { ModalBooking, ModalBookingActive } from "../ModalBooking";
 import { ipcRenderer } from "electron";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import DotAdded from "../../system/DotAdded";
+import DotAdded from "../../../system/DotAdded";
 import swal from 'sweetalert';
 
 
 
-class Table_01 extends React.Component<any, any> {
+class Table_02 extends React.Component<any, any> {
     constructor(props) {
         super(props);
 
@@ -20,9 +20,9 @@ class Table_01 extends React.Component<any, any> {
             isUse: false,
             nama: "",
             price: 0,
-            table_name: "Table 01",
+            table_name: "Table 02",
             mode: "",
-            table_id: "table001",
+            table_id: "table002",
             modal_close: false,
             harga_detail: "",
             total_harga: 0,
@@ -53,7 +53,7 @@ class Table_01 extends React.Component<any, any> {
         this.addOn = this.addOn.bind(this);
         this.resetTable = this.resetTable.bind(this);
         this.startTimerLoss = this.startTimerLoss.bind(this);
-
+        this.stopTimerLoss = this.stopTimerLoss.bind(this);
 
     }
 
@@ -261,7 +261,7 @@ class Table_01 extends React.Component<any, any> {
                         console.log("start 01 is created");
                         toast.success(this.state.table_name + " berhasil dibooking.");
                         this.getDataTable();
-                        this.setState({ disabled: false, isUse: true, modal_close: true, isOpen: true })
+                        this.setState({ disabled: false, isUse: true, isOpen: false });
                     });
                 }
             }, 1000);
@@ -327,7 +327,7 @@ class Table_01 extends React.Component<any, any> {
                         });
                     } else if (this.state.mode === 'Loss') {
                         console.log(data_booking)
-                        ipcRenderer.invoke("start_loss", this.state.table_id, false, false, data_booking, true).then((result) => {
+                        ipcRenderer.invoke("start_loss", this.state.table_id, false, false, data_booking, true, false).then((result) => {
                             console.log(`${this.state.table_name} is reset ${result}`);
                             this.clearAllState();
                             localStorage.setItem(this.state.table_id, `[not_active,00:00]`)
@@ -342,10 +342,19 @@ class Table_01 extends React.Component<any, any> {
     stopTimer(): void {
         ipcRenderer.invoke("start", this.state.table_id, 0, 0, true, true, 0, 0, 0, {}, false, false, false).then(() => {
             console.log("stop 01 is done")
-            this.clearAllState()
+            this.clearAllState();
             localStorage.setItem(this.state.table_id, `[not_active,00:00]`)
             toast.success(this.state.table_name + " di stop.");
         });
+    }
+
+    stopTimerLoss(): void {
+        ipcRenderer.invoke("start_loss", this.state.table_id, false, false, {}, true, false).then((result) => {
+            console.log(`${this.state.table_name} is reset ${result}`);
+            this.clearAllState();
+            localStorage.setItem(this.state.table_id, `[not_active,00:00]`)
+            toast.success(`${this.state.table_name} direset (Loss)`);
+        })
     }
 
     componentDidMount(): void {
@@ -355,7 +364,11 @@ class Table_01 extends React.Component<any, any> {
         this.setState({ modal_close: false })
     }
 
-
+    componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<any>, snapshot?: any): void {
+        if (this.state.id_booking !== prevState.id_booking) {
+            this.getDataTable();
+        }
+    }
 
     startTimerLoss() {
         console.log('test')
@@ -373,7 +386,7 @@ class Table_01 extends React.Component<any, any> {
                 }
 
                 if (this.state.mode === 'Loss') {
-                    ipcRenderer.invoke("start_loss", this.state.table_id, true, false, data_booking, false).then(() => {
+                    ipcRenderer.invoke("start_loss", this.state.table_id, true, false, data_booking, false, false).then(() => {
                         console.log("start loss 01 is created");
                         toast.success(this.state.table_name + " berhasil dibooking (Loss).");
                         this.getDataTable();
@@ -391,49 +404,46 @@ class Table_01 extends React.Component<any, any> {
         ipcRenderer.invoke("getDataTable", this.state.table_id).then((result) => {
             console.log(result)
             if (result.response === true) {
-                var blnk;
-                if (result.data[0].tipe_booking === 'Regular') {
-                    blnk = true
+                if (result.data[0].status_booking === 'lunas') {
+                    this.clearAllState();
                 } else {
-                    blnk = false
-                }
-                if (result.data[0].status_booking !== 'not_active') {
-                    console.log(result.data[0].id_booking)
+                    var blnk;
+                    if (result.data[0].tipe_booking === 'Regular') {
+                        blnk = true
+                    } else {
+                        blnk = false
+                    }
+                    if (result.data[0].status_booking !== 'not_active') {
+                        console.log(result.data[0].id_booking)
 
 
-                    this.setState({
-                        nama: result.data[0].nama_booking,
-                        total_harga: dot.parse(result.data[0].total_harga),
-                        blink: blnk,
-                        mode: result.data[0].tipe_booking,
-                        isUse: true,
-                        id_booking: result.data[0].id_booking,
-                    })
-                } else {
-                    this.setState({
-                        nama: '',
-                        total_harga: '0',
-                        blink: false,
-                        isUse: false,
-                        id_booking: '',
-                    })
+                        this.setState({
+                            nama: result.data[0].nama_booking,
+                            total_harga: dot.parse(result.data[0].total_harga),
+                            blink: blnk,
+                            mode: result.data[0].tipe_booking,
+                            isUse: true,
+                            id_booking: result.data[0].id_booking,
+                        })
+                    } else {
+                        this.setState({
+                            nama: '',
+                            total_harga: '0',
+                            blink: false,
+                            isUse: false,
+                            id_booking: '',
+                        })
+                    }
                 }
             } else {
-                this.setState({
-                    nama: '',
-                    total_harga: '0',
-                    blink: false,
-                    isUse: false,
-                    id_booking: '',
-
-                })
+                this.clearAllState();
             }
         })
     }
 
     getTimeString(): void {
         ipcRenderer.on(this.state.table_id, (event, msg) => {
-            this.setState({ timer: msg.data })
+            this.setState({ timer: msg.data });
             if (msg.reponse === true) {
                 if (msg.mode === 'loss') {
                     localStorage.setItem(this.state.table_id, `[active,${msg.data.split(':')[0]}:${msg.data.split(':')[1]}, Loss]`)
@@ -482,7 +492,7 @@ class Table_01 extends React.Component<any, any> {
         if (this.state.isUse === false) {
             modal = <ModalBooking table_name={this.state.table_name} handleMode={this.handleMode} handleJam={this.handleJam} startTimer={this.startTimer} handleNama={this.handleNama} disableSubmit={this.state.disabled} harga_detail={this.state.harga_detail} total_harga={this.state.total_harga} jam={this.state.jam} handleBlink={this.handleBlink} table_id={this.state.table_id} isOpen={this.state.isOpen} closeModal={this.closeModal} mode_loss={this.state.mode_loss} startTimerLoss={this.startTimerLoss} />
         } else if (this.state.isUse === true) {
-            modal = <ModalBookingActive table_name={this.state.table_name} name_customer={this.state.nama} id_booking={this.state.id_booking} table_id={this.state.table_id} stopTimer={this.stopTimer} handlePindah={this.handlePindah} jam={this.state.jam_add} harga_detail={this.state.harga_detail} total_harga_add={this.state.total_harga_add} total_harga={this.state.total_harga} handleJam={this.handleJamAdd} isOpen={this.state.isOpen} closeModal={this.closeModal} handleBlinkAdd={this.handleBlinkAdd} addOn={this.addOn} disabled_add={this.state.disabled_add} resetTable={this.resetTable} mode={this.state.mode} time_running={this.state.time_running} />
+            modal = <ModalBookingActive table_name={this.state.table_name} name_customer={this.state.nama} id_booking={this.state.id_booking} table_id={this.state.table_id} stopTimer={this.stopTimer} stopTimerLoss={this.stopTimerLoss} handlePindah={this.handlePindah} jam={this.state.jam_add} harga_detail={this.state.harga_detail} total_harga_add={this.state.total_harga_add} total_harga={this.state.total_harga} handleJam={this.handleJamAdd} isOpen={this.state.isOpen} closeModal={this.closeModal} handleBlinkAdd={this.handleBlinkAdd} addOn={this.addOn} disabled_add={this.state.disabled_add} resetTable={this.resetTable} mode={this.state.mode} time_running={this.state.time_running} />
         }
 
         if (this.state.isUse) {
@@ -552,4 +562,4 @@ class Table_01 extends React.Component<any, any> {
 
 
 
-export default Table_01;
+export default Table_02;

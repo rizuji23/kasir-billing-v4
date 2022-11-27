@@ -171,6 +171,10 @@ class ModalBookingActive extends React.Component<any, any> {
             disabled_split: true,
             text_split: 'Split Bill',
             isOpenSplit: false,
+            id_pesanan: '',
+            uang_cash: '',
+            kembalian: 0,
+            disabled_bayar: true,
         }
 
         this.getAllTable = this.getAllTable.bind(this);
@@ -179,6 +183,8 @@ class ModalBookingActive extends React.Component<any, any> {
         this.handleSplitBill = this.handleSplitBill.bind(this);
         this.handleCheckSplit = this.handleCheckSplit.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        this.handleUangCash = this.handleUangCash.bind(this);
+        this.handlePayNow = this.handlePayNow.bind(this);
     }
 
 
@@ -423,7 +429,7 @@ class ModalBookingActive extends React.Component<any, any> {
 
                                     <label className="form-check-label">{el.nama_menu} @{el.qty} = Rp. {dot.parse(el.sub_total)}
                                         {
-                                            el.status === 'belum dibayar' ? <> (<a href="javascript:void(0)" onClick={() => this.handleEditMenu(el)} className="text-info">Edit</a> | <a className="text-danger" onClick={() => this.handleDeleteMenu(el)} href="javascript:void(0)">Delete</a>) <span className="badge rounded-pill text-bg-danger">Belum Dibayar</span></> : <><span className="badge rounded-pill text-bg-success">Sudah Dibayar</span></>
+                                            el.status === 'belum dibayar' ? <> (<a href="javascript:void(0)" onClick={() => this.handleEditMenu(el)} className="text-info">Edit</a> | <a className="text-danger" onClick={() => this.handleDeleteMenu(el)} href="javascript:void(0)">Delete</a>) <span className="badge rounded-pill text-bg-danger">Belum Dibayar</span></> : <> <span className="badge rounded-pill text-bg-success">Sudah Dibayar</span></>
                                         }</label>
                                 </div>
                             </>
@@ -433,13 +439,15 @@ class ModalBookingActive extends React.Component<any, any> {
                     this.setState({
                         list_menu: data_,
                         total_pesanan: result.data_cafe.length === 0 ? 0 : dot.parse(result.data_pesanan[0].total),
-                        total_all: dot.parse(result.data_struk[0].total_struk)
+                        total_all: dot.parse(result.data_struk[0].total_struk),
+                        id_pesanan: result.data_cafe.length === 0 ? '' : result.data_pesanan[0].id_pesanan
                     });
                 } else {
                     this.setState({
                         list_menu: [],
                         total_pesanan: 0,
-                        total_all: 0
+                        total_all: 0,
+                        id_pesanan: '',
                     });
                 }
             })
@@ -483,7 +491,13 @@ class ModalBookingActive extends React.Component<any, any> {
         // }
 
         if (this.props.harga_detail !== prevProps.harga_detail) {
-            console.log(this.props.harga_detail)
+            this.getListBilling();
+            this.getListMenuCafe();
+        }
+
+        if (this.props.isOpen !== prevProps.isOpen) {
+            this.getListBilling();
+            this.getListMenuCafe();
         }
 
         if (this.props.total_harga !== prevProps.total_harga) {
@@ -494,6 +508,11 @@ class ModalBookingActive extends React.Component<any, any> {
             this.getListMenuCafe();
         }
 
+        if (this.state.isOpenSplit !== prevState.isOpenSplit) {
+            this.getListBilling();
+            this.getListMenuCafe();
+            console.log("CLOSEDDD")
+        }
 
     }
 
@@ -502,36 +521,102 @@ class ModalBookingActive extends React.Component<any, any> {
     }
 
     closeModal() {
-        this.setState({ isOpenSplit: false });
+        this.setState({ isOpenSplit: false, disabled_split: true });
     }
 
+    handleUangCash(e) {
+        if (e.target.value.length === 0) {
+            toast.error("Uang Cash wajib diisi");
+            this.setState({
+                uang_cash: '',
+                kembalian: 0,
+                disabled_bayar: true,
+            });
+        } else {
+            const dot = new DotAdded();
+            this.setState({
+                uang_cash: dot.parse(e.target.value),
+            });
+            const kembalian = dot.decode(e.target.value) - dot.decode(this.state.total_all);
+            console.log(kembalian)
+            if (!dot.isNegative(kembalian)) {
+                this.setState({
+                    kembalian: dot.parse(kembalian),
+                    disabled_bayar: false,
+                });
+            } else {
+                this.setState({
+                    kembalian: 0,
+                    disabled_bayar: true,
+                });
+            }
 
+        }
+    }
+
+    handlePayNow() {
+        swal({
+            title: "Apa kamu yakin?",
+            text: "Pembayaran akan dilanjutkan dan tidak akan bisa di kembalikan!",
+            icon: "warning",
+            buttons: ["Batal", true],
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                const data_pay = {
+                    id_table: this.props.table_id,
+                    id_booking: this.props.id_booking,
+                    id_pesanan: this.state.id_pesanan,
+                    uang_cash: this.state.uang_cash,
+                    kembalian: this.state.kembalian,
+                    type_booking: this.props.mode,
+                }
+
+                ipcRenderer.invoke("sendPayNow", data_pay).then((result) => {
+                    if (result.response === true) {
+                        toast.success("Pembayaran berhasil");
+                        if (this.props.mode === 'Regular') {
+                            this.props.stopTimer();
+                            this.props.closeModal();
+                        } else if (this.props.mode === 'Loss') {
+                            this.props.stopTimerLoss();
+                            this.props.closeModal();
+                        }
+                    } else {
+                        toast.success("Pembayaran gagal");
+                    }
+                })
+            }
+        });
+    }
 
     render(): React.ReactNode {
         return (
             <>
-                <ToastContainer
-                    position="bottom-center"
-                    autoClose={3000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    theme="dark"
-                />
+
                 <Modal
                     show={this.props.isOpen}
                     keyboard={false}
                     onHide={this.props.closeModal}
                     size="xl"
                 >
+
                     <Modal.Header closeButton>
                         <Modal.Title>Penambahan Form</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
+                        <ToastContainer
+                            position="bottom-center"
+                            autoClose={3000}
+                            hideProgressBar={false}
+                            newestOnTop={false}
+                            closeOnClick
+                            rtl={false}
+                            pauseOnFocusLoss
+                            draggable
+                            pauseOnHover
+                            theme="dark"
+                        />
                         <div className="box-booking">
                             <div className="booking-content">
                                 <h5>Setting Table</h5>
@@ -556,6 +641,14 @@ class ModalBookingActive extends React.Component<any, any> {
                                             <div>
                                                 <button id="print_struk_billing" className="btn btn-info">Print Struk
                                                     Billing</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-1">
+                                        <div className="mt-2">
+                                            <div>
+                                                <button onClick={this.props.continueTimer} className="btn btn-success">Continue Timer</button>
                                             </div>
                                         </div>
                                     </div>
@@ -666,14 +759,14 @@ class ModalBookingActive extends React.Component<any, any> {
                                     <label >Uang Cash</label>
                                     <div className="input-group mt-2">
                                         <span className="input-group-text" id="inputGroup-sizing-default">Rp.</span>
-                                        <input type="text" className="form-control group-input-custom"
+                                        <input type="text" value={this.state.uang_cash} onChange={this.handleUangCash} className="form-control group-input-custom"
                                             aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
                                             id="uang_cash_active" />
                                     </div>
                                 </div>
                                 <div className="total-all">
                                     <h6>Kembalian: </h6>
-                                    <h4>Rp. <span id="kembalian_struk_text">0</span></h4>
+                                    <h4>Rp. <span id="kembalian_struk_text">{this.state.kembalian}</span></h4>
                                 </div>
                             </div>
 
@@ -682,11 +775,11 @@ class ModalBookingActive extends React.Component<any, any> {
                     <Modal.Footer>
                         <button type="button" className="btn btn-primary btn-primary-cozy-dark"
                             data-bs-dismiss="modal" onClick={this.props.closeModal} id="close-modal-active">Close</button>
-                        <button className="btn btn-primary btn-primary-cozy" id="bayar_now">Bayar Sekarang</button>
+                        <button className="btn btn-primary btn-primary-cozy" disabled={this.state.disabled_bayar} onClick={this.handlePayNow} id="bayar_now">Bayar Sekarang</button>
                     </Modal.Footer>
                 </Modal>
                 {/* <div className="modal-backdrop fade show"></div> */}
-                <ModalSplitBill isOpenSplit={this.state.isOpenSplit} closeModalSplit={this.closeModal} data_split_billing={this.state.data_split_billing} data_split_menu={this.state.data_split_menu} />
+                <ModalSplitBill isOpenSplit={this.state.isOpenSplit} closeModalSplit={this.closeModal} data_split_billing={this.state.data_split_billing} data_split_menu={this.state.data_split_menu} id_booking={this.props.id_booking} id_pesanan={this.state.id_pesanan} />
             </>
         )
     }

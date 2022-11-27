@@ -315,11 +315,11 @@ class TablePersonal extends TableRegular {
         this.date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
     }
 
-    timerInit(): void {
+    timerInit(hh, mm, ss): void {
         var milliseconds = 0;
-        var seconds = 0;
-        var minutes = 0;
-        var hours = 0;
+        var seconds = ss;
+        var minutes = mm;
+        var hours = hh;
 
         this.table_timer_2 = () => {
             milliseconds += 1000;
@@ -343,14 +343,6 @@ class TablePersonal extends TableRegular {
                 `${this.id_table}`,
                 {reponse: true, data: `${h}:${m}:${s}`, mode: 'loss'},
             );
-
-            // if (h !== '00') {
-            //     const bill = new BillingOperation();
-            //     if (m === '01') {
-            //         const data_harga = bill.checkHarga(1);
-            //         this.inputPrice(data_booking, data_harga);
-            //     }
-            // }
 
             console.log(`${this.getIdTable} => ${h}:${m}:${s}`);
           };
@@ -413,7 +405,14 @@ class TablePersonal extends TableRegular {
             updated_at: this.date_now,
         }).execute();
        
-        this.timerInit();
+        this.timerInit(0, 0, 0);
+        this.table_timer_2 = setInterval(this.table_timer_2, 1000);
+        await this.port.write(`on ${this.table_number}`);
+        return this.table_timer_2;
+    }
+
+    async continueTimerLoss(data_booking): Promise<any> {
+        this.timerInit(data_booking.hh, data_booking.mm, 0);
         this.table_timer_2 = setInterval(this.table_timer_2, 1000);
         await this.port.write(`on ${this.table_number}`);
         return this.table_timer_2;

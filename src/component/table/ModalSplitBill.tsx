@@ -19,7 +19,18 @@ class ModalSplitBill extends React.Component<any, any> {
         }
 
         this.handleNama = this.handleNama.bind(this);
+        this.clearState = this.clearState.bind(this);
         this.handleBayar = this.handleBayar.bind(this);
+    }
+
+    clearState() {
+        this.setState({
+            data_split_billing: '',
+            data_split_menu: '',
+            total_all: 0,
+            nama: '',
+            disabled: true,
+        })
     }
 
     componentDidMount(): void {
@@ -97,7 +108,9 @@ class ModalSplitBill extends React.Component<any, any> {
                     total: this.state.total_all,
                     type_bill: 'Split Bill',
                     data_billing: this.props.data_split_billing,
-                    data_menu: this.props.data_split_menu
+                    data_menu: this.props.data_split_menu,
+                    id_booking: this.props.id_booking,
+                    id_pesanan: this.props.id_pesanan
                 }
 
                 console.log(data_bill);
@@ -107,6 +120,8 @@ class ModalSplitBill extends React.Component<any, any> {
 
                     if (result.response === true) {
                         toast.success("Split Bill berhasil dilakukan");
+                        this.clearState();
+                        this.props.closeModalSplit();
                     } else {
                         toast.error("Split Bill gagal dilakukan");
                     }

@@ -7,9 +7,21 @@ import moment from "moment";
 import { Detail_Booking } from "../entity/Detail_Booking";
 import { Pesanan } from "../entity/Pesanan";
 import { Cart } from "../entity/Cart";
-import { Menu } from "electron";
+import { ipcRenderer, Menu } from "electron";
 import shortid from 'shortid'
 import { Struk } from "../entity/Struk";
+import DotAdded from "./DotAdded";
+
+const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
+
+interface data_pay {
+    id_table: string,
+    id_booking: string,
+    id_pesanan: string,
+    uang_cash: string,
+    kembalian: string,
+    type_booking: string,
+}
 
 class BillingOperation {
     async checkHarga(durasi:number):Promise<any> {
@@ -71,6 +83,11 @@ class BillingOperation {
                 }
             });
 
+            const check_struk = await service.manager.find(Struk, {
+                where: {
+                    id_booking: data_booking.id_booking,
+                }
+            });
 
             if (check_booking.length !== 0) {
                     const harga:number = check_booking[0].total_harga + data_price.total_harga;
@@ -95,8 +112,48 @@ class BillingOperation {
                             created_at: date_now,
                             updated_at: date_now
                         }).execute();
-                        if (input_detail) {
+
+                        const check_detail_booking = await service.manager.find(Detail_Booking, {
+                            where: {
+                                id_booking: data_booking.id_booking,
+                                status: 'active'
+                            }
+                        });
+
+                        const dd_booking:any = check_detail_booking;
+                        const total_booking = dd_booking.reduce((total, arr) => {
+                            return total + arr.harga
+                        });
+
+                        var total_all;
+
+                        if (check_struk[0].id_pesanan.length !== 0) {
+                            const check_cart = await service.manager.find(Cart, {
+                                where: {
+                                    id_pesanan: check_struk[0].id_pesanan,
+                                    status: 'belum dibayar'
+                                }
+                            });
+
+                            const dd_cart:any = check_cart;
+                            const total_cart = dd_cart.reduce((total, arr) => {
+                                return total + arr.sub_total;
+                            });
+
+                            total_all = total_cart + total_booking;
+                        } else {
+                            total_all = total_booking;
+                        }
+
+                        const update_struk = await service.manager.createQueryBuilder().update(Struk).set({
+                            total_struk: total_all,
+                            updated_at: date_now,
+                        }).where('id_booking = :id', {id: data_booking.id_booking}).execute();
+
+                        if (update_struk) {
                             return {'response': true, 'data': 'data is saved'};
+                        } else {
+                            return {'response': false, 'data': 'data not found'};
                         }
                     }
             } else {
@@ -120,7 +177,8 @@ class BillingOperation {
             if (check_table.length !== 0) {
                 const search_booking = await service.manager.find(Booking, {
                     where: {
-                        id_booking: check_table[0].id_booking
+                        id_booking: check_table[0].id_booking,
+                        status_booking: 'active',
                     }
                 });
 
@@ -133,7 +191,6 @@ class BillingOperation {
 
             } else {
                 return {'response': false, data: "data empty"}
-
             }
         } catch (err) {
             console.log(err)
@@ -248,6 +305,59 @@ class BillingOperation {
         }
     }
 
+
+    static async sendPayNow(data_pay:data_pay):Promise<any> {
+        try {
+            let service = await dataSource;
+            
+            const update_cart = await service.manager.createQueryBuilder().update(Cart).set({
+                status: 'lunas',
+                updated_at: date_now,
+            }).where('id_pesanan = :id', {id: data_pay.id_pesanan}).execute();
+
+            const update_pesanan = await service.manager.createQueryBuilder().update(Pesanan).set({
+                status: 'lunas',
+                updated_at: date_now
+            }).where('id_pesanan = :id', {id: data_pay.id_pesanan}).execute();
+
+            if (update_cart && update_pesanan) {
+                const update_detail_booking = await service.manager.createQueryBuilder().update(Detail_Booking).set({
+                    status: 'lunas',
+                    updated_at: date_now,
+                }).where('id_booking = :id', {id: data_pay.id_booking}).execute();
+
+                const update_booking = await service.manager.createQueryBuilder().update(Booking).set({
+                    status_booking: 'lunas',
+                    updated_at: date_now,
+                }).where('id_booking = :id', {id: data_pay.id_booking}).execute();
+
+                const update_table = await service.manager.createQueryBuilder().update(Table_Billiard).set({
+                    id_booking: '',
+                    durasi: 0,
+                    status: 'not_active',
+                    updated_at: date_now,
+                }).where("id_booking = :id", {id: data_pay.id_booking}).execute();
+
+                if (update_detail_booking && update_booking && update_table) {
+                    const dot = new DotAdded();
+                    const update_struk = await service.manager.createQueryBuilder().update(Struk).set({
+                        status_struk: 'lunas',
+                        updated_at: date_now,
+                        cash_struk: dot.decode(data_pay.uang_cash),
+                        kembalian_struk: dot.decode(data_pay.kembalian)
+                    }).where('id_booking = :id', {id: data_pay.id_booking}).orWhere('id_pesanan = :id', {id: data_pay.id_pesanan}).execute();
+
+                    if (update_struk) {
+                        return {response: true, data: 'data is saved'};
+                    } else {
+                        return {response: false, data: 'data is not saved'};
+                    }
+                }
+            }   
+        } catch (err) {
+            console.log(err);
+        }
+    }
 }
 
 export default BillingOperation

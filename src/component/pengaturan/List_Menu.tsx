@@ -1,8 +1,8 @@
 import React from "react";
-import {Header, ModalUser} from '../header/header';
+import { Header, ModalUser } from '../header/header';
 import Sidebar from "../sidebar/sidebar";
 import Navbar_Menu from "./Navbar_Menu";
-import DataTable, { createTheme }  from 'react-data-table-component';
+import DataTable, { createTheme } from 'react-data-table-component';
 import { ipcRenderer } from "electron";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -31,7 +31,7 @@ createTheme('solarized', {
     },
 }, 'dark')
 
-const ExpandableRowComponent: React.FC<any> = ({data}) => {
+const ExpandableRowComponent: React.FC<any> = ({ data }) => {
     const dot = new DotAdded();
     return (
         <>
@@ -137,26 +137,26 @@ class List_Menu extends React.Component<any, any> {
     }
 
     validate() {
-        this.setState({text_submit: 'Checking data...'});
+        this.setState({ text_submit: 'Checking data...' });
         console.log(this.state.disabled_opsi)
         if (this.state.disabled_opsi !== false) {
             setTimeout(() => {
                 if (this.isObjectEmpty(this.state.data_menu)) {
-                    this.setState({disabled: false, text_submit: 'Buat Sekarang'});
+                    this.setState({ disabled: false, text_submit: 'Buat Sekarang' });
                 } else {
-                    this.setState({disabled: true, text_submit: 'Buat Sekarang'});
+                    this.setState({ disabled: true, text_submit: 'Buat Sekarang' });
                 }
             }, 1000)
         } else {
             setTimeout(() => {
                 if (this.isObjectEmpty(this.state.data_menu)) {
-                    this.setState({disabled: false, text_submit: 'Edit Sekarang'});
+                    this.setState({ disabled: false, text_submit: 'Edit Sekarang' });
                 } else {
-                    this.setState({disabled: true, text_submit: 'Edit Sekarang'});
+                    this.setState({ disabled: true, text_submit: 'Edit Sekarang' });
                 }
             }, 1000)
         }
-        
+
     }
 
     handleNama(e) {
@@ -233,7 +233,7 @@ class List_Menu extends React.Component<any, any> {
         } else {
             const obj_files = e.target.files[0];
             const obj_new = Array<any>();
-            obj_new.push({name: obj_files.name, size: obj_files.size, type: obj_files.type, path: obj_files.path});
+            obj_new.push({ name: obj_files.name, size: obj_files.size, type: obj_files.type, path: obj_files.path });
 
             this.setState(prevState => ({
                 data_menu: {
@@ -244,7 +244,7 @@ class List_Menu extends React.Component<any, any> {
             this.validate()
 
         }
-        
+
     }
 
     handleHargaJual(e) {
@@ -294,7 +294,7 @@ class List_Menu extends React.Component<any, any> {
                 }));
                 this.validate()
             }
-            
+
         }
     }
 
@@ -326,27 +326,27 @@ class List_Menu extends React.Component<any, any> {
             icon: "warning",
             buttons: ["Batal", true],
             dangerMode: true,
-          })
-          .then((willDelete) => {
-            if (willDelete) {
-                if (this.isObjectEmpty(this.state.data_menu)) {
-                    ipcRenderer.invoke("menu", false, true, false, false, this.state.data_menu).then((result) => {
-                        console.log(result)
-                        if (result.response === true) {
-                            toast.success("Menu berhasil ditambah");
-                            this.clearState();
-                            this.getDataMenu();
-                        } else {
-                            toast.error("Menu gagal ditambah");
-                            this.clearState();
-                            this.getDataMenu();
-                        }
-                    })
-                } else { 
-                    toast.error('Semua harus diinput');
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    if (this.isObjectEmpty(this.state.data_menu)) {
+                        ipcRenderer.invoke("menu", false, true, false, false, this.state.data_menu).then((result) => {
+                            console.log(result)
+                            if (result.response === true) {
+                                toast.success("Menu berhasil ditambah");
+                                this.clearState();
+                                this.getDataMenu();
+                            } else {
+                                toast.error("Menu gagal ditambah");
+                                this.clearState();
+                                this.getDataMenu();
+                            }
+                        })
+                    } else {
+                        toast.error('Semua harus diinput');
+                    }
                 }
-            }
-        });
+            });
     }
 
     componentDidMount(): void {
@@ -365,7 +365,7 @@ class List_Menu extends React.Component<any, any> {
                     el['kategori_menu_clean'] = el['kategori_menu'][0]['nama_kategori'];
                     el['harga_menu'] = `Rp. ${dot.parse(el['harga_menu'])}`
                 });
-                this.setState({data: result.data});
+                this.setState({ data: result.data });
             }
         })
     }
@@ -380,9 +380,9 @@ class List_Menu extends React.Component<any, any> {
                         </>
                     )
                 });
-                
+
                 setTimeout(() => {
-                    this.setState({kategori_menu: data_});
+                    this.setState({ kategori_menu: data_ });
                 }, 1000)
             } else {
                 toast.error("Data Kategori Menu tida ada!");
@@ -423,22 +423,22 @@ class List_Menu extends React.Component<any, any> {
             icon: "warning",
             buttons: ["Batal", true],
             dangerMode: true,
-          })
-          .then((willDelete) => {
-            if (willDelete) {
-                ipcRenderer.invoke("menu", false, false, false, true, this.state.id_menu).then((result) => {
-                    if (result.response === true) {
-                        toast.success('Data Menu berhasil dihapus');
-                        this.clearState();
-                        this.getDataMenu();
-                    } else {
-                        toast.error('Data Menu gagal dihapus');
-                        this.clearState();
-                        this.getDataMenu();
-                    }
-                })
-            }
         })
+            .then((willDelete) => {
+                if (willDelete) {
+                    ipcRenderer.invoke("menu", false, false, false, true, this.state.id_menu).then((result) => {
+                        if (result.response === true) {
+                            toast.success('Data Menu berhasil dihapus');
+                            this.clearState();
+                            this.getDataMenu();
+                        } else {
+                            toast.error('Data Menu gagal dihapus');
+                            this.clearState();
+                            this.getDataMenu();
+                        }
+                    })
+                }
+            })
     }
 
     handleEditMenu() {
@@ -448,58 +448,58 @@ class List_Menu extends React.Component<any, any> {
             icon: "warning",
             buttons: ["Batal", true],
             dangerMode: true,
-          })
-          .then((willDelete) => {
-            if (willDelete) {
-                const data_menu = {
-                    nama: this.state.data_menu.nama,
-                    harga: this.state.data_menu.harga,
-                    kategori: this.state.data_menu.kategori,
-                    harga_jual: this.state.data_menu.harga_jual,
-                    modal: this.state.data_menu.modal,
-                    keuntungan: this.state.data_menu.keuntungan,
-                    id_menu: this.state.id_menu
-                };
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    const data_menu = {
+                        nama: this.state.data_menu.nama,
+                        harga: this.state.data_menu.harga,
+                        kategori: this.state.data_menu.kategori,
+                        harga_jual: this.state.data_menu.harga_jual,
+                        modal: this.state.data_menu.modal,
+                        keuntungan: this.state.data_menu.keuntungan,
+                        id_menu: this.state.id_menu
+                    };
 
-                console.log(data_menu)
+                    console.log(data_menu)
 
-                ipcRenderer.invoke("menu", false, false, true, false, data_menu).then((result) => {
-                    console.log(result)
-                    if (result.response === true) {
-                        toast.success('Data Menu berhasil diedit');
-                        this.clearState();
-                        this.getDataMenu();
-                    } else {
-                        toast.error('Data Menu gagal diedit');
-                        this.clearState();
-                        this.getDataMenu();
-                    }
-                });
+                    ipcRenderer.invoke("menu", false, false, true, false, data_menu).then((result) => {
+                        console.log(result)
+                        if (result.response === true) {
+                            toast.success('Data Menu berhasil diedit');
+                            this.clearState();
+                            this.getDataMenu();
+                        } else {
+                            toast.error('Data Menu gagal diedit');
+                            this.clearState();
+                            this.getDataMenu();
+                        }
+                    });
 
-            }
-        });
+                }
+            });
     }
 
     render(): React.ReactNode {
         return (
             <>
                 <ToastContainer
-                            position="bottom-center"
-                            autoClose={3000}
-                            hideProgressBar={false}
-                            newestOnTop={false}
-                            closeOnClick
-                            rtl={false}
-                            pauseOnFocusLoss
-                            draggable
-                            pauseOnHover
-                            theme="dark"
-                            />
+                    position="bottom-center"
+                    autoClose={3000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="dark"
+                />
                 <div className="overview-pemb">
                     <div className="row">
                         <div className="col-sm">
                             <div className="d-flex">
-                                <Navbar_Menu/>
+                                <Navbar_Menu />
                             </div>
                         </div>
                         <div className="col-sm">
@@ -507,7 +507,7 @@ class List_Menu extends React.Component<any, any> {
                                 <div className="p-1">
                                     <a href="javascript:void(0)"
                                         className="btn btn-primary btn-primary-cozy border-r-13 pl-20 pr-20 pt-10 pb-10"><img
-                                            src="assets/img/icon/refresh-ccw.png" id="refresh_table" alt=""/></a>
+                                            src="assets/img/icon/refresh-ccw.png" id="refresh_table" alt="" /></a>
                                 </div>
                             </div>
                         </div>
@@ -531,7 +531,7 @@ class List_Menu extends React.Component<any, any> {
                                             <div className="input-group mb-3">
                                                 <span className="input-group-text" id="inputGroup-sizing-default">Rp.</span>
                                                 <input type="text" onChange={this.handleHarga} value={this.state.data_menu.harga} className="form-control group-input-custom"
-                                                    aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"/>
+                                                    aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
                                             </div>
                                         </div>
                                         <div className="form-group mt-3">
@@ -542,14 +542,14 @@ class List_Menu extends React.Component<any, any> {
                                                 {this.state.kategori_menu}
                                             </select>
                                         </div>
-                                        {this.state.disabled_opsi === true ? 
-                                        <>
-                                            <div className="form-group mt-3">
-                                                <label htmlFor="usr">Gambar</label>
-                                                <input type="file" onChange={this.handleGambar} className="form-control custom-input" />
-                                            </div>
-                                        </> : <></>}
-                                        
+                                        {this.state.disabled_opsi === true ?
+                                            <>
+                                                <div className="form-group mt-3">
+                                                    <label htmlFor="usr">Gambar</label>
+                                                    <input type="file" onChange={this.handleGambar} className="form-control custom-input" />
+                                                </div>
+                                            </> : <></>}
+
                                     </div>
                                     <div className="col-lg">
                                         <div className="box-dark-really">
@@ -560,7 +560,7 @@ class List_Menu extends React.Component<any, any> {
                                                 <div className="input-group mb-3">
                                                     <span className="input-group-text" id="inputGroup-sizing-default">Rp.</span>
                                                     <input type="text" onChange={this.handleHargaJual} value={this.state.data_menu.harga_jual} className="form-control group-input-custom"
-                                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"/>
+                                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
                                                 </div>
                                             </div>
                                             <div className="form-group mt-3">
@@ -568,7 +568,7 @@ class List_Menu extends React.Component<any, any> {
                                                 <div className="input-group mb-3">
                                                     <span className="input-group-text" id="inputGroup-sizing-default">Rp.</span>
                                                     <input type="text" onChange={this.handleModal} value={this.state.data_menu.modal} className="form-control group-input-custom"
-                                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"/>
+                                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
                                                 </div>
                                             </div>
                                             <div className="form-group mt-3">
@@ -576,7 +576,7 @@ class List_Menu extends React.Component<any, any> {
                                                 <div className="input-group mb-3">
                                                     <span className="input-group-text" id="inputGroup-sizing-default">Rp.</span>
                                                     <input type="text" onChange={this.handleKeuntungan} value={this.state.data_menu.keuntungan} className="form-control group-input-custom"
-                                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"/>
+                                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
                                                 </div>
                                             </div>
                                         </div>
@@ -596,7 +596,7 @@ class List_Menu extends React.Component<any, any> {
                                     <h5>List Menu</h5>
                                 </div>
                                 <div className="p-2">
-                                    <button className="btn btn-danger me-3" onClick={this.handleDelete} disabled={this.state.disabled_opsi}>Hapus</button> 
+                                    <button className="btn btn-danger me-3" onClick={this.handleDelete} disabled={this.state.disabled_opsi}>Hapus</button>
                                     {/* <button className="btn btn-info" onClick={this.handleEdit} disabled={this.state.disabled_opsi}>Edit</button> */}
                                 </div>
 
@@ -614,18 +614,18 @@ class List_Menu extends React.Component<any, any> {
     }
 }
 
-class ListMenu_Container extends React.Component<any,any> {
+class ListMenu_Container extends React.Component<any, any> {
     render() {
         return (
             <>
                 <div id="body-pd" className="body-pd">
-                    <Header/>
-                    <Sidebar/>
+                    <Header />
+                    <Sidebar />
                     <div className="box-bg">
-                        <List_Menu/>
+                        <List_Menu />
                     </div>
                 </div>
-                <ModalUser/>
+                <ModalUser />
             </>
         )
     }

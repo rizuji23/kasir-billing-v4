@@ -85,16 +85,18 @@ class SplitBillSystem {
                         console.log("Arr Billing: ", id_billing)
                         console.log("Arr Menu: ", id_menu)
 
-                        const get_billing = await service.manager.find(Detail_Booking, {
+                        var get_billing = await service.manager.find(Detail_Booking, {
                             where: {
-                                id_booking: data_bill.data_billing[0].id_booking !== undefined || data_bill.data_billing[0].id_booking !== null ? data_bill.data_billing[0].id_booking : '',
+                                id_booking: data_bill.id_booking,
                                 status: 'active',
                             }
                         });
+                        
+                        console.log(data_bill.data_menu[0]?.id_pesanan)
 
                         const get_menu = await service.manager.find(Cart, {
                             where: {
-                                id_pesanan:  data_bill.data_menu[0].id_pesanan !== undefined ||  data_bill.data_menu[0].id_pesanan !== null ?  data_bill.data_menu[0].id_pesanan : '',
+                                id_pesanan: data_bill.id_pesanan,
                                 status: 'belum dibayar',
                             }
                         });
@@ -116,13 +118,13 @@ class SplitBillSystem {
                         const update_booking = await service.manager.createQueryBuilder().update(Booking).set({
                             total_harga: total_billing,
                             updated_at: date_now,
-                        }).where('id_booking = :id', {id: get_billing[0].id_booking}).execute();
+                        }).where('id_booking = :id', {id: data_bill.id_booking}).execute();
 
                         // Update total Pesanan
                         const update_pesanan = await service.manager.createQueryBuilder().update(Pesanan).set({
                             total: total_menu,
                             updated_at: date_now,
-                        }).where("id_pesanan = :id", {id: get_menu[0].id_pesanan}).execute();
+                        }).where("id_pesanan = :id", {id: data_bill.id_pesanan}).execute();
 
                         if (update_booking && update_pesanan) {
                             // Update Final to Struk    
@@ -132,7 +134,7 @@ class SplitBillSystem {
                             const update_struk = await service.manager.createQueryBuilder().update(Struk).set({
                                 total_struk: total_struk,
                                 updated_at: date_now,
-                            }).where("id_pesanan = :id", {id: get_menu[0].id_pesanan}).orWhere("id_booking = :id", {id: get_billing[0].id_booking}).execute();
+                            }).where("id_pesanan = :id", {id: data_bill.id_pesanan}).orWhere("id_booking = :id", {id: data_bill.id_booking}).execute();
 
                             if (update_struk) {
                                 return {response: true, data: 'split bill is done'};

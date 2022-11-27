@@ -307,6 +307,7 @@ class CartSystem {
                     const check_cart = await service.manager.find(Cart, {
                         where: {
                             id_pesanan: check_pesanan[0].id_pesanan,
+                            status: 'belum dibayar',
                         }
                     });
 

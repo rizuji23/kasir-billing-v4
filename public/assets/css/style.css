@@ -918,6 +918,10 @@ label {
     margin-bottom: 0px;
 }
 
+.Toastify {
+    position: absolute;
+}
+
 .btn-cozy-danger {
     background-color: #FF4218;
 }

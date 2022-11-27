@@ -12,6 +12,7 @@ import KategoriMenuSystem from './system/KategoriMenuSystem'
 import CartSystem from './system/CartSystem'
 import StrukSystem from './system/StrukSystem'
 import SplitBillSystem from './system/SplitBillSystem'
+import Laporan from './system/Laporan'
 
 
 // AppDataSource.initialize().then(async () => {
@@ -103,12 +104,30 @@ ipcMain.handle("start", async (event, id_table:any, ms_all:any, ms_delay:any, bl
                 table_01_time = await table_01.resetTable(data_booking, table_01_time, true)
             }
         }
+    } else if (id_table === 'table002') {
+        const table_02 = new TableRegular(id_table, ms_all, ms_delay, blink, arduino.path, win);
+        if (stop === true) {
+            table_02.stopTimer(table_02_time, true)
+        } else {
+            if (add_on === true) {
+                table_02_time = await table_02.addOn(ms_delay_add, ms_add, data_booking);
+            } else if (startnew === true) {
+                table_02_time = await table_02.startTimer(data_booking);
+            }
+            
+            if (continuetime === true) {
+                table_02_time = await table_02.continueTimer(ms_delay, ms_add);
+            } else if (reset === true) {
+                console.log('test')
+                table_02_time = await table_02.resetTable(data_booking, table_02_time, true)
+            }
+        }
     }
 });
 
 //set Loss Timer Billing
 var table_01_time_loss:any
-ipcMain.handle('start_loss', async(event, id_table, start, stop, data_booking, reset) => {
+ipcMain.handle('start_loss', async(event, id_table, start, stop, data_booking, reset, continuetime) => {
     if (id_table === 'table001') {
         const table_01 = new TablePersonal(id_table, arduino.path, win);
         if (stop === true) {
@@ -117,14 +136,16 @@ ipcMain.handle('start_loss', async(event, id_table, start, stop, data_booking, r
             if (start === true) {
                 table_01_time_loss = await table_01.startTimer(data_booking);
                 console.log(table_01_time_loss)
-
             } else if (reset === true) {
                 await table_01.resetTable(data_booking, table_01_time_loss, true)
+                console.log(table_01_time_loss)
+            } else if (continuetime === true) {
+                table_01_time_loss = await table_01.continueTimerLoss(data_booking);
                 console.log(table_01_time_loss)
             }
         }
     }
-})
+});
 //end loss
 
 //operation
@@ -160,8 +181,11 @@ ipcMain.handle("inputPrice", async (event, data_booking) => {
 
 ipcMain.handle("getActiveTable", async (event) => {
     return await BillingOperation.getActiveTable();
-})
+});
 
+ipcMain.handle("sendPayNow", async (event, data_pay) => {
+    return await BillingOperation.sendPayNow(data_pay);
+});
 
 ipcMain.handle("waitinglist", async (event, get_data, add_new, delete_waiting, id_waiting, data_waiting) => {
     if (add_new === true) {
@@ -249,9 +273,21 @@ ipcMain.handle("pesanan_edit", async (event, edit_cart, delete_cart, data_cart) 
 
 ipcMain.handle("split_bill", async (event, data_bill) => {
     return await SplitBillSystem.addSplit(data_bill);
-})
+});
 
-// ipcMain.handle("print-data", async (event, id_struk) => {
-//     return StrukSystem.getPrintData(id_struk);
-// })
+
+// Laporan
+ipcMain.handle("keuangan", async (event, get_keuangan, get_cart, get_detail_booking, data_keuangan) => {
+    if (get_keuangan === true) {
+        return await Laporan.getDataKeuangan();
+    } else if (get_cart === true) {
+        return await Laporan.getDataCart(data_keuangan);
+    } else if (get_detail_booking === true) {
+        return await Laporan.getDataDetailBooking(data_keuangan);
+    }
+});
+
+
+
+
 //endopration
