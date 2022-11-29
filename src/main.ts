@@ -287,7 +287,9 @@ ipcMain.handle("keuangan", async (event, get_keuangan, get_cart, get_detail_book
     }
 });
 
-
+ipcMain.handle("keuangan_cafe", async (event) => {
+    return await Laporan.getDataKeuanganCafe();
+})
 
 
 //endopration

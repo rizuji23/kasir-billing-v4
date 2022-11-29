@@ -8,6 +8,7 @@ import Menu_Container from "./component/menu_makanan/Menu";
 import ListMenu_Container from "./component/pengaturan/List_Menu";
 import KategoriMenuContainer from "./component/pengaturan/kategori_menu/KategoriMenu";
 import KeuanganContainer from "./component/keuangan/Keuangan";
+import KeuanganCafeContainer from "./component/keuangan/cafe/KeuanganCafe";
 
 class App extends React.Component {
     render() {
@@ -23,6 +24,7 @@ class App extends React.Component {
                     <Route path="/pengaturan" element={<ListMenu_Container />}></Route>
                     <Route path="/kategori-menu" element={<KategoriMenuContainer />}></Route>
                     <Route path="/keuangan" element={<KeuanganContainer />}></Route>
+                    <Route path="/keuangan-cafe" element={<KeuanganCafeContainer />}></Route>
 
                 </Routes>
             </HashRouter>

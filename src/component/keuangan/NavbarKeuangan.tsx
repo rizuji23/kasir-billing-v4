@@ -13,7 +13,7 @@ class NavbarKeuangan extends React.Component<any, any> {
                     <div className="row">
                         <div className="col-sm">
                             <div className="d-flex mb-2">
-                                <NavLink to={"/keuangan"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10" : "btn btn-primary btn-primary-cozy-darl btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10"}>
+                                <NavLink to={"/keuangan"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10"}>
                                     List Transaksi
                                 </NavLink>
 
