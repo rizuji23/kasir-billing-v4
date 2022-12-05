@@ -502,7 +502,7 @@ class List_Menu extends React.Component<any, any> {
                                 <Navbar_Menu />
                             </div>
                         </div>
-                        <div className="col-sm">
+                        <div className="col-sm-3">
                             <div className="d-flex mb-2 float-end">
                                 <div className="p-1">
                                     <a href="javascript:void(0)"

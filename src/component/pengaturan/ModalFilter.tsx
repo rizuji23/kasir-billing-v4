@@ -41,19 +41,6 @@ class ModalFilter extends React.Component<any, any> {
                         <Modal.Title>Filter Data</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <ToastContainer
-                            position="bottom-center"
-                            autoClose={3000}
-                            hideProgressBar={false}
-                            newestOnTop={false}
-                            closeOnClick
-                            rtl={false}
-                            pauseOnFocusLoss
-                            draggable
-                            pauseOnHover
-                            theme="dark"
-                        />
-
                         <div className="mt-2">
                             <label>Dari Tanggal</label>
                             <input type="date" onChange={this.handleFromDate} className="form-control custom-input mt-2" />

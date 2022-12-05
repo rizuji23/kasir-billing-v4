@@ -13,6 +13,8 @@ import CartSystem from './system/CartSystem'
 import StrukSystem from './system/StrukSystem'
 import SplitBillSystem from './system/SplitBillSystem'
 import Laporan from './system/Laporan'
+import FilterTransaksi from './component/keuangan/system/FilterTransaksi'
+import VoucherSystem from './system/VoucherSystem'
 
 
 // AppDataSource.initialize().then(async () => {
@@ -289,7 +291,28 @@ ipcMain.handle("keuangan", async (event, get_keuangan, get_cart, get_detail_book
 
 ipcMain.handle("keuangan_cafe", async (event) => {
     return await Laporan.getDataKeuanganCafe();
-})
+});
 
+ipcMain.handle("filterByDateBilling", async(event, data_keuangan) => {
+    return await FilterTransaksi.filterByDateBilling(data_keuangan);
+});
+
+ipcMain.handle("filterByDateCafe", async (event, data_keuangan) => {
+    return await FilterTransaksi.filterByDateCafe(data_keuangan);
+});
+
+ipcMain.handle("voucher", async (event, getData, insertData, updateData, deleteData, data_voucher) => {
+    if (getData === true) {
+        return await VoucherSystem.getDataVoucher();
+    } else if (insertData === true) {
+        return await VoucherSystem.addVoucher(data_voucher);
+    } else if (updateData === true) {
+        return await VoucherSystem.editVoucher(data_voucher);
+    } else if (deleteData === true) {
+        return await VoucherSystem.deleteVoucher(data_voucher);
+    } else {
+        return {response: false, data: "data is not valid!"};
+    }
+});
 
 //endopration

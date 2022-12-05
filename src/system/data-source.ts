@@ -19,6 +19,7 @@ import { Harga_Member } from "../entity/Harga_Member"
 import { Member } from "../entity/Member"
 import { Split_Bill } from "../entity/Split_Bill"
 import { Split_Bill_Detail } from "../entity/Split_Bill_Detail"
+import { Voucher } from "../entity/Voucher"
 
 const AppDataSource = async () => {
     const dataSourceConn = new DataSource({
@@ -47,6 +48,7 @@ const AppDataSource = async () => {
             Member,
             Split_Bill,
             Split_Bill_Detail,
+            Voucher,
         ],
         migrations: [
             "./src/migrations/**/*.ts"

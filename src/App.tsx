@@ -9,6 +9,8 @@ import ListMenu_Container from "./component/pengaturan/List_Menu";
 import KategoriMenuContainer from "./component/pengaturan/kategori_menu/KategoriMenu";
 import KeuanganContainer from "./component/keuangan/Keuangan";
 import KeuanganCafeContainer from "./component/keuangan/cafe/KeuanganCafe";
+import VoucherContainer from "./component/pengaturan/voucher/Voucher";
+import TransaksiShiftContainer from "./component/keuangan/transaksi_shift/TransaksiShift";
 
 class App extends React.Component {
     render() {
@@ -23,8 +25,13 @@ class App extends React.Component {
 
                     <Route path="/pengaturan" element={<ListMenu_Container />}></Route>
                     <Route path="/kategori-menu" element={<KategoriMenuContainer />}></Route>
+                    <Route path="/voucher" element={<VoucherContainer />}></Route>
+
+
                     <Route path="/keuangan" element={<KeuanganContainer />}></Route>
                     <Route path="/keuangan-cafe" element={<KeuanganCafeContainer />}></Route>
+
+                    <Route path="/transaksi-shift" element={<TransaksiShiftContainer />}></Route>
 
                 </Routes>
             </HashRouter>

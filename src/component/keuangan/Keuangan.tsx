@@ -167,11 +167,13 @@ class Keuangan extends React.Component<any, any> {
             tanggal: '',
             bulan: '',
             isOpen: false,
+            reset_disable: true,
         }
 
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.handleFilter = this.handleFilter.bind(this);
+        this.resetFilter = this.resetFilter.bind(this);
     }
 
 
@@ -194,7 +196,7 @@ class Keuangan extends React.Component<any, any> {
                     if (day_now === day_filter) {
                         total_hari += el.total_struk;
                     }
-                })
+                });
 
                 let total_bulan = 0;
                 result.data.forEach(el => {
@@ -204,7 +206,7 @@ class Keuangan extends React.Component<any, any> {
                     if (date_now === date_filter) {
                         total_bulan += el.total_struk;
                     }
-                })
+                });
 
 
                 this.setState({
@@ -212,8 +214,11 @@ class Keuangan extends React.Component<any, any> {
                     total_harian: dot.parse(total_hari),
                     total_bulanan: dot.parse(total_bulan),
                     tanggal: moment().tz("Asia/Jakarta").format("DD-MM-YYYY"),
-                    bulan: moment().tz("Asia/Jakarta").subtract(1, "month").format("MMMM")
+                    bulan: moment().tz("Asia/Jakarta").subtract(0, "month").format("MMMM"),
+                    reset_disable: true,
                 });
+            } else {
+                toast.error("Data kosong!");
             }
         })
     }
@@ -236,20 +241,78 @@ class Keuangan extends React.Component<any, any> {
             dari_tanggal: dari_tanggal,
             sampai_tanggal: sampai_tanggal
         }
+        const dot = new DotAdded();
 
-        FilterTransaksi.filterByDate(data_filter).then((result) => {
-            this.setState({
-                data: result
-            });
-        }).catch((rej) => {
-            toast.error(rej);
+        ipcRenderer.invoke("filterByDateBilling", data_filter).then((result) => {
+            if (result.response === true) {
+                let i = 1;
+                result.data.map((el) => {
+                    el['number'] = i++;
+                    el['total_struk_val'] = `Rp. ${dot.parse(el.total_struk)}`
+                });
+
+                let total_hari = 0;
+                result.data.forEach(el => {
+                    const get_date = el.created_at;
+                    const day_filter = moment(get_date, "DD-MM-YYYY").format("DD-MM-YYYY");
+                    if (day_filter) {
+                        total_hari += el.total_struk;
+                    }
+                })
+
+                let total_bulan = 0;
+                result.data.forEach(el => {
+                    const get_date = el.created_at;
+                    const date_filter = moment(get_date, "DD-MM-YYYY").format("MM-YYYY");
+                    if (date_filter) {
+                        total_bulan += el.total_struk;
+                    }
+                })
+
+                toast.success("Data berhasil difilter.");
+
+                this.setState({
+                    data: result.data,
+                    total_harian: dot.parse(total_hari),
+                    total_bulanan: dot.parse(total_bulan),
+                    tanggal: `${moment(dari_tanggal).format("DD-MM-YYYY")} ~ ${moment(sampai_tanggal).format("DD-MM-YYYY")}`,
+                    bulan: `${moment(dari_tanggal).subtract(0, "month").format("MMMM")} ~ ${moment(sampai_tanggal).subtract(0, "month").format("MMMM")}`,
+                    isOpen: false,
+                    reset_disable: false,
+                });
+            } else {
+                toast.error("Data kosong!");
+                this.getDataKeuangan();
+                this.setState({
+                    isOpen: false,
+                });
+            }
+        })
+    }
+
+    resetFilter() {
+        toast.success("Filter berhasil direset.");
+        this.getDataKeuangan();
+        this.setState({
+            reset_disable: true,
         })
     }
 
     render(): React.ReactNode {
         return (
             <>
-
+                <ToastContainer
+                    position="bottom-center"
+                    autoClose={3000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="dark"
+                />
                 <div className="hr-white"></div>
                 <NavbarTransaksi />
                 <div className="row">
@@ -287,6 +350,9 @@ class Keuangan extends React.Component<any, any> {
                                 <div className="p-2 me-auto">
                                     <button className="btn btn-primary btn-primary-cozy" onClick={this.openModal}>Filter</button>
                                 </div>
+                                <div className="p-2 me-auto">
+                                    <button className="btn btn-primary btn-primary-cozy-dark" disabled={this.state.reset_disable} onClick={this.resetFilter}>Reset</button>
+                                </div>
                             </div>
                         </div>
                         <div className="card-body">
@@ -297,7 +363,6 @@ class Keuangan extends React.Component<any, any> {
                     </div>
                 </div>
                 <ModalFilter openModal={this.openModal} data={this.state.data} handleFilter={this.handleFilter} closeModal={this.closeModal} isOpen={this.state.isOpen} />
-
             </>
         )
     }

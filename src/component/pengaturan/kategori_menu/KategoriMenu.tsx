@@ -1,8 +1,8 @@
 import React from "react";
-import {Header, ModalUser} from '../../header/header';
+import { Header, ModalUser } from '../../header/header';
 import Sidebar from "../../sidebar/sidebar";
 import Navbar_Menu from "../Navbar_Menu";
-import DataTable, { createTheme }  from 'react-data-table-component';
+import DataTable, { createTheme } from 'react-data-table-component';
 import { ipcRenderer } from "electron";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -30,7 +30,7 @@ createTheme('solarized', {
     },
 }, 'dark')
 
-const ExpandableRowComponent: React.FC<any> = ({data}) => {
+const ExpandableRowComponent: React.FC<any> = ({ data }) => {
     return (
         <>
             <ul className="mt-3 mb-3 list-group">
@@ -98,22 +98,23 @@ class KategoriMenu extends React.Component<any, any> {
     }
 
     validate() {
-        this.setState({text_submit: 'Checking Data...'});
+        this.setState({ text_submit: 'Checking Data...' });
         setTimeout(() => {
             if (this.isObjectEmpty(this.state.data_kategori)) {
                 if (this.state.disabled_opsi === true) {
-                    this.setState({disabled: false, text_submit: 'Buat Sekarang'});
+                    this.setState({ disabled: false, text_submit: 'Buat Sekarang' });
                 } else {
-                    this.setState({disabled: false, text_submit: 'Edit Sekarang'});
+                    this.setState({ disabled: false, text_submit: 'Edit Sekarang' });
 
                 }
             } else {
                 if (this.state.disabled_opsi === true) {
-                    this.setState({disabled: true, text_submit: 'Buat Sekarang'});
+                    this.setState({ disabled: true, text_submit: 'Buat Sekarang' });
                 } else {
-                    this.setState({disabled: true, text_submit: 'Edit Sekarang'});
+                    this.setState({ disabled: true, text_submit: 'Edit Sekarang' });
 
-                }            }
+                }
+            }
         }, 1000)
     }
 
@@ -145,23 +146,23 @@ class KategoriMenu extends React.Component<any, any> {
             icon: "warning",
             buttons: ["Batal", true],
             dangerMode: true,
-          })
-          .then((willDelete) => {
-            if (willDelete) {
-                const data_kategori = {
-                    nama: this.state.data_kategori.nama_kategori
-                }
-                ipcRenderer.invoke("kategori_menu", false, true, false, false, data_kategori).then((result) => {
-                    if (result.response === true) {
-                        toast.success("Data Kategori Menu berhasil disimpan");
-                        this.clearState();
-                    } else {
-                        toast.error("Data Kategori Menu gagal disimpan");
-                        this.clearState();
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    const data_kategori = {
+                        nama: this.state.data_kategori.nama_kategori
                     }
-                })
-            }
-        });
+                    ipcRenderer.invoke("kategori_menu", false, true, false, false, data_kategori).then((result) => {
+                        if (result.response === true) {
+                            toast.success("Data Kategori Menu berhasil disimpan");
+                            this.clearState();
+                        } else {
+                            toast.error("Data Kategori Menu gagal disimpan");
+                            this.clearState();
+                        }
+                    })
+                }
+            });
     }
 
     handleEditKategori() {
@@ -171,27 +172,27 @@ class KategoriMenu extends React.Component<any, any> {
             icon: "warning",
             buttons: ["Batal", true],
             dangerMode: true,
-          })
-          .then((willDelete) => {
-            if (willDelete) {
-                const data_kategori = {
-                    nama: this.state.data_kategori.nama_kategori,
-                    id_kategori: this.state.id_kategori_menu
-                }
-
-                ipcRenderer.invoke("kategori_menu", false, false, true, false, data_kategori).then((result) => {
-                    if (result.response === true) {
-                        toast.success("Data Kategori Menu berhasil diedit");
-                        this.clearState();
-                        this.getDataKategori();
-                    } else {
-                        toast.error("Data Kategori Menu gagal diedit");
-                        this.clearState();
-                        this.getDataKategori();
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    const data_kategori = {
+                        nama: this.state.data_kategori.nama_kategori,
+                        id_kategori: this.state.id_kategori_menu
                     }
-                });
-            }
-        });
+
+                    ipcRenderer.invoke("kategori_menu", false, false, true, false, data_kategori).then((result) => {
+                        if (result.response === true) {
+                            toast.success("Data Kategori Menu berhasil diedit");
+                            this.clearState();
+                            this.getDataKategori();
+                        } else {
+                            toast.error("Data Kategori Menu gagal diedit");
+                            this.clearState();
+                            this.getDataKategori();
+                        }
+                    });
+                }
+            });
     }
 
     componentDidMount(): void {
@@ -204,7 +205,7 @@ class KategoriMenu extends React.Component<any, any> {
             if (result.response === true) {
                 let i = 1;
                 result.data.map(el => el['number'] = i++);
-                this.setState({data: result.data});
+                this.setState({ data: result.data });
             }
         })
     }
@@ -233,52 +234,52 @@ class KategoriMenu extends React.Component<any, any> {
             icon: "warning",
             buttons: ["Batal", true],
             dangerMode: true,
-          })
-          .then((willDelete) => {
-            if (willDelete) {
-                ipcRenderer.invoke("kategori_menu", false, false, false, true, this.state.id_kategori_menu).then((result) => {
-                    if (result.response === true) {
-                        toast.success("Data Kategori Menu berhasil dihapus");
-                        this.clearState();
-                        this.getDataKategori();
-                    } else {
-                        toast.success("Data Kategori Menu gagal dihapus");
-                        this.clearState();
-                        this.getDataKategori();
-                    }
-                })
-            }
-          });
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    ipcRenderer.invoke("kategori_menu", false, false, false, true, this.state.id_kategori_menu).then((result) => {
+                        if (result.response === true) {
+                            toast.success("Data Kategori Menu berhasil dihapus");
+                            this.clearState();
+                            this.getDataKategori();
+                        } else {
+                            toast.success("Data Kategori Menu gagal dihapus");
+                            this.clearState();
+                            this.getDataKategori();
+                        }
+                    })
+                }
+            });
     }
 
     render(): React.ReactNode {
         return (
             <>
                 <ToastContainer
-                            position="bottom-center"
-                            autoClose={3000}
-                            hideProgressBar={false}
-                            newestOnTop={false}
-                            closeOnClick
-                            rtl={false}
-                            pauseOnFocusLoss
-                            draggable
-                            pauseOnHover
-                            theme="dark"
-                            />
+                    position="bottom-center"
+                    autoClose={3000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="dark"
+                />
                 <div className="overview-pemb">
                     <div className="row">
                         <div className="col-sm">
                             <div className="d-flex">
-                                <Navbar_Menu/>
+                                <Navbar_Menu />
                             </div>
                         </div>
-                        <div className="col-sm">
+                        <div className="col-sm-3">
                             <div className="d-flex mb-2 float-end">
                                 <div className="p-1">
                                     <a href="javascript:void(0)"
                                         className="btn btn-primary btn-primary-cozy border-r-13 pl-20 pr-20 pt-10 pb-10"><img
-                                            src="assets/img/icon/refresh-ccw.png" id="refresh_table" alt=""/></a>
+                                            src="assets/img/icon/refresh-ccw.png" id="refresh_table" alt="" /></a>
                                 </div>
                             </div>
                         </div>
@@ -296,30 +297,30 @@ class KategoriMenu extends React.Component<any, any> {
                                 </div>
                             </div>
                         </div>
-                            <div className="text-end mt-3">
-                                <button className="btn btn-primary btn-primary-cozy" onClick={this.state.disabled_opsi === true ? this.handleAddKategori : this.handleEditKategori} disabled={this.state.disabled}>{this.state.text_submit}</button>
-                            </div>
+                        <div className="text-end mt-3">
+                            <button className="btn btn-primary btn-primary-cozy" onClick={this.state.disabled_opsi === true ? this.handleAddKategori : this.handleEditKategori} disabled={this.state.disabled}>{this.state.text_submit}</button>
+                        </div>
                     </div>
                 </div>
                 <div className="card card-custom-dark mb-5">
-                        <div className="card-header">
-                            <div className="d-flex">
-                                <div className="p-2 me-auto">
-                                    <h5>List Kategori</h5>
-                                </div>
-                                <div className="p-2">
-                                    <button className="btn btn-danger me-3" onClick={this.handleDelete} disabled={this.state.disabled_opsi}>Hapus</button> 
-                                    {/* <button className="btn btn-info" onClick={this.handleEdit} disabled={this.state.disabled_opsi}>Edit</button> */}
-                                </div>
+                    <div className="card-header">
+                        <div className="d-flex">
+                            <div className="p-2 me-auto">
+                                <h5>List Kategori</h5>
+                            </div>
+                            <div className="p-2">
+                                <button className="btn btn-danger me-3" onClick={this.handleDelete} disabled={this.state.disabled_opsi}>Hapus</button>
+                                {/* <button className="btn btn-info" onClick={this.handleEdit} disabled={this.state.disabled_opsi}>Edit</button> */}
+                            </div>
 
-                            </div>
-                        </div>
-                        <div className="card-body">
-                            <div className="table-responsive">
-                                <DataTable columns={this.state.columns} data={this.state.data} pagination theme="solarized" selectableRows expandableRows selectableRowsSingle expandableRowsComponent={ExpandableRowComponent} onSelectedRowsChange={this.handleSelected} />
-                            </div>
                         </div>
                     </div>
+                    <div className="card-body">
+                        <div className="table-responsive">
+                            <DataTable columns={this.state.columns} data={this.state.data} pagination theme="solarized" selectableRows expandableRows selectableRowsSingle expandableRowsComponent={ExpandableRowComponent} onSelectedRowsChange={this.handleSelected} />
+                        </div>
+                    </div>
+                </div>
             </>
         )
     }
@@ -330,13 +331,13 @@ class KategoriMenuContainer extends React.Component<any, any> {
         return (
             <>
                 <div id="body-pd" className="body-pd">
-                    <Header/>
-                    <Sidebar/>
+                    <Header />
+                    <Sidebar />
                     <div className="box-bg">
-                        <KategoriMenu/>
+                        <KategoriMenu />
                     </div>
                 </div>
-                <ModalUser/>
+                <ModalUser />
             </>
         )
     }
