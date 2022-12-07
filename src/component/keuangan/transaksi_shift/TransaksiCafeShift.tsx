@@ -14,8 +14,9 @@ import FilterTransaksi from "../system/FilterTransaksi";
 import NavbarTransaksiShift from "./NavbarTransaksiShift";
 import BillingSiang from "./BillingSiang";
 import BillingMalam from "./BillingMalam";
+import CafeSiang from "./CafeSiang";
 
-class TransaksiShift extends React.Component<any, any> {
+class TransaksiCafeShift extends React.Component<any, any> {
     constructor(props: any) {
         super(props);
     }
@@ -39,7 +40,7 @@ class TransaksiShift extends React.Component<any, any> {
                 <NavbarTransaksiShift />
                 <div id="siang">
                     <h3 className="text-light"><b>Siang</b></h3>
-                    <BillingSiang />
+                    <CafeSiang />
                 </div>
                 <div id="malam">
                     <h3 className="text-light"><b>Malam</b></h3>
@@ -50,7 +51,7 @@ class TransaksiShift extends React.Component<any, any> {
     }
 }
 
-class TransaksiShiftContainer extends React.Component<any, any> {
+class TransaksiCafeShiftContainer extends React.Component<any, any> {
     constructor(props: any) {
         super(props);
     }
@@ -63,7 +64,7 @@ class TransaksiShiftContainer extends React.Component<any, any> {
                     <Sidebar />
                     <div className="box-bg">
                         <NavbarKeuangan />
-                        <TransaksiShift />
+                        <TransaksiCafeShift />
                     </div>
                 </div>
                 <ModalUser />
@@ -72,4 +73,4 @@ class TransaksiShiftContainer extends React.Component<any, any> {
     }
 }
 
-export default TransaksiShiftContainer;
+export default TransaksiCafeShiftContainer;

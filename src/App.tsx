@@ -11,6 +11,8 @@ import KeuanganContainer from "./component/keuangan/Keuangan";
 import KeuanganCafeContainer from "./component/keuangan/cafe/KeuanganCafe";
 import VoucherContainer from "./component/pengaturan/voucher/Voucher";
 import TransaksiShiftContainer from "./component/keuangan/transaksi_shift/TransaksiShift";
+import TransaksiCafeShiftContainer from "./component/keuangan/transaksi_shift/TransaksiCafeShift";
+import AnalisisContainer from "./component/analisis/Analisis";
 
 class App extends React.Component {
     render() {
@@ -32,6 +34,10 @@ class App extends React.Component {
                     <Route path="/keuangan-cafe" element={<KeuanganCafeContainer />}></Route>
 
                     <Route path="/transaksi-shift" element={<TransaksiShiftContainer />}></Route>
+
+                    <Route path="/transaksi-shift-cafe" element={<TransaksiCafeShiftContainer />}></Route>
+
+                    <Route path="/analisis" element={<AnalisisContainer />}></Route>
 
                 </Routes>
             </HashRouter>

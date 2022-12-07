@@ -15,6 +15,8 @@ import SplitBillSystem from './system/SplitBillSystem'
 import Laporan from './system/Laporan'
 import FilterTransaksi from './component/keuangan/system/FilterTransaksi'
 import VoucherSystem from './system/VoucherSystem'
+import LaporanShift from './system/LaporanShift'
+import FilterTransaksiShift from './component/keuangan/system/FilterTransaksiShift'
 
 
 // AppDataSource.initialize().then(async () => {
@@ -293,12 +295,24 @@ ipcMain.handle("keuangan_cafe", async (event) => {
     return await Laporan.getDataKeuanganCafe();
 });
 
+ipcMain.handle("keuangan_cafe_shift", async (event) => {
+    return await LaporanShift.getDataKeuanganCafe();
+});
+
 ipcMain.handle("filterByDateBilling", async(event, data_keuangan) => {
     return await FilterTransaksi.filterByDateBilling(data_keuangan);
 });
 
 ipcMain.handle("filterByDateCafe", async (event, data_keuangan) => {
     return await FilterTransaksi.filterByDateCafe(data_keuangan);
+});
+
+ipcMain.handle("filterByDateBillingShift", async(event, data_keuangan) => {
+    return await FilterTransaksiShift.filterByDateBilling(data_keuangan);
+});
+
+ipcMain.handle("filterByDateCafeShift", async (event, data_keuangan) => {
+    return await FilterTransaksiShift.filterByDateCafe(data_keuangan);
 });
 
 ipcMain.handle("voucher", async (event, getData, insertData, updateData, deleteData, data_voucher) => {
@@ -313,6 +327,10 @@ ipcMain.handle("voucher", async (event, getData, insertData, updateData, deleteD
     } else {
         return {response: false, data: "data is not valid!"};
     }
+});
+
+ipcMain.handle("keuangan_shift", async (event) => {
+    return await LaporanShift.getDataBilling();
 });
 
 //endopration

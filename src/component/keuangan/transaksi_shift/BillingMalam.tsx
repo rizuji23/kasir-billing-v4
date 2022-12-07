@@ -1,17 +1,18 @@
 import { ipcRenderer } from "electron";
 import React, { useState } from "react";
-import DotAdded from "../../system/DotAdded";
-import { Header, ModalUser } from "../header/header";
-import Sidebar from "../sidebar/sidebar";
-import NavbarKeuangan from "./NavbarKeuangan";
+import DotAdded from "../../../system/DotAdded";
+import { Header, ModalUser } from "../../header/header";
+import Sidebar from "../../sidebar/sidebar";
+import NavbarKeuangan from "../NavbarKeuangan";
 import DataTable, { createTheme } from 'react-data-table-component';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import moment from "moment";
 import 'moment-timezone';
-import NavbarTransaksi from "./NavbarTransaksi";
-import ModalFilter from "../pengaturan/ModalFilter";
-import FilterTransaksi from "./system/FilterTransaksi";
+import NavbarTransaksi from "../NavbarTransaksi";
+import ModalFilter from "../../pengaturan/ModalFilter";
+import FilterTransaksi from "../system/FilterTransaksi";
+import ModalFilterShift from "./ModalFilterShift";
 
 createTheme('solarized', {
     background: {
@@ -128,7 +129,7 @@ const ExpandableRowComponent: React.FC<any> = ({ data }) => {
     )
 }
 
-class Keuangan extends React.Component<any, any> {
+class BillingMalam extends React.Component<any, any> {
     constructor(props) {
         super(props);
         this.state = {
@@ -170,20 +171,22 @@ class Keuangan extends React.Component<any, any> {
 
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
-        this.handleFilter = this.handleFilter.bind(this);
+        this.handleFilterMalam = this.handleFilterMalam.bind(this);
         this.resetFilter = this.resetFilter.bind(this);
     }
 
 
     getDataKeuangan() {
         const dot = new DotAdded();
-        ipcRenderer.invoke("keuangan", true, false, false, {}).then((result) => {
+        ipcRenderer.invoke("keuangan_shift").then((result) => {
             console.log(result);
             if (result.response === true) {
                 let i = 1;
                 result.data.map((el) => {
-                    el['number'] = i++;
-                    el['total_struk_val'] = `Rp. ${dot.parse(el.total_struk)}`
+                    if (el.shift === "malam") {
+                        el['number'] = i++;
+                        el['total_struk_val'] = `Rp. ${dot.parse(el.total_struk)}`
+                    }
                 });
 
                 let total_hari = 0;
@@ -191,7 +194,7 @@ class Keuangan extends React.Component<any, any> {
                     const get_date = el.created_at;
                     const day_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY");
                     const day_filter = moment(get_date, "DD-MM-YYYY").format("DD-MM-YYYY");
-                    if (day_now === day_filter) {
+                    if (day_now === day_filter && el.shift === "malam") {
                         total_hari += el.total_struk;
                     }
                 });
@@ -201,14 +204,13 @@ class Keuangan extends React.Component<any, any> {
                     const get_date = el.created_at;
                     const date_now = moment().tz("Asia/Jakarta").format("MM-YYYY");
                     const date_filter = moment(get_date, "DD-MM-YYYY").format("MM-YYYY");
-                    if (date_now === date_filter) {
+                    if (date_now === date_filter && el.shift === "malam") {
                         total_bulan += el.total_struk;
                     }
                 });
 
-
                 this.setState({
-                    data: result.data,
+                    data: result.data.filter(o => o.shift === "malam"),
                     total_harian: dot.parse(total_hari),
                     total_bulanan: dot.parse(total_bulan),
                     tanggal: moment().tz("Asia/Jakarta").format("DD-MM-YYYY"),
@@ -216,7 +218,7 @@ class Keuangan extends React.Component<any, any> {
                     reset_disable: true,
                 });
             } else {
-                toast.error("Data kosong!");
+                toast.error("Data malam kosong!");
             }
         })
     }
@@ -233,7 +235,7 @@ class Keuangan extends React.Component<any, any> {
         this.setState({ isOpen: false });
     }
 
-    handleFilter(dari_tanggal, sampai_tanggal) {
+    handleFilterMalam(dari_tanggal, sampai_tanggal) {
         const data_filter = {
             data: this.state.data,
             dari_tanggal: dari_tanggal,
@@ -241,36 +243,40 @@ class Keuangan extends React.Component<any, any> {
         }
         const dot = new DotAdded();
 
-        ipcRenderer.invoke("filterByDateBilling", data_filter).then((result) => {
+        ipcRenderer.invoke("filterByDateBillingShift", data_filter).then((result) => {
             if (result.response === true) {
                 let i = 1;
                 result.data.map((el) => {
-                    el['number'] = i++;
-                    el['total_struk_val'] = `Rp. ${dot.parse(el.total_struk)}`
+                    if (el.shift === "malam") {
+                        el['number'] = i++;
+                        el['total_struk_val'] = `Rp. ${dot.parse(el.total_struk)}`
+                    }
                 });
 
                 let total_hari = 0;
                 result.data.forEach(el => {
                     const get_date = el.created_at;
+                    const day_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY");
                     const day_filter = moment(get_date, "DD-MM-YYYY").format("DD-MM-YYYY");
-                    if (day_filter) {
+                    if (day_now === day_filter && el.shift === "malam") {
                         total_hari += el.total_struk;
                     }
-                })
+                });
 
                 let total_bulan = 0;
                 result.data.forEach(el => {
                     const get_date = el.created_at;
+                    const date_now = moment().tz("Asia/Jakarta").format("MM-YYYY");
                     const date_filter = moment(get_date, "DD-MM-YYYY").format("MM-YYYY");
-                    if (date_filter) {
+                    if (date_now === date_filter && el.shift === "malam") {
                         total_bulan += el.total_struk;
                     }
-                })
+                });
 
-                toast.success("Data berhasil difilter.");
+                toast.success("Data malam berhasil difilter.");
 
                 this.setState({
-                    data: result.data,
+                    data: result.data.filter(o => o.shift === "malam"),
                     total_harian: dot.parse(total_hari),
                     total_bulanan: dot.parse(total_bulan),
                     tanggal: `${moment(dari_tanggal).format("DD-MM-YYYY")} ~ ${moment(sampai_tanggal).format("DD-MM-YYYY")}`,
@@ -279,7 +285,7 @@ class Keuangan extends React.Component<any, any> {
                     reset_disable: false,
                 });
             } else {
-                toast.error("Data kosong!");
+                toast.error("Data malam kosong!");
                 this.getDataKeuangan();
                 this.setState({
                     isOpen: false,
@@ -289,7 +295,7 @@ class Keuangan extends React.Component<any, any> {
     }
 
     resetFilter() {
-        toast.success("Filter berhasil direset.");
+        toast.success("Filter malam berhasil direset.");
         this.getDataKeuangan();
         this.setState({
             reset_disable: true,
@@ -311,8 +317,7 @@ class Keuangan extends React.Component<any, any> {
                     pauseOnHover
                     theme="dark"
                 />
-                <div className="hr-white"></div>
-                <NavbarTransaksi />
+
                 <div className="row">
                     <div className="col-sm">
                         <div className="card card-custom">
@@ -360,29 +365,11 @@ class Keuangan extends React.Component<any, any> {
                         </div>
                     </div>
                 </div>
-                <ModalFilter openModal={this.openModal} data={this.state.data} handleFilter={this.handleFilter} closeModal={this.closeModal} isOpen={this.state.isOpen} />
+                <ModalFilterShift openModal={this.openModal} shift={"malam"} data={this.state.data} handleFilter={this.handleFilterMalam} closeModal={this.closeModal} isOpen={this.state.isOpen} />
             </>
         )
     }
 }
 
-class KeuanganContainer extends React.Component<any, any> {
-    render(): React.ReactNode {
-        return (
-            <>
-                <div id="body-pd" className="body-pd">
-                    <Header />
-                    <Sidebar />
-                    <div className="box-bg">
-                        <NavbarKeuangan />
-                        <Keuangan />
-                    </div>
-                </div>
-                <ModalUser />
-            </>
 
-        )
-    }
-}
-
-export default KeuanganContainer;
+export default BillingMalam;
