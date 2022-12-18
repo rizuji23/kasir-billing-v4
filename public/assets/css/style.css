@@ -203,7 +203,7 @@ a {
 .card-custom {
     background-color: #FF8A00 !important;
     border-radius: 13px;
-    padding-top: 18px;
+    padding-top: 10px;
     padding-bottom: 10px;
 }
 
@@ -225,7 +225,14 @@ a {
 .card-custom-dark {
     background-color: #1A1B1F !important;
     border-radius: 13px;
-    padding-top: 18px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.card-custom-dark-light {
+    background-color: #2E2F33 !important;
+    border-radius: 13px;
+    padding-top: 10px;
     padding-bottom: 10px;
 }
 
@@ -1200,4 +1207,38 @@ label {
     /* .body-pd {
         padding-left: calc(var(--nav-width) + 188px)
     } */
+}
+
+.analisis-header h3 {
+    font-family: 'Inter-Bold';
+    color: #FFFFFF;
+}
+
+.circle-analisis {
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+}
+
+.analisis-kategori {
+    width: 100%;
+    margin-left: 20px;
+}
+
+.bg-yellow-analisis {
+    background-color: #ffc658;
+}
+
+.bg-green-analisis {
+    background-color: #82ca9d;
+}
+
+.circle-analisis-content {
+    color: #FFFFFF;
+}
+
+.keputusan-subs {
+    color: #FFFFFF;
+    font-size: 12px;
+    text-align: center;
 }

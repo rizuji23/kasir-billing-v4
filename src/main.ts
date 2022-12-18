@@ -17,6 +17,7 @@ import FilterTransaksi from './component/keuangan/system/FilterTransaksi'
 import VoucherSystem from './system/VoucherSystem'
 import LaporanShift from './system/LaporanShift'
 import FilterTransaksiShift from './component/keuangan/system/FilterTransaksiShift'
+import AnalisisSystem from './system/AnalisisSystem'
 
 
 // AppDataSource.initialize().then(async () => {
@@ -332,5 +333,18 @@ ipcMain.handle("voucher", async (event, getData, insertData, updateData, deleteD
 ipcMain.handle("keuangan_shift", async (event) => {
     return await LaporanShift.getDataBilling();
 });
+
+//route main Analisis
+ipcMain.handle("getPendapatan", async(event, filter, data) => {
+    return await AnalisisSystem.getPendapatan(filter, data);
+});
+
+ipcMain.handle("getPendapatanMonth", async(event, data_month) => {
+    return await AnalisisSystem.getPendapatanPerbulan(data_month);
+});
+
+ipcMain.handle("getPendapatanKuartal", async(event, data_year) => {
+    return await AnalisisSystem.getPendapatanKuartal(data_year);
+})
 
 //endopration

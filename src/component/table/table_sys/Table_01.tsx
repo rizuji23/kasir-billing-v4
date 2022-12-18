@@ -1,5 +1,5 @@
 import React from "react";
-import { ModalBooking, ModalBookingActive } from "../ModalBooking";
+import { ModalBooking, ModalBookingActive } from "../IndexModal";
 import { ipcRenderer } from "electron";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

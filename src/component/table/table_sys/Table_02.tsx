@@ -1,11 +1,10 @@
 import React from "react";
-import { ModalBooking, ModalBookingActive } from "../ModalBooking";
+import { ModalBooking, ModalBookingActive } from "../IndexModal";
 import { ipcRenderer } from "electron";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DotAdded from "../../../system/DotAdded";
 import swal from 'sweetalert';
-
 
 
 class Table_02 extends React.Component<any, any> {
