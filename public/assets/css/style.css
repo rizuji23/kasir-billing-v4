@@ -1242,3 +1242,40 @@ label {
     font-size: 12px;
     text-align: center;
 }
+
+.table-custom {
+    background-color: #2E2F33 !important;
+    border-radius: 8px !important;
+
+}
+
+.table-custom td {
+    background-color: #1A1B1F !important;
+}
+.table>:not(caption)>*>* {
+    text-align: center;
+}
+
+.table-custom .no-border {
+    border-bottom-width: 0px !important;
+}
+
+.detail-laporan-stok h5 {
+    color: #FFFFFF;
+    font-family: 'Inter-Bold';
+}
+
+.list-group-dark .list-group-item {
+    background-color: #1A1B1F !important;
+}
+
+select {
+    background-image: url('../img/icon/dropdown.png');
+    background-repeat: no-repeat;
+    background-position: right 1.3rem center;
+    border-radius: 2px;
+}
+
+.modal-title {
+    font-family: 'Inter-Bold';
+}

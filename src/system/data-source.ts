@@ -9,9 +9,6 @@ import { Kategori_Menu } from "../entity/Kategori_Menu"
 import { Menu } from "../entity/Menu"
 import { Pesanan } from "../entity/Pesanan"
 import { Settings } from "../entity/Settings"
-import { Stok_Barang } from "../entity/Stok_Barang"
-import { Stok_Masuk } from "../entity/Stok_Masuk"
-import { Stok } from "../entity/Stok"
 import { Struk } from "../entity/Struk"
 import { Table_Billiard } from "../entity/Table_Billiard"
 import { Waiting_List } from "../entity/Waiting_List"
@@ -20,6 +17,9 @@ import { Member } from "../entity/Member"
 import { Split_Bill } from "../entity/Split_Bill"
 import { Split_Bill_Detail } from "../entity/Split_Bill_Detail"
 import { Voucher } from "../entity/Voucher"
+import { Stok_Main } from "../entity/Stok_Main"
+import { Stok_Masuk } from "../entity/Stok_Masuk"
+import { Stok_Keluar } from "../entity/Stok_Keluar"
 
 const AppDataSource = async () => {
     const dataSourceConn = new DataSource({
@@ -38,9 +38,6 @@ const AppDataSource = async () => {
             Menu,
             Pesanan,
             Settings,
-            Stok_Barang,
-            Stok_Masuk,
-            Stok,
             Struk,
             Table_Billiard,
             Waiting_List,
@@ -49,6 +46,10 @@ const AppDataSource = async () => {
             Split_Bill,
             Split_Bill_Detail,
             Voucher,
+            Stok_Main,
+            Stok_Masuk,
+            Stok_Keluar,
+            
         ],
         migrations: [
             "./src/migrations/**/*.ts"

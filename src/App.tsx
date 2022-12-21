@@ -13,6 +13,7 @@ import VoucherContainer from "./component/pengaturan/voucher/Voucher";
 import TransaksiShiftContainer from "./component/keuangan/transaksi_shift/TransaksiShift";
 import TransaksiCafeShiftContainer from "./component/keuangan/transaksi_shift/TransaksiCafeShift";
 import AnalisisContainer from "./component/analisis/Analisis";
+import StokContainer from "./component/stok/Stok";
 
 class App extends React.Component {
     render() {
@@ -38,6 +39,8 @@ class App extends React.Component {
                     <Route path="/transaksi-shift-cafe" element={<TransaksiCafeShiftContainer />}></Route>
 
                     <Route path="/analisis" element={<AnalisisContainer />}></Route>
+
+                    <Route path="/stok" element={<StokContainer />}></Route>
 
                 </Routes>
             </HashRouter>

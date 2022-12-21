@@ -37,22 +37,18 @@ class Login extends React.Component<any, any> {
 
     handleUsername(e) {
         if (e.target.value === '') {
-            this.setState({ isError: true, error: "Username harus diisi" });
+            this.setState({ isError: true, error: "Username harus diisi", username: e.target.value });
 
         } else {
-            this.setState({ isError: false });
-
-            this.setState({ username: e.target.value })
+            this.setState({ username: e.target.value, isError: false })
         }
     }
 
     handlePassword(e) {
         if (e.target.value === '') {
-            this.setState({ isError: true, error: "Password harus diisi" });
+            this.setState({ isError: true, error: "Password harus diisi", password: e.target.value });
         } else {
-            this.setState({ isError: false });
-
-            this.setState({ password: e.target.value })
+            this.setState({ password: e.target.value, isError: false })
         }
     }
 
@@ -124,11 +120,11 @@ class Login extends React.Component<any, any> {
                             <div className="">
                                 <div className="form-group">
                                     <label>Username</label>
-                                    <input type="text" className="form-control custom-input" value={this.state.username} onChange={this.handleUsername} id="username" />
+                                    <input type="text" className="form-control custom-input" autoFocus value={this.state.username} onChange={this.handleUsername} />
                                 </div>
                                 <div className="form-group mt-2">
                                     <label>Password</label>
-                                    <input type="password" className="form-control custom-input" value={this.state.password} onChange={this.handlePassword} id="password" />
+                                    <input type="password" className="form-control custom-input" value={this.state.password} onChange={this.handlePassword} />
                                 </div>
 
                             </div>

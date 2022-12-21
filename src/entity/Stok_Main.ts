@@ -3,38 +3,41 @@ import 'moment-timezone';
 import moment from "moment";
 
 @Entity()
-export class Stok_Barang {
-
+export class Stok_Main {
+    
     @PrimaryGeneratedColumn()
     id:number
 
     @Column()
-    id_stok_barang:string
+    id_stok_main: string
 
     @Column()
-    id_menu:string
+    id_menu: string
 
     @Column()
-    stok_awal:number
-    
-    @Column()
-    id_cart:string
+    stok_awal: number
 
     @Column()
-    terjual:number
+    stok_masuk: number
 
     @Column()
-    sisa:number
+    terjual: number
 
     @Column()
-    shift:string
+    sisa: number
 
     @Column()
-    stok_akhir:string
+    stok_akhir: number
 
     @Column()
-    user_in:string
-    
+    keterangan: string
+
+    @Column()
+    shift: string
+
+    @Column()
+    user_in: string
+
     @Column()
     created_at: string
 
@@ -51,5 +54,4 @@ export class Stok_Barang {
     insertUpdated() {
         this.updated_at = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss")
     }
-
 }

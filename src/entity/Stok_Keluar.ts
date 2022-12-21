@@ -2,20 +2,33 @@ import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate } fr
 import 'moment-timezone';
 import moment from "moment";
 
+
 @Entity()
-export class Stok {
+export class Stok_Keluar {
 
     @PrimaryGeneratedColumn()
-    id:number
+    id: number
 
     @Column()
-    id_stok:string
+    id_stok_keluar: string
 
     @Column()
-    id_menu:string
+    id_stok_main: string
 
     @Column()
-    stok:number
+    id_menu: string
+
+    @Column()
+    stok_keluar: number
+
+    @Column()
+    keterangan: string
+
+    @Column()
+    shift: string
+
+    @Column()
+    user_in: string
 
     @Column()
     created_at: string
@@ -33,5 +46,6 @@ export class Stok {
     insertUpdated() {
         this.updated_at = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss")
     }
+    
 
 }

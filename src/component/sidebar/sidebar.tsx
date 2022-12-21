@@ -37,6 +37,11 @@ class Sidebar extends React.Component<any, any> {
                                 <span className="nav_name">Laporan</span>
                             </NavLink>
 
+                            <NavLink to="/stok" className={({ isActive }) => isActive ? "nav_link active" : "nav_link"}>
+                                <i className='bx bx-package nav_icon'></i>
+                                <span className="nav_name">Stok</span>
+                            </NavLink>
+
                             <NavLink to="/analisis" className={({ isActive }) => isActive ? "nav_link active" : "nav_link"}>
                                 <i className='bx bx-line-chart nav_icon'></i>
                                 <span className="nav_name">Analisis</span>
