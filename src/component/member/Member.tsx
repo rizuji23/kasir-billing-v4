@@ -1,7 +1,7 @@
 import React from "react";
-import {Header, ModalUser} from '../header/header';
+import { Header, ModalUser } from '../header/header';
 import Sidebar from "../sidebar/sidebar";
-import DataTable, { createTheme }  from 'react-data-table-component';
+import DataTable, { createTheme } from 'react-data-table-component';
 import { ipcRenderer } from "electron";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -29,22 +29,6 @@ createTheme('solarized', {
         disabled: '#fff',
     },
 }, 'dark')
-
-// interface Row {
-//     alamat: string,
-//     created_at: string,
-//     email: string,
-//     id: number,
-//     id_member: string,
-//     kode_member: string,
-//     nama_member:string,
-//     no_ktp: number,
-//     no_telp: number,
-//     number: number,
-//     status_member: string,
-//     tipe_member: string,
-//     updated_at: string
-// }
 
 const ExpandableRowComponent: React.FC<any> = ({ data }) => {
     return (
@@ -91,7 +75,7 @@ class Member extends React.Component<any, any> {
                     sortable: true,
                 },
                 {
-                    name: "Nama", 
+                    name: "Nama",
                     selector: row => row.nama_member,
                     sortable: true,
                 },
@@ -145,14 +129,14 @@ class Member extends React.Component<any, any> {
             disabled: true,
             kode_member_fetch: '',
             email: '',
-            id_member: '', 
-            disabled_opsi: true, 
-            editable: false, 
+            id_member: '',
+            disabled_opsi: true,
+            editable: false,
         })
     }
 
     handleJenisMember(e) {
-        this.setState({jenis_member: e.target.value});
+        this.setState({ jenis_member: e.target.value });
         this.insertPrice(e.target.value);
     }
 
@@ -160,7 +144,7 @@ class Member extends React.Component<any, any> {
         const dot = new DotAdded();
         ipcRenderer.invoke("member", false, true, false, false, jenis_member, false, false).then((result) => {
             if (result.response === true) {
-                this.setState({harga_member: dot.parse(result.data[0].harga_member), potongan: result.data[0].potongan});
+                this.setState({ harga_member: dot.parse(result.data[0].harga_member), potongan: result.data[0].potongan });
             }
         });
     }
@@ -168,9 +152,9 @@ class Member extends React.Component<any, any> {
     handleNama(e) {
         if (e.target.value.length === 0) {
             toast.error("Nama harus diisi!");
-            this.setState({nama: '', disabled: true});
+            this.setState({ nama: e.target.value, disabled: true });
         } else {
-            this.setState({nama: e.target.value});
+            this.setState({ nama: e.target.value });
             this.validation();
             this.generateKodeMember();
         }
@@ -179,9 +163,9 @@ class Member extends React.Component<any, any> {
     handleNoTelp(e) {
         if (e.target.value.length === 0) {
             toast.error("No Telp harus diisi!");
-            this.setState({no_telp: 0, disabled: true});
+            this.setState({ no_telp: e.target.value, disabled: true });
         } else {
-            this.setState({no_telp: e.target.value});
+            this.setState({ no_telp: e.target.value });
             this.validation();
             this.generateKodeMember();
         }
@@ -190,9 +174,9 @@ class Member extends React.Component<any, any> {
     handleAlamat(e) {
         if (e.target.value.length === 0) {
             toast.error("Alamat harus diisi!");
-            this.setState({alamat: '', disabled:true});
+            this.setState({ alamat: e.target.value, disabled: true });
         } else {
-            this.setState({alamat: e.target.value});
+            this.setState({ alamat: e.target.value });
             this.validation();
         }
     }
@@ -200,9 +184,9 @@ class Member extends React.Component<any, any> {
     handleNoKtp(e) {
         if (e.target.value.length === 0) {
             toast.error("No KTP harus diisi!");
-            this.setState({no_ktp: 0, disabled: true});
+            this.setState({ no_ktp: e.target.value, disabled: true });
         } else {
-            this.setState({no_ktp: e.target.value});
+            this.setState({ no_ktp: e.target.value });
             this.validation();
         }
     }
@@ -210,27 +194,27 @@ class Member extends React.Component<any, any> {
     handleEmail(e) {
         if (e.target.value.length === '') {
             toast.error("Email harus diisi!");
-            this.setState({email: 0, disabled: true});
+            this.setState({ email: e.target.value, disabled: true });
         } else {
-            this.setState({email: e.target.value});
+            this.setState({ email: e.target.value });
             this.validation();
         }
     }
 
     validation() {
-        if (this.state.nama === '' || this.state.no_telp === 0 || this.state.alamat === '' || this.state.no_ktp === 0){
-            this.setState({disabled: true});
+        if (this.state.nama === '' || this.state.no_telp === 0 || this.state.alamat === '' || this.state.no_ktp === 0) {
+            this.setState({ disabled: true });
         } else {
-            this.setState({disabled: false});
+            this.setState({ disabled: false });
         }
     }
 
     generateKodeMember() {
-        this.setState({kode_member: 'Loading Kode...'})
+        this.setState({ kode_member: 'Loading Kode...' })
         setTimeout(() => {
             const nama_depan = this.state.nama.split(' ');
             const kode_member = `${nama_depan[0].toUpperCase()}${this.state.no_telp}`;
-            this.setState({kode_member: kode_member});
+            this.setState({ kode_member: kode_member });
         }, 1000)
     }
 
@@ -239,7 +223,7 @@ class Member extends React.Component<any, any> {
             if (result.response === true) {
                 var i = 1;
                 result.data.map(elem => elem['number'] = i++);
-                this.setState({data: result.data});
+                this.setState({ data: result.data });
             } else {
                 this.setState({
                     data: []
@@ -255,35 +239,35 @@ class Member extends React.Component<any, any> {
             icon: "warning",
             buttons: ["Batal", true],
             dangerMode: true,
-          })
-          .then((willDelete) => {
-            if (willDelete) {
-                const data_member = {
-                    nama_member: this.state.nama,
-                    no_telp: this.state.no_telp,
-                    alamat: this.state.alamat,
-                    no_ktp: this.state.no_ktp,
-                    tipe_member:this.state.jenis_member,
-                    kode_member: this.state.kode_member,
-                    status_member: 'active',
-                    email: this.state.email
-                }
-        
-                ipcRenderer.invoke("member", false, false, true, false, data_member, false, false).then((result) => {
-                    if (result.response === true) {
-                        toast.success("Member berhasil ditambah");
-                        this.clearState();
-                        this.getAllMember();
-                    } else {
-                        toast.error("Member gagal ditambah")
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    const data_member = {
+                        nama_member: this.state.nama,
+                        no_telp: this.state.no_telp,
+                        alamat: this.state.alamat,
+                        no_ktp: this.state.no_ktp,
+                        tipe_member: this.state.jenis_member,
+                        kode_member: this.state.kode_member,
+                        status_member: 'active',
+                        email: this.state.email
                     }
-                })
-            }
-          });
-       
+
+                    ipcRenderer.invoke("member", false, false, true, false, data_member, false, false).then((result) => {
+                        if (result.response === true) {
+                            toast.success("Member berhasil ditambah");
+                            this.clearState();
+                            this.getAllMember();
+                        } else {
+                            toast.error("Member gagal ditambah")
+                        }
+                    })
+                }
+            });
+
     }
 
-    
+
     componentDidMount(): void {
         this.insertPrice('Premium');
         this.getAllMember();
@@ -292,7 +276,8 @@ class Member extends React.Component<any, any> {
     handleSelected(selectedRow) {
         if (selectedRow.selectedCount !== 0) {
             const id_member = selectedRow.selectedRows[0].id_member
-            this.setState({id_member: id_member, disabled_opsi: false, editable: true, nama: selectedRow.selectedRows[0].nama_member,
+            this.setState({
+                id_member: id_member, disabled_opsi: false, editable: true, nama: selectedRow.selectedRows[0].nama_member,
                 no_telp: selectedRow.selectedRows[0].no_telp,
                 email: selectedRow.selectedRows[0].email,
                 alamat: selectedRow.selectedRows[0].alamat,
@@ -301,7 +286,8 @@ class Member extends React.Component<any, any> {
                 kode_member: selectedRow.selectedRows[0].kode_member,
             })
         } else {
-            this.setState({id_member: '', disabled_opsi: true, editable: false, nama: '',
+            this.setState({
+                id_member: '', disabled_opsi: true, editable: false, nama: '',
                 no_telp: 0,
                 email: '',
                 alamat: '',
@@ -320,23 +306,23 @@ class Member extends React.Component<any, any> {
             icon: "warning",
             buttons: ["Batal", true],
             dangerMode: true,
-          })
-          .then((willDelete) => {
-            if (willDelete) {
-                console.log(this.state.id_member);
-                ipcRenderer.invoke("member", false, false, false, true, this.state.id_member, false, false).then((result) => {
-                    if (result.response === true) {
-                        toast.success("Member berhasil dihapus");
-                        this.clearState();
-                        this.getAllMember();
-                    } else {
-                        toast.error("Member gagal dihapus");
-                        this.clearState();
-                        this.getAllMember();
-                    }
-                })
-            }
-          });
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    console.log(this.state.id_member);
+                    ipcRenderer.invoke("member", false, false, false, true, this.state.id_member, false, false).then((result) => {
+                        if (result.response === true) {
+                            toast.success("Member berhasil dihapus");
+                            this.clearState();
+                            this.getAllMember();
+                        } else {
+                            toast.error("Member gagal dihapus");
+                            this.clearState();
+                            this.getAllMember();
+                        }
+                    })
+                }
+            });
     }
 
     handleEdit() {
@@ -346,53 +332,53 @@ class Member extends React.Component<any, any> {
             icon: "warning",
             buttons: ["Batal", true],
             dangerMode: true,
-          })
-          .then((willDelete) => {
-            if (willDelete) {
-                console.log(this.state.id_member);
-                const data_member = {
-                    kode_member: this.state.kode_member,
-                    nama_member: this.state.nama,
-                    no_telp: this.state.no_telp,
-                    email: this.state.email,
-                    no_ktp: this.state.no_ktp,
-                    alamat: this.state.alamat,
-                    tipe_member: this.state.jenis_member,
-                    id_member: this.state.id_member,
-                }
-                ipcRenderer.invoke("member", false, false, false, false, data_member, true, false).then((result) => {
-                    if (result.response === true) {
-                        this.clearState();
-                        this.getAllMember();
-                        toast.success("Edit Member berhasil");
-                    } else {
-                        toast.error("Edit Member gagal");
-                        this.clearState();
-                        this.getAllMember();
-                    }
-                })
-            }
         })
-       
+            .then((willDelete) => {
+                if (willDelete) {
+                    console.log(this.state.id_member);
+                    const data_member = {
+                        kode_member: this.state.kode_member,
+                        nama_member: this.state.nama,
+                        no_telp: this.state.no_telp,
+                        email: this.state.email,
+                        no_ktp: this.state.no_ktp,
+                        alamat: this.state.alamat,
+                        tipe_member: this.state.jenis_member,
+                        id_member: this.state.id_member,
+                    }
+                    ipcRenderer.invoke("member", false, false, false, false, data_member, true, false).then((result) => {
+                        if (result.response === true) {
+                            this.clearState();
+                            this.getAllMember();
+                            toast.success("Edit Member berhasil");
+                        } else {
+                            toast.error("Edit Member gagal");
+                            this.clearState();
+                            this.getAllMember();
+                        }
+                    })
+                }
+            })
+
     }
 
 
     render(): React.ReactNode {
 
-        return(
+        return (
             <>
                 <ToastContainer
-                            position="bottom-center"
-                            autoClose={3000}
-                            hideProgressBar={false}
-                            newestOnTop={false}
-                            closeOnClick
-                            rtl={false}
-                            pauseOnFocusLoss
-                            draggable
-                            pauseOnHover
-                            theme="dark"
-                            />
+                    position="bottom-center"
+                    autoClose={3000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="dark"
+                />
                 <div className="overview-pemb mb-3">
                     <div className="bg-dark box-dark">
                         <h5 className="text-center">{this.state.editable ? 'Edit Member' : 'Tambah Member'}</h5>
@@ -432,7 +418,7 @@ class Member extends React.Component<any, any> {
                                                     <div className="radio-box-custom mb-2">
                                                         <div className="d-flex">
                                                             <div className="p-1">
-                                                                <input type="radio" value={'Premium'} onChange={this.handleJenisMember} checked={this.state.jenis_member === "Premium"} className="radio-custom"/>
+                                                                <input type="radio" value={'Premium'} onChange={this.handleJenisMember} checked={this.state.jenis_member === "Premium"} className="radio-custom" />
                                                             </div>
                                                             <div className="p-1">
                                                                 Premium
@@ -444,7 +430,7 @@ class Member extends React.Component<any, any> {
                                                     <div className="radio-box-custom mb-2">
                                                         <div className="d-flex">
                                                             <div className="p-1">
-                                                                <input type="radio" value={'Gold'} onChange={this.handleJenisMember} checked={this.state.jenis_member === "Gold"} className="radio-custom"/>                                                    
+                                                                <input type="radio" value={'Gold'} onChange={this.handleJenisMember} checked={this.state.jenis_member === "Gold"} className="radio-custom" />
                                                             </div>
                                                             <div className="p-1">
                                                                 Gold
@@ -456,7 +442,7 @@ class Member extends React.Component<any, any> {
                                                     <div className="radio-box-custom mb-2">
                                                         <div className="d-flex">
                                                             <div className="p-1">
-                                                                <input type="radio" value={'Platinum'} onChange={this.handleJenisMember} checked={this.state.jenis_member === "Platinum"} className="radio-custom"/>
+                                                                <input type="radio" value={'Platinum'} onChange={this.handleJenisMember} checked={this.state.jenis_member === "Platinum"} className="radio-custom" />
                                                             </div>
                                                             <div className="p-1">
                                                                 Platinum
@@ -470,7 +456,7 @@ class Member extends React.Component<any, any> {
                                                 <div className="box-total-member">
                                                     <div className="d-flex">
                                                         <div className="p-1">
-                                                            <img src="assets/img/icon/rp.png" alt=""/>
+                                                            <img src="assets/img/icon/rp.png" alt="" />
                                                         </div>
                                                         <div className="p-1">
                                                             <p>Rp. {this.state.harga_member} Per bulan,</p>
@@ -493,7 +479,7 @@ class Member extends React.Component<any, any> {
 
                         </div>
                         <div className="text-end mt-3">
-                            <button className="btn btn-primary btn-primary-cozy" onClick={ this.state.editable ? this.handleEdit : this.handleSubmit} disabled={this.state.disabled}>{this.state.editable ? 'Edit Sekarang' : 'Buat Sekarang'}</button>
+                            <button className="btn btn-primary btn-primary-cozy" onClick={this.state.editable ? this.handleEdit : this.handleSubmit} disabled={this.state.disabled}>{this.state.editable ? 'Edit Sekarang' : 'Buat Sekarang'}</button>
 
                         </div>
                     </div>
@@ -508,13 +494,13 @@ class Member extends React.Component<any, any> {
                                     <h5>List Member</h5>
                                 </div>
                                 <div className="p-2">
-                                    <button className="btn btn-danger me-3" onClick={this.handleDelete} disabled={this.state.disabled_opsi}>Hapus</button> 
+                                    <button className="btn btn-danger me-3" onClick={this.handleDelete} disabled={this.state.disabled_opsi}>Hapus</button>
                                     {/* <button className="btn btn-info" onClick={this.handleEdit} disabled={this.state.disabled_opsi}>Edit</button> */}
                                 </div>
                             </div>
                         </div>
                         <div className="card-body">
-                        <DataTable columns={this.state.columns} selectableRows expandableRows selectableRowsNoSelectAll selectableRowsSingle onSelectedRowsChange={this.handleSelected} expandableRowsComponent={ExpandableRowComponent} data={this.state.data} pagination theme="solarized" />
+                            <DataTable columns={this.state.columns} selectableRows expandableRows selectableRowsNoSelectAll selectableRowsSingle onSelectedRowsChange={this.handleSelected} expandableRowsComponent={ExpandableRowComponent} data={this.state.data} pagination theme="solarized" />
                         </div>
                     </div>
                 </div>
@@ -525,19 +511,19 @@ class Member extends React.Component<any, any> {
 
 class Member_Container extends React.Component<any, any> {
     render(): React.ReactNode {
-        return(
+        return (
             <>
                 <div id="body-pd" className="body-pd">
-                    <Header/>
-                    <Sidebar/>
+                    <Header />
+                    <Sidebar />
                     <div className="box-bg">
-                        <Member/>
+                        <Member />
                     </div>
                 </div>
-                <ModalUser/>
+                <ModalUser />
             </>
 
-          )
+        )
     }
 }
 

@@ -18,6 +18,7 @@ import VoucherSystem from './system/VoucherSystem'
 import LaporanShift from './system/LaporanShift'
 import FilterTransaksiShift from './component/keuangan/system/FilterTransaksiShift'
 import AnalisisSystem from './system/AnalisisSystem'
+import StokSystem from './system/StokSystem'
 
 
 // AppDataSource.initialize().then(async () => {
@@ -345,6 +346,22 @@ ipcMain.handle("getPendapatanMonth", async(event, data_month) => {
 
 ipcMain.handle("getPendapatanKuartal", async(event, data_year) => {
     return await AnalisisSystem.getPendapatanKuartal(data_year);
-})
+});
+
+ipcMain.handle("newBookStok", async (event, day) => {
+    return await StokSystem.newBookStok(day);
+});
+
+ipcMain.handle("getStok", async(event, day) => {
+    return await StokSystem.getStok(day);
+});
+
+ipcMain.handle("fetchStokMenu", async(event, data) => {
+    return await StokSystem.fetchStokMenu(data);
+});
+
+ipcMain.handle("addStokMasuk", async(event, data) => {
+    return await StokSystem.addStokMasuk(data);
+});
 
 //endopration

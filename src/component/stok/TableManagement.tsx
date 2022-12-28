@@ -15,8 +15,8 @@ class TableManagement extends React.Component<any, any> {
                             <th rowSpan={2} className="border-end">Nama Barang</th>
                             <th rowSpan={2} className="border-end">Stok Awal</th>
                             <th rowSpan={2}>Barang Masuk</th>
-                            <th colSpan={2} className="no-border border-end border-start">Shift 1</th>
-                            <th colSpan={2} className="no-border border-end border-start">Shift 2</th>
+                            <th colSpan={2} className=" border-end border-start">Shift 1</th>
+                            <th colSpan={2} className=" border-end border-start">Shift 2</th>
                             <th rowSpan={2} className="border-end">Stok Akhir</th>
                             <th rowSpan={2}>Keterangan</th>
                         </tr>

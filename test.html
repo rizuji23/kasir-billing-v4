@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <script>
+        const data_stok = [
+            {
+                id_menu: "1234",
+                stok_akhir: 2,
+                terjual: 3,
+            },
+            {
+                id_menu: "123",
+                stok_akhir: 4,
+                terjual: 1,
+            }
+        ]
+
+        const data_cafe = [
+            {
+                id_menu: "1234",
+                qty: 1
+            },
+            {
+                id_menu: "123",
+                qty: 2
+            },
+            {
+                id_menu: "321",
+                qty: 3
+            }
+        ];
+
+
+        for (var i = 0; i <= data_cafe.length - 1; i++) {
+            console.log(i)
+            console.log(data_cafe[i].id_menu)
+        }
+    </script>
+</body>
+</html>

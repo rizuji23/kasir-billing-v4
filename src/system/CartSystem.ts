@@ -8,6 +8,8 @@ import { Struk } from "../entity/Struk";
 import DotAdded from "./DotAdded";
 import StrukSystem from "./StrukSystem";
 import { Booking } from "../entity/Booking";
+import { Stok_Main } from "../entity/Stok_Main";
+import StokSystem from "./StokSystem";
 
 const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
 
@@ -154,7 +156,27 @@ class CartSystem {
                         status: 'not active',
                     }).where('status = :status', {status: 'active'}).execute();
 
+                    // increast stok
+                    const get_date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY");
+                    // update stok
+                    const get_cart:any = await service.manager.find(Cart, {
+                        where: {
+                            id_pesanan: id_pesanan,
+                        }
+                    });
+
+                    const arr_cart = await Array.from(
+                        get_cart.reduce((a, {id_menu, qty}) => {
+                            return a.set(id_menu, (a.get(id_menu) || 0) + qty);
+                        }, new Map())
+                    ).map(([id_menu, qty]) => ({id_menu, qty}));
+
+                    console.log(arr_cart);
+
+                    
+
                     if (cart) {
+                        StokSystem.addTerjual(arr_cart, get_date_now, data_cart.user_in, "")
                         StrukSystem.print(id_struk);
                         return {response: true, data: 'pesanan selesai'};
                     } else {

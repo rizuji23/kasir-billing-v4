@@ -37,10 +37,6 @@ class ModalEditStokMasuk extends React.Component<any, any> {
                                     </div>
                                 </div>
 
-                                <div className="alert alert-danger mt-3" role="alert">
-                                    <small>Stok masuk harus lebih dari Stok Terbaru.</small>
-                                </div>
-
                                 <div className="form-group mt-3">
                                     <label htmlFor="">Stok Masuk Input</label>
                                     <input type="number" className="form-control custom-input" />

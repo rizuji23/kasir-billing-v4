@@ -18,7 +18,6 @@ class Cozy {
             // for cafe
             data_cafe.map((el) => {
                 el['hour'] = moment(el.created_at, "DD-MM-YYYY HH:mm:ss").format("HH");
-               
             });
 
             const final_cafe = Array.from(

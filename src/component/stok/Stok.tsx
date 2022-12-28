@@ -2,13 +2,15 @@ import React from "react";
 import { Header, ModalUser } from "../header/header";
 import Sidebar from "../sidebar/sidebar";
 import NavbarStok from "./NavbarStok";
-import { ToastContainer } from "react-toastify";
-import DataTable from "react-data-table-component";
+import { ToastContainer, toast } from "react-toastify";
 import TableManagement from "./TableManagement";
 import { ipcRenderer } from "electron";
 import moment from "moment";
+import 'moment-timezone';
 import ModalStokMasuk from "./ModalStokMasuk";
 import ModalEditStokMasuk from "./ModalEditStokMasuk";
+import ModalStokFilter from "./ModalStokFilter";
+import swal from "sweetalert";
 
 class Stok extends React.Component<any, any> {
     constructor(props: any) {
@@ -19,6 +21,9 @@ class Stok extends React.Component<any, any> {
             isOpenMasuk: false,
             isOpenMasukEdit: false,
             option_menu: "",
+            isOpenFilter: false,
+            user_in: sessionStorage.getItem('username'),
+            date_now: moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss"),
         }
 
         this.getMenu = this.getMenu.bind(this);
@@ -26,6 +31,9 @@ class Stok extends React.Component<any, any> {
         this.isOpenMasuk = this.isOpenMasuk.bind(this);
         this.closeModalMasukEdit = this.closeModalMasukEdit.bind(this);
         this.isOpenMasukEdit = this.isOpenMasukEdit.bind(this);
+        this.closeModalFilter = this.closeModalFilter.bind(this);
+        this.isOpenFilter = this.isOpenFilter.bind(this);
+        this.handleOpenNewStok = this.handleOpenNewStok.bind(this);
     }
 
     componentDidMount(): void {
@@ -34,25 +42,29 @@ class Stok extends React.Component<any, any> {
 
 
     getMenu() {
-        ipcRenderer.invoke("menu", true, false, false, false, []).then((result) => {
+        const day = {
+            tanggal: moment().tz("Asia/Jakarta").format("DD-MM-YYYY"),
+        }
+        ipcRenderer.invoke("getStok", day).then((result) => {
             console.log(result);
 
             if (result.response === true) {
                 let no = 1;
                 const component_menu = result.data.map((el, i) => {
+                    console.log(el.shift);
+
                     return (
                         <>
                             <tr>
-
                                 <td className="border-end">{no++}</td>
-                                <td className="border-end">{el.nama_menu}</td>
-                                <td className="border-end">0</td>
-                                <td >0</td>
-                                <td className="border-start">2</td>
-                                <td>2</td>
+                                <td className="border-end text-start">{el.nama_menu}</td>
+                                <td className="border-end">{el.stok_awal}</td>
+                                <td>{el.stok_masuk}</td>
+                                <td className="border-start">{el.terjual}</td>
+                                <td>{el.sisa}</td>
                                 <td className="border-start">2</td>
                                 <td>3</td>
-                                <td className="border-start border-end">3</td>
+                                <td className="border-start border-end">{el.stok_akhir}</td>
                                 <td></td>
                             </tr>
                         </>
@@ -62,7 +74,7 @@ class Stok extends React.Component<any, any> {
                 const option_menu = result.data.map((el, i) => {
                     return (
                         <>
-                            <option value={el.id_menu[0].id_menu}>{el.nama_menu}</option>
+                            <option value={`["${el.id_menu}", "${el.id_stok_main}"]`}>{el.nama_menu}</option>
                         </>
                     )
                 })
@@ -71,8 +83,36 @@ class Stok extends React.Component<any, any> {
                     data_menu: component_menu,
                     option_menu: option_menu
                 })
+            } else {
+                toast.error("Buku stok belum ditambahkan atau Kosong!");
             }
         })
+    }
+
+    handleOpenNewStok() {
+        swal({
+            title: "Apa kamu yakin?",
+            text: "Buku stok baru akan dibuat!",
+            icon: "warning",
+            buttons: ["Batal", true],
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                const day = {
+                    user_in: this.state.user_in,
+                    date_now: this.state.date_now,
+                }
+                ipcRenderer.invoke("newBookStok", day).then((result) => {
+                    console.log(result);
+
+                    if (result.response === true) {
+                        toast.success("Buku Stok Dibuat..");
+                        this.getMenu();
+                    }
+                });
+            }
+        });
+
     }
 
     isOpenMasuk() {
@@ -99,6 +139,19 @@ class Stok extends React.Component<any, any> {
         })
     }
 
+
+    isOpenFilter() {
+        this.setState({
+            isOpenFilter: true
+        })
+    }
+
+    closeModalFilter() {
+        this.setState({
+            isOpenFilter: false
+        })
+    }
+
     render(): React.ReactNode {
         return (
             <>
@@ -114,6 +167,12 @@ class Stok extends React.Component<any, any> {
                     pauseOnHover
                     theme="dark"
                 />
+                <NavbarStok handleOpenNewStok={this.handleOpenNewStok} />
+
+
+                <div className="alert alert-warning" role="alert">
+                    <span>Untuk setiap penggantian <b>Shift</b> maka klik tombol <b>Buka Stok Baru</b>, dibagian atas ini.</span>
+                </div>
 
                 <div className="card card-custom-dark mb-5">
                     <div className="card-header">
@@ -123,7 +182,10 @@ class Stok extends React.Component<any, any> {
                                 <small>Tanggal: {moment().tz("Asia/Jakarta").format("DD-MM-YYYY")}</small>
                             </div>
                             <div className="p-2">
-                                <button className="btn btn-primary btn-primary-cozy btn-sm">Filter Laporan</button>
+                                <button className="btn btn-primary btn-primary-cozy btn-sm" onClick={this.isOpenFilter}>Filter Laporan</button>
+                            </div>
+                            <div className="p-2">
+                                <button className="btn btn-primary btn-primary-cozy-dark btn-sm">Export Laporan</button>
                             </div>
 
                         </div>
@@ -147,7 +209,6 @@ class Stok extends React.Component<any, any> {
                                                 <li className="list-group-item"><small>Kasir Shift 2:</small> <br /> <b>Saha Weh</b> </li>
                                                 <li className="list-group-item"><small>Tanggal Pembuatan:</small> <br /> <b></b></li>
                                                 <li className="list-group-item"><small>Tanggal Update:</small> <br /> <b></b></li>
-
                                             </ul>
                                         </div>
                                     </div>
@@ -176,9 +237,9 @@ class Stok extends React.Component<any, any> {
                         </div>
                     </div>
                 </div>
-                <ModalStokMasuk isOpenMasuk={this.state.isOpenMasuk} closeModalMasuk={this.closeModalMasuk} option_menu={this.state.option_menu} />
+                <ModalStokMasuk isOpenMasuk={this.state.isOpenMasuk} closeModalMasuk={this.closeModalMasuk} getMenu={this.getMenu} option_menu={this.state.option_menu} />
                 <ModalEditStokMasuk isOpenMasukEdit={this.state.isOpenMasukEdit} closeModalMasukEdit={this.closeModalMasukEdit} option_menu={this.state.option_menu} />
-
+                <ModalStokFilter isOpenFilter={this.state.isOpenFilter} closeModalFilter={this.closeModalFilter} />
 
             </>
         )
@@ -197,7 +258,6 @@ class StokContainer extends React.Component<any, any> {
                     <Header />
                     <Sidebar />
                     <div className="box-bg">
-                        <NavbarStok />
                         <Stok />
                     </div>
                 </div>
