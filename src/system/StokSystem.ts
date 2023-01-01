@@ -5,6 +5,7 @@ import { dataSource } from "./data-source";
 import shortid from 'shortid';
 import "moment-timezone";
 import { Stok_Keluar } from "../entity/Stok_Keluar";
+import { Stok_Masuk } from "../entity/Stok_Masuk";
 
 const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
 class StokSystem {
@@ -140,7 +141,20 @@ class StokSystem {
                 stok_akhir: sum_akhir,
             }).where("id_menu = :id_menu AND id_stok_main = :id_stok_main", {id_menu: data.id_menu, id_stok_main: data.id_stok_main}).execute();
 
-            if (update_stok) {
+            const id_stok_masuk = shortid.generate();
+            const insert_masuk = await service.manager.getRepository(Stok_Masuk).createQueryBuilder().insert().values({
+                id_stok_masuk: id_stok_masuk,
+                id_stok_main: get_data_stok[0].id_stok_main,
+                id_menu: data.id_menu,
+                stok_masuk: data.stok_masuk,
+                keterangan: data.keterangan,
+                shift: "",
+                user_in: data.user_in,
+                created_at: date_now,
+                updated_at: date_now,
+            }).execute();
+
+            if (update_stok && insert_masuk) {
                 return {response: true, data: "data is saved"};
             } else {
                 return {response: true, data: 'data is not saved'};
@@ -151,7 +165,7 @@ class StokSystem {
         }
     }
 
-    static async addTerjual(data_cart, tanggal, user_in, shift):Promise<any> {
+    static async addTerjual(data_cart, tanggal, user_in, shift, keterangan):Promise<any> {
         try {
             let service = await dataSource;
             const arr_id_menu = Array<any>();
@@ -203,7 +217,7 @@ class StokSystem {
                             id_stok_main: get_stok[i].id_stok_main,
                             id_menu: data_cart[i].id_menu,
                             stok_keluar: data_cart[i].qty,
-                            keterangan: "",
+                            keterangan: keterangan,
                             shift: shift,
                             user_in: user_in,
                             created_at: date_now,
@@ -223,6 +237,38 @@ class StokSystem {
                 }
             } else {
                 return {response: false, data: "stok not found"};
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async getStokMasuk():Promise<any> {
+        try {
+            let service = await dataSource;
+
+            const get_stok_masuk = await service.manager.query("SELECT sm.*, m.nama_menu FROM stok_masuk AS sm LEFT OUTER JOIN menu AS m ON sm.id_menu = m.id_menu ORDER BY id DESC");
+
+            if (get_stok_masuk.length !== 0) {
+                return {response: true, data: get_stok_masuk};
+            } else {
+                return {response: false, data: "data is empty"};
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async getStokKeluar():Promise<any> {
+        try {
+            let service = await dataSource;
+
+            const get_stok_keluar = await service.manager.query("SELECT sm.*, m.nama_menu FROM stok_keluar AS sm LEFT OUTER JOIN menu AS m ON sm.id_menu = m.id_menu ORDER BY id DESC");
+
+            if (get_stok_keluar.length !== 0) {
+                return {response: true, data: get_stok_keluar};
+            } else {
+                return {response: false, data: "data is empty"};
             }
         } catch (err) {
             console.log(err);

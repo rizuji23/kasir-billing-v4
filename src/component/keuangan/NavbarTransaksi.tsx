@@ -19,14 +19,14 @@ class NavbarTransaksi extends React.Component<any, any> {
 
                     </div>
 
-                    <div className="p-1">
+                    {/* <div className="p-1">
                         <a href="list_stok_cafe.html" className="btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10">
                             Cafe Stok</a>
                     </div>
                     <div className="p-1">
                         <a href="list_stok_masuk.html" className="btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10">
                             Stok Masuk</a>
-                    </div>
+                    </div> */}
                 </div>
             </>
         )

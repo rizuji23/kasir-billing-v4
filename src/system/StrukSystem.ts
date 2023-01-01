@@ -32,6 +32,7 @@ class StrukSystem {
                         struk: check_struk
                     }
 
+
                     printWindow.loadFile('../../public/struk.html');
                     printWindow.webContents.on('did-finish-load', () => {
                         printWindow.webContents.send('message', JSON.stringify(data_struk));

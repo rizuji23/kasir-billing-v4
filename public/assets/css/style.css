@@ -1279,3 +1279,7 @@ select {
 .modal-title {
     font-family: 'Inter-Bold';
 }
+
+.btn.disabled, .btn:disabled, fieldset:disabled .btn {
+    background-color: #FF4218;
+}

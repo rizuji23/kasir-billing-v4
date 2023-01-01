@@ -14,6 +14,9 @@ import TransaksiShiftContainer from "./component/keuangan/transaksi_shift/Transa
 import TransaksiCafeShiftContainer from "./component/keuangan/transaksi_shift/TransaksiCafeShift";
 import AnalisisContainer from "./component/analisis/Analisis";
 import StokContainer from "./component/stok/Stok";
+import List_StokMasukContainer from "./component/stok/List_StokMasuk";
+import List_StokKeluarContainer from "./component/stok/List_StokKeluar";
+import ApiContainer from "./component/pengaturan/api/Api";
 
 class App extends React.Component {
     render() {
@@ -29,6 +32,8 @@ class App extends React.Component {
                     <Route path="/pengaturan" element={<ListMenu_Container />}></Route>
                     <Route path="/kategori-menu" element={<KategoriMenuContainer />}></Route>
                     <Route path="/voucher" element={<VoucherContainer />}></Route>
+                    <Route path="/api" element={<ApiContainer />}></Route>
+
 
 
                     <Route path="/keuangan" element={<KeuanganContainer />}></Route>
@@ -41,6 +46,8 @@ class App extends React.Component {
                     <Route path="/analisis" element={<AnalisisContainer />}></Route>
 
                     <Route path="/stok" element={<StokContainer />}></Route>
+                    <Route path="/stok-masuk" element={<List_StokMasukContainer />}></Route>
+                    <Route path="/stok-keluar" element={<List_StokKeluarContainer />}></Route>
 
                 </Routes>
             </HashRouter>

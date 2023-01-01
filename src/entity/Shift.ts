@@ -3,31 +3,22 @@ import 'moment-timezone';
 import moment from "moment";
 
 @Entity()
-export class Stok_Masuk {
+export class Shift {
 
     @PrimaryGeneratedColumn()
-    id: number
+    id:number
 
     @Column()
-    id_stok_masuk: string
-
-    @Column()
-    id_stok_main: string
-
-    @Column()
-    id_menu: string
-
-    @Column()
-    stok_masuk: number
-
-    @Column()
-    keterangan: string
+    id_shift: string
 
     @Column()
     shift: string
 
     @Column()
-    user_in: string
+    start_jam: string
+
+    @Column()
+    end_jam: string
 
     @Column()
     created_at: string

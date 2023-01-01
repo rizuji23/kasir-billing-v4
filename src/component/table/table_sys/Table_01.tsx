@@ -22,7 +22,7 @@ class Table_01 extends React.Component<any, any> {
             nama: "",
             price: 0,
             table_name: "Table 01",
-            mode: "",
+            mode: "Regular",
             table_id: "table001",
             modal_close: false,
             harga_detail: "",
@@ -37,6 +37,7 @@ class Table_01 extends React.Component<any, any> {
             isOpen: false,
             blink_add: false,
             time_running: false,
+            member: false
         }
 
         this.handleMode = this.handleMode.bind(this);
@@ -56,7 +57,7 @@ class Table_01 extends React.Component<any, any> {
         this.startTimerLoss = this.startTimerLoss.bind(this);
         this.stopTimerLoss = this.stopTimerLoss.bind(this);
         this.continueTimer = this.continueTimer.bind(this);
-
+        this.handleMember = this.handleMember.bind(this);
     }
 
     validation() {
@@ -85,7 +86,7 @@ class Table_01 extends React.Component<any, any> {
             isUse: false,
             nama: "",
             price: 0,
-            mode: "",
+            mode: "Regular",
             modal_close: false,
             harga_detail: "",
             total_harga: 0,
@@ -124,7 +125,7 @@ class Table_01 extends React.Component<any, any> {
         const dot = new DotAdded();
         if (e.target.value.length === 0) {
             toast.error("Jam wajib diisi!")
-            this.setState({ jam: "", modal_close: false });
+            this.setState({ jam: "", harga_detail: "", total_harga: "0", raw_detail_h: [], modal_close: false });
             this.validation()
 
         } else {
@@ -243,34 +244,43 @@ class Table_01 extends React.Component<any, any> {
     }
 
     startTimer(): void {
-        if (this.state.jam !== '' && this.state.mode !== '') {
-            this.setState({ disabled: true })
-            setTimeout(() => {
-                const durasi_minute = this.state.jam * 60;
-                const minutetoms = durasi_minute * 60000;
+        swal({
+            title: "Apa kamu yakin?",
+            text: "Data tidak akan bisa diubah..",
+            icon: "warning",
+            buttons: ["Batal", true],
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                if (this.state.jam !== '' && this.state.mode !== '') {
+                    this.setState({ disabled: true })
+                    setTimeout(() => {
+                        const durasi_minute = this.state.jam * 60;
+                        const minutetoms = durasi_minute * 60000;
 
-                const data_booking = {
-                    nama: this.state.nama,
-                    durasi_booking: this.state.jam,
-                    total_harga: this.state.total_harga,
-                    tipe_booking: this.state.mode,
-                    user_in: sessionStorage.getItem('username'),
-                    raw_detail_h: this.state.raw_detail_h,
+                        const data_booking = {
+                            nama: this.state.nama,
+                            durasi_booking: this.state.jam,
+                            total_harga: this.state.total_harga,
+                            tipe_booking: this.state.mode,
+                            user_in: sessionStorage.getItem('username'),
+                            raw_detail_h: this.state.raw_detail_h,
+                        }
+
+                        if (this.state.mode === 'Regular') {
+                            ipcRenderer.invoke("start", this.state.table_id, minutetoms, 0, this.state.blink, false, false, 0, 0, data_booking, false, false, true).then(() => {
+                                console.log("start 01 is created");
+                                toast.success(this.state.table_name + " berhasil dibooking.");
+                                this.getDataTable();
+                                this.setState({ disabled: false, isUse: true, isOpen: false });
+                            });
+                        }
+                    }, 1000);
+                } else {
+                    console.log("table 01 error")
                 }
-
-                if (this.state.mode === 'Regular') {
-                    ipcRenderer.invoke("start", this.state.table_id, minutetoms, 0, this.state.blink, false, false, 0, 0, data_booking, false, false, true).then(() => {
-                        console.log("start 01 is created");
-                        toast.success(this.state.table_name + " berhasil dibooking.");
-                        this.getDataTable();
-                        this.setState({ disabled: false, isUse: true, isOpen: false });
-                    });
-                }
-            }, 1000);
-
-        } else {
-            console.log("table 01 error")
-        }
+            }
+        })
     }
 
     addOn(): void {
@@ -364,6 +374,7 @@ class Table_01 extends React.Component<any, any> {
         this.getTimeString()
         this.getDataTable()
         this.setState({ modal_close: false })
+        console.log(this.state.mode)
     }
 
     componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<any>, snapshot?: any): void {
@@ -485,7 +496,14 @@ class Table_01 extends React.Component<any, any> {
     }
 
     closeModal() {
-        this.setState({ isOpen: false });
+        if (this.state.isUse === false) {
+            this.setState({ isOpen: false });
+            this.clearAllState();
+        } else {
+            this.setState({
+                isOpen: false,
+            });
+        }
     }
 
     continueTimer() {
@@ -512,11 +530,17 @@ class Table_01 extends React.Component<any, any> {
 
     }
 
+    handleMember(e) {
+        this.setState({
+            member: e.target.checked
+        });
+        console.log(e.target.checked)
+    }
 
     render(): React.ReactNode {
         let modal, badges, badges_mode;
         if (this.state.isUse === false) {
-            modal = <ModalBooking table_name={this.state.table_name} handleMode={this.handleMode} handleJam={this.handleJam} startTimer={this.startTimer} handleNama={this.handleNama} disableSubmit={this.state.disabled} harga_detail={this.state.harga_detail} total_harga={this.state.total_harga} jam={this.state.jam} handleBlink={this.handleBlink} table_id={this.state.table_id} isOpen={this.state.isOpen} closeModal={this.closeModal} mode_loss={this.state.mode_loss} startTimerLoss={this.startTimerLoss} />
+            modal = <ModalBooking table_name={this.state.table_name} handleMode={this.handleMode} mode={this.state.mode} handleJam={this.handleJam} startTimer={this.startTimer} handleNama={this.handleNama} disableSubmit={this.state.disabled} harga_detail={this.state.harga_detail} total_harga={this.state.total_harga} jam={this.state.jam} handleBlink={this.handleBlink} table_id={this.state.table_id} isOpen={this.state.isOpen} closeModal={this.closeModal} mode_loss={this.state.mode_loss} startTimerLoss={this.startTimerLoss} handleMember={this.handleMember} member={this.state.member} />
         } else if (this.state.isUse === true) {
             modal = <ModalBookingActive table_name={this.state.table_name} name_customer={this.state.nama} id_booking={this.state.id_booking} table_id={this.state.table_id} stopTimer={this.stopTimer} stopTimerLoss={this.stopTimerLoss} handlePindah={this.handlePindah} jam={this.state.jam_add} harga_detail={this.state.harga_detail} total_harga_add={this.state.total_harga_add} total_harga={this.state.total_harga} handleJam={this.handleJamAdd} isOpen={this.state.isOpen} closeModal={this.closeModal} handleBlinkAdd={this.handleBlinkAdd} addOn={this.addOn} disabled_add={this.state.disabled_add} resetTable={this.resetTable} mode={this.state.mode} time_running={this.state.time_running} continueTimer={this.continueTimer} />
         }

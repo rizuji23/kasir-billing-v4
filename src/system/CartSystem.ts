@@ -142,7 +142,7 @@ class CartSystem {
                     nama_customer: 'Cafe',
                     total_struk: data_cart.total,
                     cash_struk: data_cart.uang_cash,
-                    kembalian_struk: data_cart.uang_kembalian,
+                    kembalian_struk: data_cart.uang_kembalian, 
                     status_struk: 'lunas',
                     type_struk: 'cafe only',
                     user_in: data_cart.user_in,
@@ -173,10 +173,8 @@ class CartSystem {
 
                     console.log(arr_cart);
 
-                    
-
                     if (cart) {
-                        StokSystem.addTerjual(arr_cart, get_date_now, data_cart.user_in, "")
+                        StokSystem.addTerjual(arr_cart, get_date_now, data_cart.user_in, "", "cafe only")
                         StrukSystem.print(id_struk);
                         return {response: true, data: 'pesanan selesai'};
                     } else {

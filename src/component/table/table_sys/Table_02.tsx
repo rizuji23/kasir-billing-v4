@@ -482,7 +482,14 @@ class Table_02 extends React.Component<any, any> {
     }
 
     closeModal() {
-        this.setState({ isOpen: false });
+        if (this.state.isUse === false) {
+            this.setState({ isOpen: false });
+            this.clearAllState();
+        } else {
+            this.setState({
+                isOpen: false,
+            });
+        }
     }
 
 

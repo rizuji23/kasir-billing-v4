@@ -1,4 +1,4 @@
-import {app, BrowserWindow, dialog, ipcMain, ipcRenderer} from 'electron'
+import {app, BrowserWindow, dialog, ipcMain, ipcRenderer, webContents} from 'electron'
 import * as url from 'url'
 import * as path from 'path'
 import PortConnect from './system/PortConnect'
@@ -19,32 +19,13 @@ import LaporanShift from './system/LaporanShift'
 import FilterTransaksiShift from './component/keuangan/system/FilterTransaksiShift'
 import AnalisisSystem from './system/AnalisisSystem'
 import StokSystem from './system/StokSystem'
-
-
-// AppDataSource.initialize().then(async () => {
-
-//     console.log("Inserting a new user into the database...")
-//     const user = new User_Kasir()
-//     user.id_user = "TEST"
-//     user.nama = "Aye Shabira"
-//     user.username = "aye"
-//     user.password = "password"
-//     user.jabatan = "Kasir"
-//     await AppDataSource.manager.save(user)
-//     console.log("Saved a new user with id: " + user.id)
-
-//     console.log("Loading users from the database...")
-//     const users = await AppDataSource.manager.find(User_Kasir)
-//     console.log("Loaded users: ", users)
-
-//     console.log("Here you can setup and run express / fastify / any other framework.")
-
-// }).catch(error => console.log(error))
-
+import System from './system/System'
 
 //init MainWindow
 let win:any;
 const gotTheLock = app.requestSingleInstanceLock();
+var printer_list;
+
 app.on('ready', () => {
    win = new BrowserWindow({
         width:800,
@@ -55,16 +36,22 @@ app.on('ready', () => {
             contextIsolation: false,
             webSecurity: false
         }
-    })
+    });
 
 //    win.loadURL(path.join(__dirname, '..', '..', 'build', 'index.html'))
-   win.loadURL('http://localhost:3000')
+   win.loadURL('http://localhost:3000');
 
    win.on('closed', () => {
        win = null;
         app.quit();
         process.exit(1)
-    })
+    });
+
+    console.log(win);
+
+    win.on("did-finish-load", () => {
+        printer_list = win.getPrintersAsync();
+    });
 })
 
 if (!gotTheLock) {
@@ -77,6 +64,8 @@ if (!gotTheLock) {
         }
     })
 }
+
+
 
 ipcMain.handle("get_data",async (event) => {
     return "HEHEHE";
@@ -364,4 +353,41 @@ ipcMain.handle("addStokMasuk", async(event, data) => {
     return await StokSystem.addStokMasuk(data);
 });
 
+ipcMain.handle("getStokMasuk", async (event) => {
+    return await StokSystem.getStokMasuk();
+});
+
+ipcMain.handle("getStokKeluar", async (event) => {
+    return await StokSystem.getStokKeluar();
+});
+
+ipcMain.handle("setShift", async(event, data_shift) => {
+    return await System.setShift(data_shift);
+});
+
+ipcMain.handle("api", async(event, update, get, data) => {
+    if (update === true) {
+        return await System.setApi(data);
+    } else if (get === true) {
+        return await System.getApi();
+    } else {
+        return {response: false, data: "invalid"};
+    }
+});
+
+
+ipcMain.handle("api_printer", async(event, update, get, data) => {
+    if (get === true) {
+        const printer_list = await win.webContents.getPrintersAsync();
+        return await System.getPrinter(printer_list);
+    } else if (update === true) {
+        return await System.setPrinter(data);
+    } else {
+        return {response: false, data: "invalid"};
+    }
+});
+
+ipcMain.handle("getHarga", async(event) => {
+    return await BillingOperation.getHarga();
+})
 //endopration

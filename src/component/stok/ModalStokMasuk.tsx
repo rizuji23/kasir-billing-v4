@@ -12,8 +12,11 @@ class ModalStokMasuk extends React.Component<any, any> {
             stok_awal: 0,
             id_menu: "",
             id_stok_main: "",
-            masuk_input: "",
-            keterangan: "",
+            data_stok: {
+                masuk_input: "",
+                keterangan: "",
+            },
+            user_in: sessionStorage.getItem("username"),
         }
 
         this.handleMenu = this.handleMenu.bind(this);
@@ -48,16 +51,22 @@ class ModalStokMasuk extends React.Component<any, any> {
             toast.error("Stok Masuk harus diisi");
 
         } else {
-            this.setState({
-                masuk_input: e.target.value,
-            });
+            this.setState(prevState => ({
+                data_stok: {
+                    ...prevState.data_stok,
+                    masuk_input: e.target.value,
+                }
+            }));
         }
     }
 
     handleKeterangan(e) {
-        this.setState({
-            keterangan: e.target.value
-        })
+        this.setState(prevState => ({
+            data_stok: {
+                ...prevState.data_stok,
+                keterangan: e.target.value
+            }
+        }))
     }
 
     handleTambah() {
@@ -72,7 +81,9 @@ class ModalStokMasuk extends React.Component<any, any> {
                 const data = {
                     id_menu: this.state.id_menu,
                     id_stok_main: this.state.id_stok_main,
-                    stok_masuk: this.state.masuk_input,
+                    stok_masuk: this.state.data_stok.masuk_input,
+                    keterangan: this.state.data_stok.keterangan,
+                    user_in: this.state.user_in,
                 }
 
                 ipcRenderer.invoke("addStokMasuk", data).then((result) => {

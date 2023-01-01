@@ -358,6 +358,18 @@ class BillingOperation {
             console.log(err);
         }
     }
+
+    static async getHarga():Promise<any> {
+        try {
+            let service = await dataSource;
+
+            const get_harga = await service.manager.find(Harga_Billing);
+
+            return {response: true, data: get_harga};
+        } catch (err) {
+            console.log(err);
+        }
+    }
 }
 
 export default BillingOperation
