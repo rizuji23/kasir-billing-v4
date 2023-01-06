@@ -12,9 +12,11 @@ class ModalBooking extends React.Component<any, any> {
         super(props);
         this.state = {
             harga_list: "",
-            isOpen: false
+            isOpen: false,
+            price_list: "",
         }
 
+        this.getPrice = this.getPrice.bind(this);
     }
 
     close() {
@@ -29,12 +31,30 @@ class ModalBooking extends React.Component<any, any> {
         this.setState({ harga_list: listItems })
     }
 
+    getPrice() {
+        ipcRenderer.invoke("getHarga").then((result) => {
+            console.log(result);
+            const dot = new DotAdded();
+            if (result.response === true) {
+                const price = result.data.map((el) => {
+                    return (
+                        <><li className="list-group-item"><small>{el.tipe_durasi}</small><br /><b>Rp. {dot.parse(el.harga)}</b><br /><small>Tanggal Update</small><br /><b>{el.updated_at}</b></li></>
+                    )
+                });
+
+                console.log(price)
+
+                this.setState({
+                    price_list: price
+                })
+            }
+        })
+    }
+
     componentDidMount(): void {
         if (this.props.close) {
             this.close()
         }
-
-
     }
 
     componentDidUpdate(prevProps): void {
@@ -45,6 +65,12 @@ class ModalBooking extends React.Component<any, any> {
 
         if (this.props.harga_detail !== prevProps.harga_detail) {
             console.log(this.props.harga_detail)
+        }
+
+        if (this.props.isOpen !== prevProps.isOpen) {
+            if (this.props.isOpen === true) {
+                this.getPrice();
+            }
         }
     }
 
@@ -94,7 +120,6 @@ class ModalBooking extends React.Component<any, any> {
                                             </div>
                                         </div>
 
-
                                         {/* <div className="form-group-2 mt-4">
                                             <select name="" onChange={this.props.handleMode} className="form-control custom-input" id="input_check_customer">
                                                 <option value="">Pilih Mode</option>
@@ -106,11 +131,11 @@ class ModalBooking extends React.Component<any, any> {
                                             this.props.member ? <>
                                                 <div className="form-group-custom">
                                                     <label>Kode Member</label>
-                                                    <input type="text" className="form-control custom-input" />
+                                                    <input type="text" onChange={this.props.handleInputMember} className="form-control custom-input" />
                                                 </div>
                                                 <div className="form-group-custom">
                                                     <label>Nama Lengkap</label>
-                                                    <input type="text" className="form-control custom-input" disabled />
+                                                    <input type="text" className="form-control custom-input" value={this.props.nama_member} disabled />
                                                 </div>
                                             </> : <>
                                                 <div className="form-group-custom">
@@ -119,7 +144,6 @@ class ModalBooking extends React.Component<any, any> {
                                                 </div>
                                             </>
                                         }
-
                                     </div>
                                 </div>
 
@@ -127,8 +151,7 @@ class ModalBooking extends React.Component<any, any> {
                                     <div className="booking-content">
                                         <h5>Harga</h5>
                                         <ul className="list-group">
-                                            <li className="list-group-item"><small>Siang</small><br /><b>Rp. 13.000</b></li>
-                                            <li className="list-group-item"><small>Malam</small><br /><b>Rp. 13.000</b></li>
+                                            {this.state.price_list}
 
                                         </ul>
                                     </div>

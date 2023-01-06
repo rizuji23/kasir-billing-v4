@@ -1283,3 +1283,7 @@ select {
 .btn.disabled, .btn:disabled, fieldset:disabled .btn {
     background-color: #FF4218;
 }
+
+.btn-close {
+    filter: brightness(0) invert(1);
+}

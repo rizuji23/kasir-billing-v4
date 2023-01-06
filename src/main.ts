@@ -389,5 +389,13 @@ ipcMain.handle("api_printer", async(event, update, get, data) => {
 
 ipcMain.handle("getHarga", async(event) => {
     return await BillingOperation.getHarga();
-})
+});
+
+ipcMain.handle("checkMember", async(event, data_member) => {
+    return await MemberSystem.checkMember(data_member);
+});
+
+ipcMain.handle("checkVoucher", async(event, data_voucher) => {
+    return await VoucherSystem.checkVoucher(data_voucher);
+});
 //endopration

@@ -37,7 +37,8 @@ class Table_01 extends React.Component<any, any> {
             isOpen: false,
             blink_add: false,
             time_running: false,
-            member: false
+            member: false,
+            nama_member: "",
         }
 
         this.handleMode = this.handleMode.bind(this);
@@ -58,6 +59,7 @@ class Table_01 extends React.Component<any, any> {
         this.stopTimerLoss = this.stopTimerLoss.bind(this);
         this.continueTimer = this.continueTimer.bind(this);
         this.handleMember = this.handleMember.bind(this);
+        this.handleInputMember = this.handleInputMember.bind(this);
     }
 
     validation() {
@@ -101,6 +103,7 @@ class Table_01 extends React.Component<any, any> {
             blink_add: false,
             time_running: false,
             mode_loss: false,
+            nama_member: "",
         })
     }
 
@@ -537,10 +540,26 @@ class Table_01 extends React.Component<any, any> {
         console.log(e.target.checked)
     }
 
+    handleInputMember(e) {
+        ipcRenderer.invoke("checkMember", { kode_member: e.target.value }).then((result) => {
+            if (result.response === true) {
+                this.setState({
+                    nama_member: result.data[0].nama_member,
+                    nama: result.data[0].nama_member,
+                })
+            } else {
+                this.setState({
+                    nama_member: "Member tidak ditemukan...",
+                    nama: "",
+                })
+            }
+        })
+    }
+
     render(): React.ReactNode {
         let modal, badges, badges_mode;
         if (this.state.isUse === false) {
-            modal = <ModalBooking table_name={this.state.table_name} handleMode={this.handleMode} mode={this.state.mode} handleJam={this.handleJam} startTimer={this.startTimer} handleNama={this.handleNama} disableSubmit={this.state.disabled} harga_detail={this.state.harga_detail} total_harga={this.state.total_harga} jam={this.state.jam} handleBlink={this.handleBlink} table_id={this.state.table_id} isOpen={this.state.isOpen} closeModal={this.closeModal} mode_loss={this.state.mode_loss} startTimerLoss={this.startTimerLoss} handleMember={this.handleMember} member={this.state.member} />
+            modal = <ModalBooking table_name={this.state.table_name} handleMode={this.handleMode} mode={this.state.mode} handleJam={this.handleJam} startTimer={this.startTimer} handleNama={this.handleNama} disableSubmit={this.state.disabled} harga_detail={this.state.harga_detail} total_harga={this.state.total_harga} jam={this.state.jam} handleBlink={this.handleBlink} table_id={this.state.table_id} isOpen={this.state.isOpen} closeModal={this.closeModal} mode_loss={this.state.mode_loss} startTimerLoss={this.startTimerLoss} handleMember={this.handleMember} member={this.state.member} handleInputMember={this.handleInputMember} nama_member={this.state.nama_member} />
         } else if (this.state.isUse === true) {
             modal = <ModalBookingActive table_name={this.state.table_name} name_customer={this.state.nama} id_booking={this.state.id_booking} table_id={this.state.table_id} stopTimer={this.stopTimer} stopTimerLoss={this.stopTimerLoss} handlePindah={this.handlePindah} jam={this.state.jam_add} harga_detail={this.state.harga_detail} total_harga_add={this.state.total_harga_add} total_harga={this.state.total_harga} handleJam={this.handleJamAdd} isOpen={this.state.isOpen} closeModal={this.closeModal} handleBlinkAdd={this.handleBlinkAdd} addOn={this.addOn} disabled_add={this.state.disabled_add} resetTable={this.resetTable} mode={this.state.mode} time_running={this.state.time_running} continueTimer={this.continueTimer} />
         }

@@ -127,6 +127,27 @@ class MemberSystem {
             console.log(err);
         }
     }
+
+    static async checkMember(data_member):Promise<any> {
+        try {
+            let service = await dataSource;
+
+            const check = await service.manager.find(Member, {
+                where: {
+                    kode_member: data_member.kode_member,
+                }
+            });
+
+            if (check.length !== 0) {
+                return {response: true, data: check};
+            } else {
+                return {response: false, data: "member is not found"};
+            }
+            
+        } catch (err) {
+            console.log(err);
+        }
+    }
 }
 
 export default MemberSystem

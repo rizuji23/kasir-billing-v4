@@ -100,6 +100,25 @@ class VoucherSystem {
             console.log(err);
         }
     }
+
+    static async checkVoucher(data_voucher):Promise<any> {
+        try {
+            let service = await dataSource;
+            const check = await service.manager.find(Voucher, {
+                where: {
+                    kode_voucher: data_voucher.kode_voucher,
+                }
+            });
+
+            if (check.length !== 0) {
+                return {response: true, data: check};
+            } else {
+                return {response: false, data: "voucher is not found"};
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
 }
 
 export default VoucherSystem;
