@@ -6,6 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import swal from 'sweetalert';
 import ModalSplitBill from "./ModalSplitBill";
+import LoadingButton from "../LoadingButton";
 
 class ModalBooking extends React.Component<any, any> {
     constructor(props) {
@@ -161,15 +162,7 @@ class ModalBooking extends React.Component<any, any> {
                             <div className="col-sm">
                                 <div className="box-booking">
                                     <div className="booking-content">
-                                        <h5>Voucher</h5>
-                                        <div className="form-group-custom">
-                                            <label>Kode</label>
-                                            <input type="text" className="form-control custom-input" />
-                                        </div>
-                                        <div className="text-end mt-2">
-                                            <button className="btn btn-primary btn-primary-cozy btn-sm">Check</button>
-                                        </div>
-                                        <hr />
+
                                         <h5>Detail Pesanan</h5>
                                         <label className="label-white mb-2">Table terpilih</label>
                                         <div className="detail-table">
@@ -189,13 +182,25 @@ class ModalBooking extends React.Component<any, any> {
                                         </div>
                                         <label className="label-white mb-2">Detail harga</label>
                                         <div className="detail-table  mb-3">
-                                            <ul dangerouslySetInnerHTML={{ __html: this.props.harga_detail }}>
-                                            </ul>
+                                            <ol dangerouslySetInnerHTML={{ __html: this.props.harga_detail }}>
+                                            </ol>
                                         </div>
+                                        <h5>Voucher</h5>
+                                        <div className="form-group-custom">
+                                            <label>Kode</label>
+                                            <input type="text" className="form-control custom-input" onChange={this.props.handleVoucher} />
+                                        </div>
+                                        <div className="text-end mt-2">
+                                            <button className="btn btn-primary btn-primary-cozy btn-sm" onClick={this.props.handleCheckVoucher} disabled={this.props.disabled_voucher}>Check</button>
+                                        </div>
+                                        <hr />
                                         <label className="label-white mb-2">Total harga</label>
                                         <div className="detail-table">
                                             <p><img src="assets/img/icon/rp.png" alt="" /> <span
                                                 id="harga_total_text"> {this.props.total_harga}</span>
+                                            </p>
+                                            <p className="mt-3"><img src="assets/img/icon/discount.png" alt="" /> <span
+                                                id="harga_total_text"> {this.props.potongan}%</span>
                                             </p>
                                             <p className="mt-3"><img src="assets/img/icon/clock.png" width="25" alt="" /> <span
                                                 id="durasi_total_text">{this.props.jam} Jam</span></p>
@@ -216,7 +221,9 @@ class ModalBooking extends React.Component<any, any> {
                     <Modal.Footer>
                         <button type="button" data-bs-dismiss="modal" onClick={this.props.closeModal} className="btn btn-primary btn-primary-cozy-dark"
                         >Close</button>
-                        <button className="btn btn-primary btn-primary-cozy" onClick={this.props.mode_loss ? this.props.startTimerLoss : this.props.startTimer} disabled={this.props.disableSubmit}>Booking Sekarang</button>
+                        <button className="btn btn-primary btn-primary-cozy" onClick={this.props.mode_loss ? this.props.startTimerLoss : this.props.startTimer} disabled={this.props.disableSubmit}>
+                            <LoadingButton loading={this.props.loading} />
+                            Booking Sekarang</button>
                     </Modal.Footer>
                 </Modal>
             </>

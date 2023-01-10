@@ -8,6 +8,7 @@ import swal from 'sweetalert';
 
 import { turnon, showLoading } from "../ContinueTimer";
 import TimeConvert from "../../../system/TimeConvert";
+import { Dot } from "recharts";
 
 class Table_01 extends React.Component<any, any> {
     constructor(props) {
@@ -39,6 +40,10 @@ class Table_01 extends React.Component<any, any> {
             time_running: false,
             member: false,
             nama_member: "",
+            disabled_voucher: true,
+            voucher: "",
+            potongan: 0,
+            loading: false,
         }
 
         this.handleMode = this.handleMode.bind(this);
@@ -60,6 +65,8 @@ class Table_01 extends React.Component<any, any> {
         this.continueTimer = this.continueTimer.bind(this);
         this.handleMember = this.handleMember.bind(this);
         this.handleInputMember = this.handleInputMember.bind(this);
+        this.handleVoucher = this.handleVoucher.bind(this);
+        this.handleCheckVoucher = this.handleCheckVoucher.bind(this);
     }
 
     validation() {
@@ -103,7 +110,11 @@ class Table_01 extends React.Component<any, any> {
             blink_add: false,
             time_running: false,
             mode_loss: false,
+            member: false,
             nama_member: "",
+            disabled_voucher: true,
+            voucher: "",
+            potongan: 0,
         })
     }
 
@@ -137,16 +148,23 @@ class Table_01 extends React.Component<any, any> {
                 console.log(result);
                 var data_new = ""
                 if (result.response) {
+                    result.harga_detail.map(el => {
+                        const final = el.harga * ((100 - parseFloat(this.state.potongan)) / 100);
+                        el['harga'] = final;
+                    });
+
                     result.harga_detail.forEach(element => {
                         data_new += `<li>(${element.end_duration}) ${element.tipe} = Rp. ${dot.parse(element.harga)}</li>`
                     });
 
-                    this.setState({ harga_detail: data_new, total_harga: dot.parse(result.total_harga), raw_detail_h: result.harga_detail })
+                    const total_harga = result.total_harga * ((100 - parseFloat(this.state.potongan)) / 100);
+
+                    this.setState({ harga_detail: data_new, total_harga: dot.parse(total_harga), raw_detail_h: result.harga_detail })
                     this.validation()
                 } else {
                     toast.error("Terjadi kesalahan pada mengitung jam!")
                 }
-            })
+            });
         }
     }
 
@@ -255,6 +273,17 @@ class Table_01 extends React.Component<any, any> {
             dangerMode: true,
         }).then((willDelete) => {
             if (willDelete) {
+                this.setState({
+                    loading: true,
+                    disabled: true,
+                });
+
+                toast.success("Progress: Menyimpan Data... (30%)");
+
+                setTimeout(() => {
+                    toast.success("Progress: Menyimpan Table Lampu... (80%)");
+                }, 1000)
+
                 if (this.state.jam !== '' && this.state.mode !== '') {
                     this.setState({ disabled: true })
                     setTimeout(() => {
@@ -271,14 +300,15 @@ class Table_01 extends React.Component<any, any> {
                         }
 
                         if (this.state.mode === 'Regular') {
-                            ipcRenderer.invoke("start", this.state.table_id, minutetoms, 0, this.state.blink, false, false, 0, 0, data_booking, false, false, true).then(() => {
-                                console.log("start 01 is created");
-                                toast.success(this.state.table_name + " berhasil dibooking.");
-                                this.getDataTable();
-                                this.setState({ disabled: false, isUse: true, isOpen: false });
-                            });
+                            ipcRenderer.invoke("start", this.state.table_id, minutetoms, 0, this.state.blink, false, false, 0, 0, data_booking, false, false, true)
+                                .then(() => {
+                                    console.log("start 01 is created");
+                                    toast.success(`Progress: ${this.state.table_name} berhasil dinyalakan. (100%)`);
+                                    this.getDataTable();
+                                    this.setState({ disabled: false, isUse: true, isOpen: false, loading: false });
+                                });
                         }
-                    }, 1000);
+                    }, 3000);
                 } else {
                     console.log("table 01 error")
                 }
@@ -556,10 +586,75 @@ class Table_01 extends React.Component<any, any> {
         })
     }
 
+    handleVoucher(e) {
+        if (e.target.value.length === 0) {
+            this.setState({
+                disabled_voucher: true,
+            });
+        } else {
+            this.setState({
+                disabled_voucher: false,
+                voucher: e.target.value,
+            });
+        }
+    }
+
+    handleCheckVoucher() {
+        ipcRenderer.invoke("checkVoucher", { kode_voucher: this.state.voucher }).then((result) => {
+            console.log(result);
+            if (result.response === true) {
+                var data_new = "";
+                const total_harga = new DotAdded().decode(this.state.total_harga) * ((100 - parseFloat(result.data[0].potongan)) / 100);
+
+                this.state.raw_detail_h.map((el) => {
+                    const final = el.harga * ((100 - parseFloat(result.data[0].potongan)) / 100);
+                    el['harga'] = final;
+                });
+
+                this.state.raw_detail_h.forEach(element => {
+                    data_new += `<li>(${element.end_duration}) ${element.tipe} = Rp. ${new DotAdded().parse(element.harga)}</li>`
+                });
+
+                this.setState({
+                    total_harga: new DotAdded().parse(total_harga),
+                    raw_detail_h: this.state.raw_detail_h,
+                    harga_detail: data_new,
+                    potongan: result.data[0].potongan,
+                });
+
+                toast.success("Voucher Digunakan");
+            } else {
+                const dot = new DotAdded();
+                ipcRenderer.invoke("checkHarga", this.state.jam).then((result) => {
+                    console.log(result);
+                    var data_new = ""
+                    if (result.response) {
+                        result.harga_detail.map(el => {
+                            const final = el.harga * ((100 - parseFloat("0")) / 100);
+                            el['harga'] = final;
+                        });
+
+                        result.harga_detail.forEach(element => {
+                            data_new += `<li>(${element.end_duration}) ${element.tipe} = Rp. ${dot.parse(element.harga)}</li>`
+                        });
+
+                        const total_harga = result.total_harga * ((100 - parseFloat("0")) / 100);
+
+                        this.setState({ harga_detail: data_new, total_harga: dot.parse(total_harga), raw_detail_h: result.harga_detail, potongan: 0, })
+                        this.validation()
+                    } else {
+                        toast.error("Terjadi kesalahan pada mengitung jam!")
+                    }
+                });
+                toast.error("Voucher tidak berlaku.");
+            }
+        });
+    }
+
     render(): React.ReactNode {
         let modal, badges, badges_mode;
         if (this.state.isUse === false) {
-            modal = <ModalBooking table_name={this.state.table_name} handleMode={this.handleMode} mode={this.state.mode} handleJam={this.handleJam} startTimer={this.startTimer} handleNama={this.handleNama} disableSubmit={this.state.disabled} harga_detail={this.state.harga_detail} total_harga={this.state.total_harga} jam={this.state.jam} handleBlink={this.handleBlink} table_id={this.state.table_id} isOpen={this.state.isOpen} closeModal={this.closeModal} mode_loss={this.state.mode_loss} startTimerLoss={this.startTimerLoss} handleMember={this.handleMember} member={this.state.member} handleInputMember={this.handleInputMember} nama_member={this.state.nama_member} />
+            modal = <ModalBooking table_name={this.state.table_name} handleMode={this.handleMode} mode={this.state.mode} handleJam={this.handleJam} startTimer={this.startTimer} handleNama={this.handleNama} disableSubmit={this.state.disabled} harga_detail={this.state.harga_detail} total_harga={this.state.total_harga} jam={this.state.jam} handleBlink={this.handleBlink} table_id={this.state.table_id} isOpen={this.state.isOpen} closeModal={this.closeModal} mode_loss={this.state.mode_loss} startTimerLoss={this.startTimerLoss} handleMember={this.handleMember} member={this.state.member} handleInputMember={this.handleInputMember} nama_member={this.state.nama_member} disabled_voucher={this.state.disabled_voucher} handleVoucher={this.handleVoucher} handleCheckVoucher={this.handleCheckVoucher} potongan={this.state.potongan} loading={this.state.loading} />
         } else if (this.state.isUse === true) {
             modal = <ModalBookingActive table_name={this.state.table_name} name_customer={this.state.nama} id_booking={this.state.id_booking} table_id={this.state.table_id} stopTimer={this.stopTimer} stopTimerLoss={this.stopTimerLoss} handlePindah={this.handlePindah} jam={this.state.jam_add} harga_detail={this.state.harga_detail} total_harga_add={this.state.total_harga_add} total_harga={this.state.total_harga} handleJam={this.handleJamAdd} isOpen={this.state.isOpen} closeModal={this.closeModal} handleBlinkAdd={this.handleBlinkAdd} addOn={this.addOn} disabled_add={this.state.disabled_add} resetTable={this.resetTable} mode={this.state.mode} time_running={this.state.time_running} continueTimer={this.continueTimer} />
         }
