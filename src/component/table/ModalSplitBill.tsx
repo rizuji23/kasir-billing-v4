@@ -122,6 +122,7 @@ class ModalSplitBill extends React.Component<any, any> {
                         toast.success("Split Bill berhasil dilakukan");
                         this.clearState();
                         this.props.closeModalSplit();
+                        this.props.clearSplitBill();
                     } else {
                         toast.error("Split Bill gagal dilakukan");
                     }

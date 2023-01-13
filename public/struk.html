@@ -58,24 +58,24 @@
     <table>
         <tbody>
             <tr>
-                <td><span id="date">23-05-2022</span>
+                <td><span id="date"></span>
                 </td>
-                <td align="right"><span align="right" id="time">18:59</span></td>
+                <td align="right"><span align="right" id="time"></span></td>
             </tr>
             <tr>
                 <td>Order ID:
                 </td>
-                <td align="right"><span align="right" id="order_id">testing123</span></td>
+                <td align="right"><span align="right" id="order_id"></span></td>
             </tr>
             <tr>
                 <td>Collected By:
                 </td>
-                <td align="right"><span align="right" id="collected_at">Kasir</span></td>
+                <td align="right"><span align="right" id="collected_at"></span></td>
             </tr>
             <tr>
                 <td>Customer Name:
                 </td>
-                <td align="right"><span align="right" id="customer_name">Aye Shabira</span></td>
+                <td align="right"><span align="right" id="customer_name"></span></td>
             </tr>
             <tr>
                 <td>Table Name:
@@ -89,40 +89,18 @@
         </tbody>
     </table>
     <p>----------------------------</p>
-    <h4 align="center" style="margin: 0;">*Item*</h4>
+    <h4 align="center" style="margin: 0;">*Billing Item*</h4>
     <table>
-        <tbody id="item">
-            <!-- <tr>
-                <td>
-                    <p>Billing Billiard</p>
-                    1 @50.000 = 50.000
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>Nasi Goreng</p>
-                    1 @50.000 = 50.000
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>Nasi Goreng</p>
-                    1 @50.000 = 50.000
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>Nasi Goreng</p>
-                    1 @50.000 = 50.000
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>Nasi Goreng</p>
-                    1 @50.000 = 50.000
-                </td>
-            </tr> -->
-        </tbody>
+        <tbody id="billing_item"></tbody>
+    </table>
+
+    <p style="margin-top: 10px;">Total Durasi: <span id="total_durasi"></span> Jam</p>
+
+    <p>----------------------------</p>
+
+    <h4 align="center" style="margin: 0;">*Menu Item*</h4>
+    <table>
+        <tbody id="item"></tbody>
     </table>
 
     <p>----------------------------</p>
@@ -168,7 +146,8 @@
         </tr>
     </table>
     ----------------------------
-    <p align="center">Thank for coming!</p>
+    <p align="center"><img src="assets/img/instagram.webp" width="15" alt=""> <span style="position: relative; top: -5px;">cozypool</span></p>
+    <p align="center" style="margin-top: 10px;">Thank for coming!</p>
     <br>
     <br><br><br>
     <script>
@@ -200,7 +179,7 @@
         }
 
         ipcRenderer.on('message', (event, message) => {
-            console.log(message); // logs out "Hello second window!"
+            console.log(message);
             const data = JSON.parse(message);
                 console.log(data);
                 const date_now = data.struk[0].created_at.split(' ')
@@ -213,15 +192,29 @@
                                 </td>
                             </tr>`
                 });
+
+                const data_billing = data.billing.map((el, i) => {
+                    return `<tr>
+                                <td>
+                                    <p>${el.start_duration} ~ ${el.end_duration}</p>
+                                    ${el.durasi} @${parse_to_rp(el.harga)} = ${parse_to_rp(el.harga)}
+                                </td>
+                            </tr>`
+                });
+
+
                 $("#item").html(data_item);
+                $("#billing_item").html(data_billing);
+                $("#total_durasi").html(data.billing[0]?.durasi_booking)
                 $("#date").html(date_now[0]);
                 $("#time").html(`${time_now[0]}:${time_now[1]}`);
                 $("#order_id").html(data.struk[0].id_struk);
-                $("#customer_name").html(data.struk[0].user_in);
+                $("#collected_at").html(data.struk[0].user_in);
+                $("#customer_name").html(data.struk[0].nama_customer)
                 if (data.struk[0].type_struk === 'cafe only') {
                     $("#table_name").html(data.struk[0].type_struk);
                 } else if (data.struk[0].type_struk === 'table') {
-                    $("#table_name").html(data.struk[0].id_booking[0].table_name);
+                    $("#table_name").html(data.billing[0]?.id_table);
                 }
                 $("#subtotal").html(parse_to_rp(data.struk[0].total_struk));
                 $("#total").html(parse_to_rp(data.struk[0].total_struk));

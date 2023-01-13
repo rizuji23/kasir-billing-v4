@@ -11,6 +11,7 @@ import { ipcRenderer, Menu } from "electron";
 import shortid from 'shortid'
 import { Struk } from "../entity/Struk";
 import DotAdded from "./DotAdded";
+import StrukSystem from "./StrukSystem";
 
 const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
 
@@ -309,28 +310,8 @@ class BillingOperation {
     static async sendPayNow(data_pay:data_pay):Promise<any> {
         try {
             let service = await dataSource;
-            
-            const update_cart = await service.manager.createQueryBuilder().update(Cart).set({
-                status: 'lunas',
-                updated_at: date_now,
-            }).where('id_pesanan = :id', {id: data_pay.id_pesanan}).execute();
 
-            const update_pesanan = await service.manager.createQueryBuilder().update(Pesanan).set({
-                status: 'lunas',
-                updated_at: date_now
-            }).where('id_pesanan = :id', {id: data_pay.id_pesanan}).execute();
-
-            if (update_cart && update_pesanan) {
-                const update_detail_booking = await service.manager.createQueryBuilder().update(Detail_Booking).set({
-                    status: 'lunas',
-                    updated_at: date_now,
-                }).where('id_booking = :id', {id: data_pay.id_booking}).execute();
-
-                const update_booking = await service.manager.createQueryBuilder().update(Booking).set({
-                    status_booking: 'lunas',
-                    updated_at: date_now,
-                }).where('id_booking = :id', {id: data_pay.id_booking}).execute();
-
+            if (service) {
                 const update_table = await service.manager.createQueryBuilder().update(Table_Billiard).set({
                     id_booking: '',
                     durasi: 0,
@@ -338,7 +319,7 @@ class BillingOperation {
                     updated_at: date_now,
                 }).where("id_booking = :id", {id: data_pay.id_booking}).execute();
 
-                if (update_detail_booking && update_booking && update_table) {
+                if (update_table) {
                     const dot = new DotAdded();
                     const update_struk = await service.manager.createQueryBuilder().update(Struk).set({
                         status_struk: 'lunas',
@@ -346,9 +327,16 @@ class BillingOperation {
                         cash_struk: dot.decode(data_pay.uang_cash),
                         kembalian_struk: dot.decode(data_pay.kembalian)
                     }).where('id_booking = :id', {id: data_pay.id_booking}).orWhere('id_pesanan = :id', {id: data_pay.id_pesanan}).execute();
+                    const get_struk = await service.manager.find(Struk, {
+                        where: {
+                            id_booking: data_pay.id_booking,
+                        },
+                    });
+                    console.log("Data ID STRUK ", get_struk[0].id_struk)
 
-                    if (update_struk) {
-                        return {response: true, data: 'data is saved'};
+                    if (update_struk && get_struk.length !== 0) {
+                        StrukSystem.printBilling(get_struk[0].id_struk, data_pay)
+                        return {response: true, data: 'data is saved', id: get_struk};
                     } else {
                         return {response: false, data: 'data is not saved'};
                     }

@@ -107,15 +107,24 @@ class System {
         try {
             let service = await dataSource;
 
-            console.log(win);
+            if (win.length !== 0) {
+                const get_db = await service.manager.find(Settings, {
+                    where: {
+                        id_settings: "PRINTER001"
+                    }
+                });
+    
+                return {response: true, data: win, data_db: get_db};
+            } else {
+                const get_db = await service.manager.find(Settings, {
+                    where: {
+                        id_settings: "PRINTER001"
+                    }
+                });
 
-            const get_db = await service.manager.find(Settings, {
-                where: {
-                    id_settings: "PRINTER001"
-                }
-            });
+                return {response: true, data: get_db};
 
-            return {response: true, data: win, data_db: get_db};
+            }
         } catch (err) {
             console.log(err);
         }
@@ -135,6 +144,66 @@ class System {
                 return {response: true, data: "data is saved"}; 
             } else {
                 return {response: false, data: "data is not saved"};
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async getSelectedPort():Promise<any> {
+        try {
+            let service = await dataSource;
+
+            const get_port = await service.manager.find(Settings, {
+                where: {
+                    id_settings: "PORT001"
+                }
+            });
+
+            if (get_port.length !== 0) {
+                return {response: true, data: get_port};
+            } else {
+                return {response: false, data: "data is empty"};
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async setPort(data):Promise<any> {
+        try {
+            let service = await dataSource;
+            const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
+
+            const set_data = await service.manager.createQueryBuilder().update(Settings).set({
+                url: data.port,
+                updated_at: date_now,
+            }).where("id_settings = :id", {id: "PORT001"}).execute();
+
+            if (set_data) {
+                return {response: true, data: "data is saved"};
+            } else {
+                return {response: false, data: "data is not saved"};
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async getVersion():Promise<any> {
+        try {
+            let service = await dataSource;
+
+            const check = await service.manager.find(Settings, {
+                where: {
+                    id_settings: "VERSIONAPP"
+                }
+            });
+
+            if (check.length !== 0) {
+                return {response: true, data: check};
+            } else {
+                return {response: false, data: "data is empty"};
             }
         } catch (err) {
             console.log(err);

@@ -40,10 +40,20 @@ class Table_01 extends React.Component<any, any> {
             time_running: false,
             member: false,
             nama_member: "",
+            id_member: "",
             disabled_voucher: true,
             voucher: "",
             potongan: 0,
+            playing: "",
             loading: false,
+            list_menu: "",
+            list_menu_raw: "",
+            disabled_menu: true,
+            loading_menu: false,
+            data_menu: {
+                id_menu: "",
+                qty: "",
+            }
         }
 
         this.handleMode = this.handleMode.bind(this);
@@ -115,7 +125,10 @@ class Table_01 extends React.Component<any, any> {
             disabled_voucher: true,
             voucher: "",
             potongan: 0,
-        })
+            playing: "",
+            loading_addon: false,
+
+        });
     }
 
     handleMode(e) {
@@ -158,6 +171,8 @@ class Table_01 extends React.Component<any, any> {
                     });
 
                     const total_harga = result.total_harga * ((100 - parseFloat(this.state.potongan)) / 100);
+
+                    console.log(this.state.potongan)
 
                     this.setState({ harga_detail: data_new, total_harga: dot.parse(total_harga), raw_detail_h: result.harga_detail })
                     this.validation()
@@ -297,6 +312,23 @@ class Table_01 extends React.Component<any, any> {
                             tipe_booking: this.state.mode,
                             user_in: sessionStorage.getItem('username'),
                             raw_detail_h: this.state.raw_detail_h,
+                            potongan: this.state.potongan,
+                            id_member: this.state.member === true ? this.state.id_member : "",
+                        }
+
+                        if (this.state.member === true) {
+                            const reduce = this.state.playing - 1;
+                            const data = {
+                                reduce: reduce,
+                                id_member: this.state.id_member
+                            }
+                            ipcRenderer.invoke("reducePlaying", data).then((result) => {
+                                if (result.response === true) {
+                                    toast.success("Member berhasil dikurangi.");
+                                } else {
+                                    toast.error("Member gagal dikurangi.");
+                                }
+                            })
                         }
 
                         if (this.state.mode === 'Regular') {
@@ -317,8 +349,10 @@ class Table_01 extends React.Component<any, any> {
     }
 
     addOn(): void {
+
         if (this.state.jam_add !== 0 || this.state.jam_add.length !== 0 || this.state.total_harga_add.length !== 0 && this.state.time_running !== false) {
-            this.setState({ disabled_add: true })
+            this.setState({ disabled_add: true, loading_addon: true })
+
             setTimeout(() => {
                 const durasi_minute = this.state.jam_add * 60;
                 const minutetoms = durasi_minute * 60000;
@@ -336,12 +370,12 @@ class Table_01 extends React.Component<any, any> {
                 if (this.state.mode === 'Regular') {
                     ipcRenderer.invoke("start", this.state.table_id, 0, 0, this.state.blink_add, false, true, 0, minutetoms, data_booking, false, false, false).then((result) => {
                         console.log("start 01 is addon");
-                        this.setState({ disabled_add: false, isUse: true })
+                        this.setState({ disabled_add: false, isUse: true, loading_addon: false })
                         this.getDataTable()
                         toast.success(this.state.table_name + " berhasil ditambah durasi.");
                     });
                 }
-            }, 1000)
+            }, 3000)
         } else {
             console.log("table 01 error")
         }
@@ -417,7 +451,6 @@ class Table_01 extends React.Component<any, any> {
     }
 
     startTimerLoss() {
-        console.log('test')
         if (this.state.mode !== '' && this.state.nama !== '') {
             setTimeout(() => {
                 const durasi_minute = 1 * 60;
@@ -549,9 +582,11 @@ class Table_01 extends React.Component<any, any> {
         }).then((willDelete) => {
             if (willDelete) {
                 var data = localStorage.getItem(this.state.table_id).replace(/\[|\]/g, '').split(',');
+
                 if (data[0] !== 'not_active') {
                     let current = 1;
                     if (data[2] === ' Regular') {
+                        console.log(TimeConvert.textToMS(data, this.state.table_id))
                         turnon(TimeConvert.textToMS(data, this.state.table_id)).then(() => showLoading(current++, 1))
                     } else {
                         turnon(TimeConvert.textToTime(data, this.state.table_id)).then(() => showLoading(current++, 1))
@@ -573,10 +608,18 @@ class Table_01 extends React.Component<any, any> {
     handleInputMember(e) {
         ipcRenderer.invoke("checkMember", { kode_member: e.target.value }).then((result) => {
             if (result.response === true) {
-                this.setState({
-                    nama_member: result.data[0].nama_member,
-                    nama: result.data[0].nama_member,
-                })
+                console.log(result.data[0].playing)
+                if (result.data[0].playing === 0 || result.data[0].playing === null || result.data[0].playing.length === 0) {
+                    toast.error("Jumlah batas main tidak ada.");
+                } else {
+                    this.setState({
+                        nama_member: result.data[0].nama_member,
+                        nama: result.data[0].nama_member,
+                        id_member: result.data[0].id_member,
+                        potongan: result.data[0].potongan,
+                        playing: result.data[0].playing
+                    });
+                }
             } else {
                 this.setState({
                     nama_member: "Member tidak ditemukan...",
@@ -656,7 +699,7 @@ class Table_01 extends React.Component<any, any> {
         if (this.state.isUse === false) {
             modal = <ModalBooking table_name={this.state.table_name} handleMode={this.handleMode} mode={this.state.mode} handleJam={this.handleJam} startTimer={this.startTimer} handleNama={this.handleNama} disableSubmit={this.state.disabled} harga_detail={this.state.harga_detail} total_harga={this.state.total_harga} jam={this.state.jam} handleBlink={this.handleBlink} table_id={this.state.table_id} isOpen={this.state.isOpen} closeModal={this.closeModal} mode_loss={this.state.mode_loss} startTimerLoss={this.startTimerLoss} handleMember={this.handleMember} member={this.state.member} handleInputMember={this.handleInputMember} nama_member={this.state.nama_member} disabled_voucher={this.state.disabled_voucher} handleVoucher={this.handleVoucher} handleCheckVoucher={this.handleCheckVoucher} potongan={this.state.potongan} loading={this.state.loading} />
         } else if (this.state.isUse === true) {
-            modal = <ModalBookingActive table_name={this.state.table_name} name_customer={this.state.nama} id_booking={this.state.id_booking} table_id={this.state.table_id} stopTimer={this.stopTimer} stopTimerLoss={this.stopTimerLoss} handlePindah={this.handlePindah} jam={this.state.jam_add} harga_detail={this.state.harga_detail} total_harga_add={this.state.total_harga_add} total_harga={this.state.total_harga} handleJam={this.handleJamAdd} isOpen={this.state.isOpen} closeModal={this.closeModal} handleBlinkAdd={this.handleBlinkAdd} addOn={this.addOn} disabled_add={this.state.disabled_add} resetTable={this.resetTable} mode={this.state.mode} time_running={this.state.time_running} continueTimer={this.continueTimer} />
+            modal = <ModalBookingActive table_name={this.state.table_name} name_customer={this.state.nama} id_booking={this.state.id_booking} table_id={this.state.table_id} stopTimer={this.stopTimer} stopTimerLoss={this.stopTimerLoss} handlePindah={this.handlePindah} jam={this.state.jam_add} harga_detail={this.state.harga_detail} total_harga_add={this.state.total_harga_add} total_harga={this.state.total_harga} handleJam={this.handleJamAdd} isOpen={this.state.isOpen} closeModal={this.closeModal} handleBlinkAdd={this.handleBlinkAdd} addOn={this.addOn} disabled_add={this.state.disabled_add} resetTable={this.resetTable} mode={this.state.mode} time_running={this.state.time_running} continueTimer={this.continueTimer} loading_addon={this.state.loading_addon} />
         }
 
         if (this.state.isUse) {

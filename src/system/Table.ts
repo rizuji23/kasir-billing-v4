@@ -77,12 +77,13 @@ class TableRegular {
         
         (await dataSource).createQueryBuilder().insert().into(Booking).values({
             id_booking: id_booking,
-            id_member: '',
+            id_member: data_booking.id_member,
             nama_booking: data_booking.nama,
             id_table: this.id_table,
             durasi_booking: data_booking.durasi_booking,
             total_harga: dot.decode(data_booking.total_harga),
             uang_cash: 0,
+            potongan: data_booking.potongan,
             tipe_booking: data_booking.tipe_booking,
             status_booking: "active",
             user_in: data_booking.user_in,

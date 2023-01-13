@@ -18,7 +18,10 @@ class Api extends React.Component<any, any> {
             data_db_printer: "",
             data_input_printer: {
                 printer: "",
-            }
+            },
+            data_port: "",
+            data_input_port: "",
+            data_port_db: "",
         }
 
         this.getApiLink = this.getApiLink.bind(this);
@@ -27,16 +30,80 @@ class Api extends React.Component<any, any> {
         this.getPrinter = this.getPrinter.bind(this);
         this.handlePrinter = this.handlePrinter.bind(this);
         this.handlePrintSubmit = this.handlePrintSubmit.bind(this);
+        this.getComPort = this.getComPort.bind(this);
+        this.getPortDb = this.getPortDb.bind(this);
+        this.handleInputPort = this.handleInputPort.bind(this);
+        this.handleSetPort = this.handleSetPort.bind(this);
     }
 
     componentDidMount(): void {
         this.getApiLink();
         this.getPrinter();
+        this.getComPort();
+        this.getPortDb();
+    }
+
+    getPortDb() {
+        ipcRenderer.invoke("api_port", true, false, []).then((result) => {
+            if (result.response === true) {
+                this.setState({
+                    data_port_db: result.data[0].url,
+                })
+            }
+        })
+    }
+
+    handleInputPort(e) {
+        if (e.target.value.length === 0) {
+            toast.error("Port Wajib Diisi");
+        } else {
+            this.setState({
+                data_input_port: e.target.value,
+            });
+        }
+    }
+
+    handleSetPort() {
+        swal({
+            title: "Apa kamu yakin?",
+            text: "Port akan diubah & lampu akan mati sesaat!.",
+            icon: "warning",
+            buttons: ["Batal", true],
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                ipcRenderer.invoke("api_port", false, true, { port: this.state.data_input_port }).then((result) => {
+                    console.log(result);
+                    if (result.response === true) {
+                        toast.success("Port berhasil disimpan.");
+                        this.getPortDb();
+                    } else {
+                        toast.error("Port gagal disimpan.");
+                    }
+                })
+            }
+        });
+
+    }
+
+    getComPort() {
+        ipcRenderer.invoke("getComPort").then((result) => {
+            console.log(result);
+            const comport = result.map((el) => {
+                return (
+                    <><option value={el.path}>{`${el.path} => ${el.friendlyName}`}</option></>
+                )
+            });
+
+            this.setState({
+                data_port: comport,
+            })
+        })
     }
 
     getApiLink() {
         ipcRenderer.invoke("api", false, true, []).then((result) => {
-            console.log(result);
+
             if (result.response === true) {
                 this.setState(prevState => ({
                     data_link: {
@@ -150,8 +217,6 @@ class Api extends React.Component<any, any> {
                     printer: this.state.data_input_printer.printer
                 }
 
-                console.log(data_printer)
-
                 ipcRenderer.invoke("api_printer", true, false, data_printer).then((result) => {
                     console.log(result);
                     if (result.response === true) {
@@ -199,7 +264,7 @@ class Api extends React.Component<any, any> {
                     </div>
                 </div>
 
-                <div className="keuangan-list">
+                <div className="keuangan-list mb-5">
                     <div className="bg-dark box-dark mb-3">
                         <h5 className="">Server</h5>
                         <div className="box-booking">
@@ -234,14 +299,24 @@ class Api extends React.Component<any, any> {
                             <div className="booking-content">
                                 <div className="form-group">
                                     <div className="alert alert-danger">
-                                        "Reconnect Arduino" akan menyebabkan Lampu mati sesaat.
+                                        <b>"Reconnect Arduino"</b> atau <b>Mengganti COM Port</b> akan menyebabkan Lampu mati sesaat.
                                     </div>
                                     <button className="btn btn-danger">Reconnect Arduino</button>
                                 </div>
+                                <hr />
+                                <div className="form-group mt-3">
+                                    <label htmlFor="">COM Port</label>
+                                    <select name="" id="" onChange={this.handleInputPort} className="form-control custom-input">
+                                        <option value="">Pilih COM Port</option>
+                                        {this.state.data_port}
+                                    </select>
+                                </div>
+                                <small>Last Selected: {this.state.data_port_db}</small>
+                                <div className="form-group mt-3 text-end">
+                                    <button className="btn btn-primary btn-primary-cozy btn-sm" onClick={this.handleSetPort}>Simpan</button>
+                                </div>
                             </div>
-
                         </div>
-
                     </div>
                 </div>
             </>

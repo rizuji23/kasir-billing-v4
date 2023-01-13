@@ -29,6 +29,9 @@ export class Booking {
     @Column()
     uang_cash:number
 
+    @Column({nullable: true})
+    potongan: number
+
     @Column()
     tipe_booking:string
 

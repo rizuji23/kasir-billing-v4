@@ -17,6 +17,7 @@ import StokContainer from "./component/stok/Stok";
 import List_StokMasukContainer from "./component/stok/List_StokMasuk";
 import List_StokKeluarContainer from "./component/stok/List_StokKeluar";
 import ApiContainer from "./component/pengaturan/api/Api";
+import TentangContainer from "./component/pengaturan/Tentang";
 
 class App extends React.Component {
     render() {
@@ -33,6 +34,7 @@ class App extends React.Component {
                     <Route path="/kategori-menu" element={<KategoriMenuContainer />}></Route>
                     <Route path="/voucher" element={<VoucherContainer />}></Route>
                     <Route path="/api" element={<ApiContainer />}></Route>
+                    <Route path="/tentang" element={<TentangContainer />}></Route>
 
 
 

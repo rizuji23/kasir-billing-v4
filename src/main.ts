@@ -20,6 +20,9 @@ import FilterTransaksiShift from './component/keuangan/system/FilterTransaksiShi
 import AnalisisSystem from './system/AnalisisSystem'
 import StokSystem from './system/StokSystem'
 import System from './system/System'
+import { SerialPort } from 'serialport'
+import LampSystem from './system/LampSystem'
+import FilterSystem from './system/FilterSystem'
 
 //init MainWindow
 let win:any;
@@ -73,9 +76,15 @@ ipcMain.handle("get_data",async (event) => {
 
 //init Billing Arduino Port
 var billingArduino:any;
-const arduino = new PortConnect(billingArduino, 57600, "none", true, false, "COM3");
-arduino.getConnect()
-arduino.isOpen()
+var arduino;
+System.getSelectedPort().then((result) => {
+    if (result.response === true) {
+        arduino = new PortConnect(billingArduino, 57600, "none", true, false, result.data[0].url);
+        arduino.getConnect()
+        arduino.isOpen()
+    }
+});
+
 
 //set Regular Timer Billing
 var table_01_time:any, table_02_time:any, table_03_time:any
@@ -398,4 +407,69 @@ ipcMain.handle("checkMember", async(event, data_member) => {
 ipcMain.handle("checkVoucher", async(event, data_voucher) => {
     return await VoucherSystem.checkVoucher(data_voucher);
 });
+
+ipcMain.handle("reducePlaying", async(event, data) => {
+    return await MemberSystem.reducePlaying(data);
+});
+
+ipcMain.handle("getComPort", async (event) => {
+    return await SerialPort.list();
+});
+
+ipcMain.handle("api_port", async(event, get_data, set_data, data) => {
+    if (get_data === true) {
+        return await System.getSelectedPort();
+    } else if (set_data === true) {
+        return await System.setPort(data);
+    } else {
+        return {response: false, data: "invalid"};
+    }
+});
+
+ipcMain.handle("lamp", async(event, turn_on, turn_off, id_table) => {
+    const lamp = new LampSystem(id_table, arduino.path, win);
+    if (turn_on === true) {
+        await lamp.turnOn().then((result) => {
+            if (result === true) {
+                return {response: true, data: "table " + id_table + "dinyalakan"};
+            } else {
+                return {response: false, data: "table " + id_table + "gagal dinyalakan"};
+            }
+        });
+    } else if (turn_off === true) {
+        await lamp.turnOff().then((result) => {
+            if (result === true) {
+                return {response: true, data: "table " + id_table + "dimatikan"};
+            } else {
+                return {response: false, data: "table " + id_table + "gagal dimatikan"};
+            }
+        });
+    } else {
+        return {response: false, data: "invalid"};
+    }
+});
+
+ipcMain.handle("getVersion", async(event) => {
+    return await System.getVersion();
+});
+
+ipcMain.handle("printStruk", async(event, id_struk) => {
+    return await StrukSystem.print(id_struk);
+});
+
+
+ipcMain.handle("check_export", async(event, check_today, check_date, check_month, check_year, data) => {
+    if (check_today === true) {
+        return await FilterSystem.getToday();
+    } else if (check_date === true) {
+        return await FilterSystem.getDate(data);
+    } else if (check_month === true) {
+        return await FilterSystem.getMonth(data);
+    } else if (check_year === true) {
+        return await FilterSystem.getYear(data);
+    } else {
+        return {response: false, data: "invalid"};
+    }
+});
+
 //endopration

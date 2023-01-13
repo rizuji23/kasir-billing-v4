@@ -1287,3 +1287,35 @@ select {
 .btn-close {
     filter: brightness(0) invert(1);
 }
+
+.select-search-container {
+    --select-search-background: #fff;
+    --select-search-border: #dce0e8;
+    --select-search-selected: #1e66f5;
+    --select-search-text: #000;
+    --select-search-subtle-text: #6c6f85;
+    --select-search-inverted-text: var(--select-search-background);
+    --select-search-highlight: #eff1f5;
+    --select-search-font: 'Inter', sans-serif;
+
+    width: 100% !important;
+    position: relative;
+    font-family: var(--select-search-font);
+    color: var(--select-search-text);
+    box-sizing: border-box;
+}
+
+.box-nilai {
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+    background-color: #ee7608;
+    text-align: center;
+    padding-top: 36px;
+    font-family: 'Inter-Bold';
+}
+
+.box-tentang {
+    width: 800px;
+}
+

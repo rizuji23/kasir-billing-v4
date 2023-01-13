@@ -132,6 +132,7 @@ class Member extends React.Component<any, any> {
             id_member: '',
             disabled_opsi: true,
             editable: false,
+            playing: "",
         })
     }
 
@@ -144,7 +145,7 @@ class Member extends React.Component<any, any> {
         const dot = new DotAdded();
         ipcRenderer.invoke("member", false, true, false, false, jenis_member, false, false).then((result) => {
             if (result.response === true) {
-                this.setState({ harga_member: dot.parse(result.data[0].harga_member), potongan: result.data[0].potongan });
+                this.setState({ harga_member: dot.parse(result.data[0].harga_member), potongan: result.data[0].potongan, playing: result.data[0].playing });
             }
         });
     }
@@ -250,7 +251,8 @@ class Member extends React.Component<any, any> {
                         tipe_member: this.state.jenis_member,
                         kode_member: this.state.kode_member,
                         status_member: 'active',
-                        email: this.state.email
+                        email: this.state.email,
+                        playing: this.state.playing
                     }
 
                     ipcRenderer.invoke("member", false, false, true, false, data_member, false, false).then((result) => {
@@ -460,7 +462,7 @@ class Member extends React.Component<any, any> {
                                                         </div>
                                                         <div className="p-1">
                                                             <p>Rp. {this.state.harga_member} Per bulan,</p>
-                                                            <p>dengan Potongan sebesar {this.state.potongan}%.</p>
+                                                            <p>dengan Potongan sebesar {this.state.potongan}% & {this.state.playing}x kesempatan bermain.</p>
 
                                                         </div>
                                                     </div>

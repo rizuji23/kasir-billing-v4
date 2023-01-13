@@ -31,6 +31,11 @@ class MemberSystem {
         try {
             let service = await dataSource;
             const id_member = shortid.generate();
+            const get_potongan = await service.manager.find(Harga_Member, {
+                where: {
+                    jenis_member: data_member.tipe_member,
+                }
+            });
             const add_member = await service.manager.getRepository(Member).createQueryBuilder().insert().values({
                 id_member: id_member,
                 kode_member: data_member.kode_member,
@@ -40,6 +45,8 @@ class MemberSystem {
                 no_ktp: data_member.no_ktp,
                 alamat: data_member.alamat,
                 tipe_member: data_member.tipe_member,
+                playing: data_member.playing,
+                potongan: get_potongan[0].potongan.toString(),
                 status_member: data_member.status_member,
                 created_at: date_now,
                 updated_at: date_now
@@ -144,6 +151,26 @@ class MemberSystem {
                 return {response: false, data: "member is not found"};
             }
             
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async reducePlaying(data):Promise<any> {
+        try {
+            let service = await dataSource;
+
+            const update_play = await service.manager.createQueryBuilder().update(Member).set({
+                playing: data.reduce,
+                updated_at: date_now,
+            }).where("id_member = :id", {id: data.id_member}).execute();
+
+            if (update_play) {
+                return {response: true, data: "data is saved"};
+            } else {
+                return {response: false, data: "data is not saved"};
+            }
+
         } catch (err) {
             console.log(err);
         }

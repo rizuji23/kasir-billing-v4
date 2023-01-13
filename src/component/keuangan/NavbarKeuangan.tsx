@@ -1,9 +1,28 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import ModalExport from "./ModalExport";
 
 class NavbarKeuangan extends React.Component<any, any> {
     constructor(props) {
         super(props);
+        this.state = {
+            isOpen: false,
+        }
+
+        this.handleOpen = this.handleOpen.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+    }
+
+    handleClose() {
+        this.setState({
+            isOpen: false,
+        });
+    }
+
+    handleOpen() {
+        this.setState({
+            isOpen: true,
+        })
     }
 
     render(): React.ReactNode {
@@ -29,13 +48,15 @@ class NavbarKeuangan extends React.Component<any, any> {
                                 </div>
 
                                 <div className="p-1">
-                                    <a href="javascript:void(0)" className="btn btn-primary btn-primary-cozy border-r-13 pl-20 pr-20 pt-10 pb-10" data-bs-toggle="modal" data-bs-target="#print_transaksi_modal">Print
+                                    <a href="javascript:void(0)" className="btn btn-primary btn-primary-cozy border-r-13 pl-20 pr-20 pt-10 pb-10" onClick={this.handleOpen}>Print
                                         Transaksi</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <ModalExport isOpen={this.state.isOpen} closeModal={this.handleClose} />
             </>
         )
     }

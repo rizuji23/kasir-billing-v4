@@ -11,33 +11,24 @@ import { Table_01, Table_02 } from './table/Tables';
 import Loading from "./Loading";
 
 async function turnon(id) {
-    return new Promise(res => {
-        setTimeout(() => {
-            if (id.mode === 'Regular') {
-                const id_table = id.table;
-                const ms = id.milliseconds;
+    return new Promise((res) => {
+        if (id.mode === 'Regular') {
+            const id_table = id.table;
+            const ms = id.milliseconds;
 
-                ipcRenderer.invoke('start', id_table, ms, 0, true, false, false, 0, 0, {}, true, false).then((result) => {
-                    console.log("called regular")
-                    res(result)
-                });
-            } else if (id.mode === 'Loss') {
-                const id_table = id.table;
+            ipcRenderer.invoke('start', id_table, ms, 0, true, false, false, 0, 0, {}, true, false).then((result) => {
+                console.log("called regular")
+                res(result);
+            });
+        } else if (id.mode === 'Loss') {
+            const id_table = id.table;
 
-                ipcRenderer.invoke("start_loss", id_table, false, false, id, false, true).then((result) => {
-                    console.log("called loss")
-                    res(result)
-                });
-            }
-        }, 1000);
-    });
-}
-
-function showLoading(current, max) {
-    toast.info(`Table dinyalakan tunggu sebentar ${current} - ${max}`);
-    if (current === max) {
-        toast.success('Semua table sudah dinyalakan...')
-    }
+            ipcRenderer.invoke("start_loss", id_table, false, false, id, false, true).then((result) => {
+                console.log("called loss")
+                res(result);
+            });
+        }
+    })
 }
 
 class Home extends React.Component<any, any> {
@@ -84,7 +75,13 @@ class Home extends React.Component<any, any> {
 
                     let current = 1;
                     if (arr_fine_regular.length !== 0) {
-                        arr_fine_regular.map((val, i) => turnon(val).then(() => showLoading(current++, arr_fine_regular.length)));
+                        Promise.all(arr_fine_regular.map(async (val, i) => {
+                            setTimeout(() => {
+                                turnon(val).then(() => toast.success("Progress " + Math.ceil(current++ * 100 / arr_fine_regular.length)));
+                            }, 1000 * current++);
+                        }));
+
+
                     } else {
                         toast.info(`Tidak ada waktu yang dijalankan!`);
                     }

@@ -31,6 +31,12 @@ export class Member {
     @Column()
     tipe_member:string
 
+    @Column({nullable: true})
+    playing: number
+
+    @Column({nullable: true})
+    potongan: string
+
     @Column()
     status_member:string
 

@@ -16,6 +16,9 @@ export class Harga_Member {
     @Column()
     potongan: number
 
+    @Column({nullable: true})
+    playing: number
+
     @Column()
     jenis_member: string
 
