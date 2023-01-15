@@ -20,6 +20,9 @@ class ModalExport extends React.Component<any, any> {
             bulan: "",
             tahun: "",
             shift: "",
+            data: [],
+            disabled: true,
+            selected: "",
         }
 
         this.handleFilter = this.handleFilter.bind(this);
@@ -30,6 +33,21 @@ class ModalExport extends React.Component<any, any> {
         this.handleEndDate = this.handleEndDate.bind(this);
         this.handleTahun = this.handleTahun.bind(this);
         this.handleCheckDate = this.handleCheckDate.bind(this);
+        this.checkTahun = this.checkTahun.bind(this);
+        this.checkData = this.checkData.bind(this);
+        this.handleExport = this.handleExport.bind(this);
+    }
+
+    checkData(data) {
+        if (data.length === 0) {
+            this.setState({
+                disabled: true,
+            });
+        } else {
+            this.setState({
+                disabled: false,
+            })
+        }
     }
 
     handleExportType(e) {
@@ -38,6 +56,7 @@ class ModalExport extends React.Component<any, any> {
         } else {
             this.setState({
                 filter: e.target.value,
+                export_tipe: e.target.value,
             })
         }
     }
@@ -66,6 +85,8 @@ class ModalExport extends React.Component<any, any> {
                     console.log(result);
                     if (result.response === true) {
                         toast.success("Data tersedia.");
+                        const today = moment().tz("Asia/Jakarta").format("DD-MM-YYYY")
+
                         this.setState({
                             container_filter: <>
                                 <div className="">
@@ -73,7 +94,11 @@ class ModalExport extends React.Component<any, any> {
                                         {date_now}
                                     </div>
                                 </div>
-                            </>
+                            </>,
+                            data: result.data,
+                            selected: today,
+                        }, () => {
+                            this.checkData(this.state.data)
                         });
                     } else {
                         toast.error("Data tidak tersedia.");
@@ -82,6 +107,10 @@ class ModalExport extends React.Component<any, any> {
                                 <p style={{ textAlign: "center", fontStyle: "italic" }}>Tidak dipilih filter</p>
                             </>,
                             filter: "",
+                            data: [],
+                            selected: "",
+                        }, () => {
+                            this.checkData(this.state.data)
                         });
                     }
                 })
@@ -116,6 +145,10 @@ class ModalExport extends React.Component<any, any> {
                             <label htmlFor="">Input Tahun</label>
                             <input type="number" className="form-control custom-input" onChange={this.handleTahun} />
                         </div>
+
+                        <div className="form-group mt-3 text-end">
+                            <button className="btn btn-primary btn-primary-cozy btn-sm" onClick={this.checkTahun}>Check Data</button>
+                        </div>
                     </>
                 })
             }
@@ -135,11 +168,19 @@ class ModalExport extends React.Component<any, any> {
                     toast.success("Data tersedia.")
                     this.setState({
                         bulan: e.target.value,
+                        data: result.data,
+                        selected: e.target.value
+                    }, () => {
+                        this.checkData(this.state.data)
                     });
                 } else {
                     toast.error("Data tidak tersedia.")
                     this.setState({
                         bulan: "",
+                        data: [],
+                        selected: ""
+                    }, () => {
+                        this.checkData(this.state.data)
                     });
                 }
             })
@@ -182,7 +223,6 @@ class ModalExport extends React.Component<any, any> {
     }
 
     handleCheckDate() {
-
         if (this.state.tanggal.start.length === 0 || this.state.tanggal.end.length === 0) {
             toast.error("Tanggal tidak benar.");
         } else {
@@ -192,11 +232,22 @@ class ModalExport extends React.Component<any, any> {
             }
 
             ipcRenderer.invoke("check_export", false, true, false, false, data).then((result) => {
+                console.log(result);
                 if (result.response === true) {
                     toast.success("Data tersedia.");
+                    this.setState({
+                        data: result.data,
+                        selected: `${data.start} ~ ${data.end}`
+                    }, () => {
+                        this.checkData(this.state.data)
+                    })
                 } else {
                     toast.error("Data tidak tersedia.");
-
+                    this.setState({
+                        data: [],
+                    }, () => {
+                        this.checkData(this.state.data)
+                    })
                 }
             })
         }
@@ -208,7 +259,39 @@ class ModalExport extends React.Component<any, any> {
         } else {
             this.setState({
                 tahun: e.target.value,
+                selected: e.target.value
             });
+        }
+    }
+
+    checkTahun() {
+        ipcRenderer.invoke("check_export", false, false, false, true, this.state.tahun).then((result) => {
+            console.log(result);
+            if (result.response === true) {
+                toast.success("Data tersedia.");
+                this.setState({
+                    data: result.data,
+                    selected: this.state.tahun
+                }, () => {
+                    this.checkData(this.state.data)
+                });
+            } else {
+                toast.error("Data tidak tersedia.");
+                this.setState({
+                    data: [],
+                    selected: "",
+                }, () => {
+                    this.checkData(this.state.data)
+                });
+            }
+        })
+    }
+
+    handleExport() {
+        if (this.state.export_tipe === "PDF") {
+            ipcRenderer.invoke("export", true, false, { data: this.state.data, selected: this.state.selected, shift: this.state.shift }).then((result) => {
+                console.log(result);
+            })
         }
     }
 
@@ -227,7 +310,6 @@ class ModalExport extends React.Component<any, any> {
                                 <option value="">Pilih Export Tipe</option>
                                 <option value="PDF">PDF</option>
                                 <option value="Struk">Struk</option>
-                                <option value="Excel">Excel</option>
                             </select>
                         </div>
 
@@ -263,7 +345,7 @@ class ModalExport extends React.Component<any, any> {
                     <Modal.Footer>
                         <button type="button" className="btn btn-primary btn-primary-cozy-dark"
                             data-bs-dismiss="modal" onClick={this.props.closeModal} id="close-modal-active">Close</button>
-                        <button className="btn btn-primary btn-primary-cozy" onClick={() => this.props.handleFilter(this.state.dari_tanggal, this.state.sampai_tanggal)} id="bayar_now">Export</button>
+                        <button className="btn btn-primary btn-primary-cozy" disabled={this.state.disabled} onClick={this.handleExport}>Export</button>
                     </Modal.Footer>
                 </Modal>
             </>

@@ -1,6 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, ManyToMany, JoinTable } from "typeorm"
 import 'moment-timezone';
 import moment from "moment";
+import { Booking } from "./Booking";
+import { Pesanan } from "./Pesanan";
 
 @Entity()
 export class Struk {
@@ -43,6 +45,8 @@ export class Struk {
 
     @Column()
     updated_at: string
+
+  
 
     @BeforeInsert()
     insertCreated() {

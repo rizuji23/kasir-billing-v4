@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Keuangan</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/boxicons.min.css">
+    <style>
+        ul li {
+            list-style-type: none;
+            font-size: 14px;
+        }
+
+        ul {
+            padding: 0;
+        }
+
+       
+        .table {
+            margin-top: 20px;
+        }
+
+        .table tr td {
+            font-size: 12px;
+            border-left: 1px solid rgb(189, 189, 189);
+            border-bottom: 1px solid rgb(189, 189, 189);
+        }
+
+        .table tr th {
+            font-size: 14px;
+        }
+
+        h1 {
+            font-size: 30px;
+        }
+
+        p {
+            font-size: 14px;
+        }
+
+        h3 {
+            font-size: 20px;
+        }
+        small {
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="">
+        <div class="box-billing_cafe mb-5">
+            <div class="d-flex">
+                <div class="me-3 align-self-center">
+                    <img src="assets/img/logo-print.png" width="120" alt="">
+                </div>
+
+                <div>
+                    <div class="box-title">
+                        <h1><b>Laporan Keuangan</b></h1>
+                        <p class="mb-0">Tanggal: <b id="selected"></b></p>
+                        <p>Shift: <b id="shift"></b></p>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="tables">
+                <h3><b>Billing + Cafe: </b></h3>
+                <table class="table">
+                    <thead class="table-primary">
+                        <tr>
+                          <th scope="col">No</th>
+                          <th scope="col">Nama</th>
+                          <th>Item</th>
+                          <th scope="col">Total</th>
+                          <th scope="col">Tanggal</th>
+                        </tr>
+                      </thead>
+                      <tbody id="table_cafe_billing">
+                       
+                      </tbody>
+                  </table>
+    
+                  <ul>
+                    <li>Total Customer: <b id="total_customer"></b></li>
+                    <li>Total Jam: <b id="total_jam"></b></li>
+                    <li>Rata Rata Jam: <b id="rata_jam"></b></li>
+                    <li>Total Menu Terjual: <b>14 Item</b></li>
+                </ul>
+                <hr>
+                <div class="d-flex">
+                    <div class="pe-3">
+                        <small>Total Pendapatan Semua</small>
+                        <h3><b>Rp. 3.000.000</b></h3>
+                    </div>
+                    <div class="pe-3">
+                        <small>Total Pendapatan Billing</small>
+                        <h3><b>Rp. 3.000.000</b></h3>
+                    </div>
+                </div>
+    
+                <div class="d-flex mt-3">
+                    <div class="pe-3">
+                        <small>Total Pendapatan Cafe</small>
+                        <h3><b>Rp. 200.000</b></h3>
+                    </div>
+    
+                    <div class="pe-3">
+                        <small>Total Modal Cafe</small>
+                        <h3><b>Rp. 3.000.000</b></h3>
+                    </div>
+    
+                    <div class="">
+                        <small>Total Keuntungan Cafe</small>
+                        <h3><b>Rp. 200.000</b></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div style="break-after:page"></div>
+
+        <div class="box_cafe">
+           
+            <div class="tables">
+                <h3><b>Cafe: </b></h3>
+                <table class="table">
+                    <thead class="table-primary">
+                        <tr>
+                          <th scope="col">No</th>
+                          <th scope="col">Nama</th>
+                          <th scope="col">Qty</th>
+                          <th scope="col">Total</th>
+                          <th scope="col">Tanggal</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th scope="row">1</th>
+                          <td>Mark</td>
+                          <td>Otto</td>
+                          <td>@mdo</td>
+                          <td>@mdo</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">2</th>
+                          <td>Jacob</td>
+                          <td>Thornton</td>
+                          <td>@fat</td>
+                          <td>@mdo</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">3</th>
+                          <td>Larry the Bird</td>
+                          <td>@twitter</td>
+                          <td>@mdo</td>
+                          <td>Larry the Bird</td>
+
+                        </tr>
+                      </tbody>
+                  </table>
+                  <p class="mb-0"><b>Jumlah Menu Terbeli: </b></p>
+                  <ul>
+                    <li>Kopi Hitam: <b>10 Item</b></li>
+                    <li>Kopi Susu: <b>10 Item</b></li>
+                </ul>
+                <hr>
+                <ul>
+                    <li>Total Customer: <b>10 Orang</b></li>
+                    <li>Total Menu Terjual: <b>14 Item</b></li>
+                    <li>Rata Rata Menu: <b>Kopi Hitam</b></li>
+                </ul>
+                <hr>
+                
+                <div class="d-flex mt-3">
+                    <div class="pe-3">
+                        <small>Total Pendapatan Cafe</small>
+                        <h3><b>Rp. 200.000</b></h3>
+                    </div>
+    
+                    <div class="pe-3">
+                        <small>Total Modal Cafe</small>
+                        <h3><b>Rp. 3.000.000</b></h3>
+                    </div>
+    
+                    <div class="">
+                        <small>Total Keuntungan Cafe</small>
+                        <h3><b>Rp. 200.000</b></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        if (typeof module === 'object') {
+            window.module = module;
+            module = undefined;
+        }
+    </script>
+    <script src="assets/js/jquery-3.6.0.min.js"></script>
+    <script src="assets/js/popper.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script>
+        if (window.module) module = window.module;
+    </script>
+    <script type="module">
+        const { ipcRenderer } = require("electron");
+
+        const parse_to_rp = (rp) => {
+            var number_string = rp.toString().replace(/[^,\d]/g, ""),
+            split = number_string.split(","),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            if (ribuan) {
+                var separator = sisa ? "." : "";
+                rupiah += separator + ribuan.join(".");
+            }
+
+            rupiah = split[1] != undefined ? rupiah + "," + split[1] : rupiah;
+            return rupiah;
+        }
+
+        ipcRenderer.on('message', (event, message) => {
+            const data = JSON.parse(message);
+            console.log(data);
+            $("#selected").html(data.selected);
+            $("#shift").html(data.shift);
+
+            // Filter by billing + cafe
+            const item_arr = [];
+            const filter_cafe_billing = data.data.filter(el => el.type_struk === "table");
+            let no = 1;
+            filter_cafe_billing.map(el2 => {
+                el2['number'] = no++;
+                var data_menu = ""
+                var data_billing = ""
+
+                if (el2.id_pesanan !== null) {
+                    const filter_data = el2.id_pesanan.id_pesanan.map((el, i) => {
+                        data_menu += `<li class='mt-2'>${el.id_menu.nama_menu} Rp. ${parse_to_rp(el.id_menu.harga_menu)} @${el.qty} = Rp. ${parse_to_rp(el.sub_total)}</li>`
+                        el2['menu'] = data_menu
+                    });
+                }
+
+                if (el2.id_booking !== null) {
+                    const filter_bill = el2.id_booking.id_booking.map((el, i) => {
+                        data_billing += `<li class='mt-2'>${el.start_duration} - ${el.end_duration} @${el.durasi} Jam = Rp. ${parse_to_rp(el.harga)}</li>`;
+                        el2['billing'] = data_billing
+                    })
+                }
+            });
+
+            console.log(filter_cafe_billing)
+
+            const data_bill_cafe = filter_cafe_billing.map((el, i) => {
+                return `<tr>
+                            <td>${el.number}</td>
+                            <td>${el.nama_customer}</td>
+                            <td><p class="mb-0"><b>Billing: </b></p> <ul>${el?.billing === undefined ? "Tidak ada." : el.billing} <li class="mt-2"><b>Total: </b> @${el.id_booking.durasi_booking} = Rp. ${parse_to_rp(el.id_booking.total_harga)}</li></ul><hr><p class="mb-0"><b>Menu: </b></p> <ul>${el?.menu === undefined ? "Tidak ada." : el.menu} <li class="mt-2"><b>Total: </b> Rp. ${parse_to_rp(el.id_pesanan.total)}</li></ul></td>
+                            <td><b>Rp. ${parse_to_rp(el.total_struk)}</b></td>
+                            <td>${el.created_at}</td>
+                        </tr>`
+            });
+
+            const total_jam = filter_cafe_billing.reduce((total, arr) => {
+                return total + arr.id_booking.durasi_booking;
+            }, 0);
+
+            const rata_jam = filter_cafe_billing.reduce((total, arr) => total + arr.id_booking.durasi_booking, 0) / filter_cafe_billing.length
+
+            $("#table_cafe_billing").html(data_bill_cafe);
+            $("#total_customer").html(`${filter_cafe_billing.length} Orang`);
+            $("#total_jam").html(`${total_jam} Jam`);
+            $("#rata_jam").html(`${rata_jam.toPrecision(3)} Jam`);
+            // end Filter by billing + cafe
+
+        });
+    </script>
+</body>
+</html>

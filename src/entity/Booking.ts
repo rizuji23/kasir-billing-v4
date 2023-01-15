@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, ManyToMany, JoinTable } from "typeorm";
 import 'moment-timezone';
 import moment from "moment";
+import { Detail_Booking } from "./Detail_Booking";
 
 
 @Entity()
@@ -46,6 +47,7 @@ export class Booking {
 
     @Column()
     updated_at:string
+
 
     @BeforeInsert()
     insertCreated() {

@@ -23,6 +23,7 @@ import System from './system/System'
 import { SerialPort } from 'serialport'
 import LampSystem from './system/LampSystem'
 import FilterSystem from './system/FilterSystem'
+import ExportSystem from './system/ExportSystem'
 
 //init MainWindow
 let win:any;
@@ -471,5 +472,12 @@ ipcMain.handle("check_export", async(event, check_today, check_date, check_month
         return {response: false, data: "invalid"};
     }
 });
+
+
+ipcMain.handle("export", async(event, pdf, struk, data) => {
+    if (pdf === true) {
+        return await ExportSystem.printPDF(data);
+    }
+})
 
 //endopration
