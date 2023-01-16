@@ -109,6 +109,12 @@ const ExpandableRowComponent: React.FC<any> = ({ data }) => {
         })
     });
 
+    async function handlePrintStruk() {
+        ipcRenderer.invoke("printStruk", data.id_struk).then((result) => {
+
+        })
+    }
+
     return (
         <>
             <ul className="mt-3 mb-3 list-group">
@@ -124,6 +130,7 @@ const ExpandableRowComponent: React.FC<any> = ({ data }) => {
                 <li className="list-group-item"><small>Kembalian</small><br /> <b>Rp. {dot.parse(data.kembalian_struk)}</b></li>
                 <li className="list-group-item"><small>Kasir Input</small><br /> <b>{data.user_in}</b></li>
                 <li className="list-group-item"><small>Created At</small><br /> <b>{data.created_at}</b></li>
+                <li className="list-group-item"><small>Opsi</small><br /> <button onClick={handlePrintStruk} className="btn btn-primary mt-3 btn-primary-cozy btn-sm">Print Struk</button></li>
             </ul>
         </>
     )
@@ -192,8 +199,8 @@ class CafeSiang extends React.Component<any, any> {
                 let total_hari = 0;
                 result.data.forEach(el => {
                     const get_date = el.created_at;
-                    const day_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY");
-                    const day_filter = moment(get_date, "DD-MM-YYYY").format("DD-MM-YYYY");
+                    const day_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD");
+                    const day_filter = moment(get_date, "YYYY-MM-DD").format("YYYY-MM-DD");
                     if (day_now === day_filter && el.shift === "siang") {
                         total_hari += el.total_struk;
                     }
@@ -203,7 +210,7 @@ class CafeSiang extends React.Component<any, any> {
                 result.data.forEach(el => {
                     const get_date = el.created_at;
                     const date_now = moment().tz("Asia/Jakarta").format("MM-YYYY");
-                    const date_filter = moment(get_date, "DD-MM-YYYY").format("MM-YYYY");
+                    const date_filter = moment(get_date, "YYYY-MM-DD").format("MM-YYYY");
                     if (date_now === date_filter && el.shift === "siang") {
                         total_bulan += el.total_struk;
                     }
@@ -213,7 +220,7 @@ class CafeSiang extends React.Component<any, any> {
                     data: result.data.filter(o => o.shift === "siang"),
                     total_harian: dot.parse(total_hari),
                     total_bulanan: dot.parse(total_bulan),
-                    tanggal: moment().tz("Asia/Jakarta").format("DD-MM-YYYY"),
+                    tanggal: moment().tz("Asia/Jakarta").format("YYYY-MM-DD"),
                     bulan: moment().tz("Asia/Jakarta").subtract(0, "month").format("MMMM")
                 });
             }
@@ -253,8 +260,8 @@ class CafeSiang extends React.Component<any, any> {
                 let total_hari = 0;
                 result.data.forEach(el => {
                     const get_date = el.created_at;
-                    const day_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY");
-                    const day_filter = moment(get_date, "DD-MM-YYYY").format("DD-MM-YYYY");
+                    const day_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD");
+                    const day_filter = moment(get_date, "YYYY-MM-DD").format("YYYY-MM-DD");
                     if (day_now === day_filter && el.shift === "siang") {
                         total_hari += el.total_struk;
                     }
@@ -264,7 +271,7 @@ class CafeSiang extends React.Component<any, any> {
                 result.data.forEach(el => {
                     const get_date = el.created_at;
                     const date_now = moment().tz("Asia/Jakarta").format("MM-YYYY");
-                    const date_filter = moment(get_date, "DD-MM-YYYY").format("MM-YYYY");
+                    const date_filter = moment(get_date, "YYYY-MM-DD").format("MM-YYYY");
                     if (date_now === date_filter && el.shift === "siang") {
                         total_bulan += el.total_struk;
                     }
@@ -276,7 +283,7 @@ class CafeSiang extends React.Component<any, any> {
                     data: result.data.filter(o => o.shift === "siang"),
                     total_harian: dot.parse(total_hari),
                     total_bulanan: dot.parse(total_bulan),
-                    tanggal: `${moment(dari_tanggal).format("DD-MM-YYYY")} ~ ${moment(sampai_tanggal).format("DD-MM-YYYY")}`,
+                    tanggal: `${moment(dari_tanggal).format("YYYY-MM-DD")} ~ ${moment(sampai_tanggal).format("YYYY-MM-DD")}`,
                     bulan: `${moment(dari_tanggal).subtract(0, "month").format("MMMM")} ~ ${moment(sampai_tanggal).subtract(0, "month").format("MMMM")}`,
                     isOpen: false,
                     reset_disable: false,

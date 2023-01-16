@@ -8,7 +8,7 @@ import { Settings } from "../entity/Settings";
 class System {
     static async setShift(data_shift):Promise<any> {
         try {
-            const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
+            const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
             let service = await dataSource;
 
             const check_shift = await service.manager.find(Shift);
@@ -63,7 +63,7 @@ class System {
     static async setApi(data_api):Promise<any> {
         try {
             let service = await dataSource;
-            const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
+            const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
 
             const update_api = await service.manager.createQueryBuilder().update(Settings).set({
                 url: data_api.url,
@@ -133,7 +133,7 @@ class System {
     static async setPrinter(data_print):Promise<any> {
         try {
             let service = await dataSource;
-            const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
+            const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
 
             const update_api = await service.manager.createQueryBuilder().update(Settings).set({
                 url: data_print.printer,
@@ -173,7 +173,7 @@ class System {
     static async setPort(data):Promise<any> {
         try {
             let service = await dataSource;
-            const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
+            const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
 
             const set_data = await service.manager.createQueryBuilder().update(Settings).set({
                 url: data.port,

@@ -4,7 +4,7 @@ import shortid from 'shortid';
 import moment from "moment";
 import 'moment-timezone';
 
-const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
+const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
 
 class VoucherSystem {
     static async addVoucher(data_voucher:any):Promise<any> {

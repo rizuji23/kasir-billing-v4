@@ -61,7 +61,7 @@
                     <div class="box-title">
                         <h1><b>Laporan Keuangan</b></h1>
                         <p class="mb-0">Tanggal: <b id="selected"></b></p>
-                        <p>Shift: <b id="shift"></b></p>
+                        <p>Shift: <b id="shift"></b> <b id="time"></b></p>
                     </div>
                 </div>
             </div>
@@ -83,47 +83,50 @@
                       </tbody>
                   </table>
     
-                  <ul>
-                    <li>Total Customer: <b id="total_customer"></b></li>
-                    <li>Total Jam: <b id="total_jam"></b></li>
-                    <li>Rata Rata Jam: <b id="rata_jam"></b></li>
-                    <li>Total Menu Terjual: <b>14 Item</b></li>
-                </ul>
-                <hr>
-                <div class="d-flex">
-                    <div class="pe-3">
-                        <small>Total Pendapatan Semua</small>
-                        <h3><b>Rp. 3.000.000</b></h3>
-                    </div>
-                    <div class="pe-3">
-                        <small>Total Pendapatan Billing</small>
-                        <h3><b>Rp. 3.000.000</b></h3>
-                    </div>
-                </div>
-    
-                <div class="d-flex mt-3">
-                    <div class="pe-3">
-                        <small>Total Pendapatan Cafe</small>
-                        <h3><b>Rp. 200.000</b></h3>
-                    </div>
-    
-                    <div class="pe-3">
-                        <small>Total Modal Cafe</small>
-                        <h3><b>Rp. 3.000.000</b></h3>
-                    </div>
-    
+                  <div class="d-flex">
                     <div class="">
-                        <small>Total Keuntungan Cafe</small>
-                        <h3><b>Rp. 200.000</b></h3>
+                        <ul>
+                            <li>Total Customer: <b id="total_customer"></b></li>
+                            <li>Total Jam: <b id="total_jam"></b></li>
+                            <li>Rata Rata Jam: <b id="rata_jam"></b></li>
+                            <li>Total Menu Terjual: <b id="total_menu"></b></li>
+                        </ul>
                     </div>
-                </div>
+
+                    <div class="ms-auto">
+                        <div class="d-flex">
+                            <div class="pe-3">
+                                <small>Total Pendapatan Semua</small>
+                                <h3><b id="total_all"></b></h3>
+                            </div>
+                            <div class="pe-3">
+                                <small>Total Pendapatan Billing</small>
+                                <h3><b id="total_bill"></b></h3>
+                            </div>
+                        </div>
+            
+                        <div class="d-flex mt-3">
+                            <div class="pe-3">
+                                <small>Total Pendapatan Cafe</small>
+                                <h3><b id="total_menu_pen"></b></h3>
+                            </div>
+            
+                            <div class="pe-3">
+                                <small>Total Modal Cafe</small>
+                                <h3><b id="total_modal"></b></h3>
+                            </div>
+            
+                            <div class="">
+                                <small>Total Keuntungan Cafe</small>
+                                <h3><b id="total_keuntungan"></b></h3>
+                            </div>
+                        </div>
+                    </div>
+                  </div>                
             </div>
         </div>
-        <hr>
         <div style="break-after:page"></div>
-
         <div class="box_cafe">
-           
             <div class="tables">
                 <h3><b>Cafe: </b></h3>
                 <table class="table">
@@ -131,65 +134,45 @@
                         <tr>
                           <th scope="col">No</th>
                           <th scope="col">Nama</th>
-                          <th scope="col">Qty</th>
+                          <th scope="col">Item</th>
                           <th scope="col">Total</th>
                           <th scope="col">Tanggal</th>
                         </tr>
                       </thead>
-                      <tbody>
-                        <tr>
-                          <th scope="row">1</th>
-                          <td>Mark</td>
-                          <td>Otto</td>
-                          <td>@mdo</td>
-                          <td>@mdo</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">2</th>
-                          <td>Jacob</td>
-                          <td>Thornton</td>
-                          <td>@fat</td>
-                          <td>@mdo</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">3</th>
-                          <td>Larry the Bird</td>
-                          <td>@twitter</td>
-                          <td>@mdo</td>
-                          <td>Larry the Bird</td>
-
-                        </tr>
+                      <tbody id="table_cafe">
+                        
                       </tbody>
                   </table>
-                  <p class="mb-0"><b>Jumlah Menu Terbeli: </b></p>
-                  <ul>
-                    <li>Kopi Hitam: <b>10 Item</b></li>
-                    <li>Kopi Susu: <b>10 Item</b></li>
-                </ul>
-                <hr>
-                <ul>
-                    <li>Total Customer: <b>10 Orang</b></li>
-                    <li>Total Menu Terjual: <b>14 Item</b></li>
-                    <li>Rata Rata Menu: <b>Kopi Hitam</b></li>
-                </ul>
-                <hr>
-                
-                <div class="d-flex mt-3">
-                    <div class="pe-3">
-                        <small>Total Pendapatan Cafe</small>
-                        <h3><b>Rp. 200.000</b></h3>
+                  <div class="d-flex">
+                    <div>
+                        <p class="mb-0"><b>Jumlah Menu Terbeli: </b></p>
+                        <ul id="total_terbeli_menu"></ul>
+                        <ul>
+                            <li>Total Customer: <b id="total_customer_cafe"></b></li>
+                            <li>Total Menu Terjual: <b id="total_menu_cafe"></b></li>
+                            <li>Rata Rata Menu: <b id="rata_menu"></b></li>
+                        </ul>
                     </div>
-    
-                    <div class="pe-3">
-                        <small>Total Modal Cafe</small>
-                        <h3><b>Rp. 3.000.000</b></h3>
+
+                    <div class="ms-auto">
+                        <div class="d-flex mt-3">
+                            <div class="pe-3">
+                                <small>Total Pendapatan Cafe</small>
+                                <h3><b id="total_pendapatan_cafe"></b></h3>
+                            </div>
+            
+                            <div class="pe-3">
+                                <small>Total Modal Cafe</small>
+                                <h3><b id="total_modal_cafe"></b></h3>
+                            </div>
+            
+                            <div class="">
+                                <small>Total Keuntungan Cafe</small>
+                                <h3><b id="total_keuntungan_cafe"></b></h3>
+                            </div>
+                        </div>
                     </div>
-    
-                    <div class="">
-                        <small>Total Keuntungan Cafe</small>
-                        <h3><b>Rp. 200.000</b></h3>
-                    </div>
-                </div>
+                  </div>
             </div>
         </div>
     </div>
@@ -207,21 +190,38 @@
     </script>
     <script type="module">
         const { ipcRenderer } = require("electron");
+        const moment = require('moment');
 
         const parse_to_rp = (rp) => {
-            var number_string = rp.toString().replace(/[^,\d]/g, ""),
-            split = number_string.split(","),
-            sisa = split[0].length % 3,
-            rupiah = split[0].substr(0, sisa),
-            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+            if (rp !== undefined) {
+                var number_string = rp.toString().replace(/[^,\d]/g, ""),
+                split = number_string.split(","),
+                sisa = split[0].length % 3,
+                rupiah = split[0].substr(0, sisa),
+                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
 
-            if (ribuan) {
-                var separator = sisa ? "." : "";
-                rupiah += separator + ribuan.join(".");
+                if (ribuan) {
+                    var separator = sisa ? "." : "";
+                    rupiah += separator + ribuan.join(".");
+                }
+
+                rupiah = split[1] != undefined ? rupiah + "," + split[1] : rupiah;
+                return rupiah;
+            } else {
+                return 0;
             }
+        }
 
-            rupiah = split[1] != undefined ? rupiah + "," + split[1] : rupiah;
-            return rupiah;
+        function frequent(number){
+            var count = 0;
+            var sortedNumber = number.sort();
+            var start = number[0], item;
+            for(var i = 0 ;  i < sortedNumber.length; i++){
+                if(start === sortedNumber[i] || sortedNumber[i] === sortedNumber[i+1]){
+                    item = sortedNumber[i]
+                }
+            }
+            return item
         }
 
         ipcRenderer.on('message', (event, message) => {
@@ -231,36 +231,52 @@
             $("#shift").html(data.shift);
 
             // Filter by billing + cafe
-            const item_arr = [];
             const filter_cafe_billing = data.data.filter(el => el.type_struk === "table");
+
             let no = 1;
             filter_cafe_billing.map(el2 => {
                 el2['number'] = no++;
                 var data_menu = ""
                 var data_billing = ""
+                var qty = 0;
+                var total_billing = 0;
+                var total_menu = 0;
+                var total_modal = 0;
+                var total_keuntungan = 0;
+
 
                 if (el2.id_pesanan !== null) {
                     const filter_data = el2.id_pesanan.id_pesanan.map((el, i) => {
-                        data_menu += `<li class='mt-2'>${el.id_menu.nama_menu} Rp. ${parse_to_rp(el.id_menu.harga_menu)} @${el.qty} = Rp. ${parse_to_rp(el.sub_total)}</li>`
+                        data_menu += `<li class='mt-2'>${el.id_menu.nama_menu} Rp. ${parse_to_rp(el.id_menu?.harga_menu)} @${el.qty} = Rp. ${parse_to_rp(el?.sub_total)}</li>`
                         el2['menu'] = data_menu
+                        qty += el.qty;
+                        el2['qty'] = qty
+                        total_modal += (el.qty * el.id_menu.id_menu.modal)
+                        el2['total_modal'] = total_modal
+                        total_keuntungan += (el.qty * el.id_menu.id_menu.keuntungan)
+                        el2['total_keuntungan'] = total_keuntungan
                     });
+
+                    total_menu += el2.id_pesanan.total || 0
+                    el2['total_menu'] = total_menu
                 }
 
                 if (el2.id_booking !== null) {
                     const filter_bill = el2.id_booking.id_booking.map((el, i) => {
-                        data_billing += `<li class='mt-2'>${el.start_duration} - ${el.end_duration} @${el.durasi} Jam = Rp. ${parse_to_rp(el.harga)}</li>`;
+                        data_billing += `<li class='mt-2'>${el.start_duration} - ${el.end_duration} @${el.durasi} Jam = Rp. ${parse_to_rp(el?.harga)}</li>`;
                         el2['billing'] = data_billing
-                    })
+                    });
+
+                    total_billing += el2.id_booking.total_harga || 0
+                    el2['total_billing'] = total_billing
                 }
             });
-
-            console.log(filter_cafe_billing)
 
             const data_bill_cafe = filter_cafe_billing.map((el, i) => {
                 return `<tr>
                             <td>${el.number}</td>
                             <td>${el.nama_customer}</td>
-                            <td><p class="mb-0"><b>Billing: </b></p> <ul>${el?.billing === undefined ? "Tidak ada." : el.billing} <li class="mt-2"><b>Total: </b> @${el.id_booking.durasi_booking} = Rp. ${parse_to_rp(el.id_booking.total_harga)}</li></ul><hr><p class="mb-0"><b>Menu: </b></p> <ul>${el?.menu === undefined ? "Tidak ada." : el.menu} <li class="mt-2"><b>Total: </b> Rp. ${parse_to_rp(el.id_pesanan.total)}</li></ul></td>
+                            <td><p class="mb-0"><b>Billing: </b></p> <ul>${el?.billing === undefined ? "Tidak ada." : el.billing} <li class="mt-2"><b>Total: </b> @${el.id_booking.durasi_booking} = Rp. ${parse_to_rp(el.id_booking.total_harga)}</li></ul><hr><p class="mb-0"><b>Menu: </b></p> <ul>${el?.menu === undefined ? "Tidak ada." : el.menu} <li class="mt-2"><b>Total: </b> @${el?.qty || 0} Rp. ${parse_to_rp(el.id_pesanan?.total)}</li></ul></td>
                             <td><b>Rp. ${parse_to_rp(el.total_struk)}</b></td>
                             <td>${el.created_at}</td>
                         </tr>`
@@ -271,12 +287,100 @@
             }, 0);
 
             const rata_jam = filter_cafe_billing.reduce((total, arr) => total + arr.id_booking.durasi_booking, 0) / filter_cafe_billing.length
+            const total_menu = filter_cafe_billing.reduce((total, arr) => {return total + (arr.qty || 0);}, 0);
+            const total_bill = filter_cafe_billing.reduce((total, arr) => total + (arr.total_billing || 0), 0);
+            const total_all = filter_cafe_billing.reduce((total, arr) => total + (arr.total_struk || 0), 0);
+            const total_menu_pen = filter_cafe_billing.reduce((total, arr) => total + (arr.total_menu || 0), 0);
+            const total_modal = filter_cafe_billing.reduce((total, arr) => total + (arr.total_modal || 0), 0);
+            const total_keuntungan = filter_cafe_billing.reduce((total, arr) => total + (arr.total_keuntungan || 0), 0);
 
             $("#table_cafe_billing").html(data_bill_cafe);
             $("#total_customer").html(`${filter_cafe_billing.length} Orang`);
             $("#total_jam").html(`${total_jam} Jam`);
             $("#rata_jam").html(`${rata_jam.toPrecision(3)} Jam`);
+            $("#total_menu").html(`${total_menu} Item`);
+            $("#total_bill").html(`Rp. ${parse_to_rp(total_bill)}`);
+            $("#total_all").html(`Rp. ${parse_to_rp(total_all)}`);
+            $("#total_menu_pen").html(`Rp. ${parse_to_rp(total_menu_pen)}`);
+            $("#total_modal").html(`Rp. ${parse_to_rp(total_modal)}`);
+            $("#total_keuntungan").html(`Rp. ${parse_to_rp(total_keuntungan)}`);
             // end Filter by billing + cafe
+
+            // start Filter by Cafe Only
+            const filter_cafe = data.data.filter(el => el.type_struk === "cafe only");
+            console.log(filter_cafe);
+
+            let no_cafe = 1;
+            filter_cafe.map(el2 => {
+                el2['number'] = no_cafe++;
+                var data_menu = ""
+                var qty = 0;
+                var total_menu = 0;
+                var total_modal = 0;
+                var total_keuntungan = 0;
+                var arr_menu = [];
+                var arr_menu_2 = [];
+
+                if (el2.id_pesanan !== null) {
+                    const filter_data = el2.id_pesanan.id_pesanan.map((el, i) => {
+                        data_menu += `<li class='mt-2'>${el.id_menu.nama_menu} Rp. ${parse_to_rp(el.id_menu?.harga_menu)} @${el.qty} = Rp. ${parse_to_rp(el?.sub_total)}</li>`
+                        el2['menu'] = data_menu
+                        qty += el.qty;
+                        el2['qty'] = qty
+                        total_modal += (el.qty * el.id_menu.id_menu.modal)
+                        el2['total_modal'] = total_modal
+                        total_keuntungan += (el.qty * el.id_menu.id_menu.keuntungan)
+                        el2['total_keuntungan'] = total_keuntungan
+                        arr_menu.push(el.id_menu.nama_menu);
+                        el2['arr_menu'] = arr_menu
+                        arr_menu_2.push({menu: el.id_menu.nama_menu, qty: el.qty});
+                        el2['arr_menu_2'] = arr_menu_2
+                    });
+
+                    total_menu += el2.id_pesanan.total || 0
+                    el2['total_menu'] = total_menu
+                }
+            });
+
+            const data_cafe = filter_cafe.map((el, i) => {
+                return `<tr>
+                            <td>${el.number}</td>
+                            <td>${el.nama_customer}</td>
+                            <td><p class="mb-0"><p class="mb-0"><b>Menu: </b></p> <ul>${el?.menu === undefined ? "Tidak ada." : el.menu} <li class="mt-2"><b>Total: </b> @${el?.qty || 0} Rp. ${parse_to_rp(el.id_pesanan?.total)}</li></ul></td>
+                            <td><b>Rp. ${parse_to_rp(el.total_struk)}</b></td>
+                            <td>${el.created_at}</td>
+                        </tr>`
+            });
+
+            const combine_menu = filter_cafe.map(menu => menu.arr_menu).reduce((prev, curr) => [...prev, ...curr]).map((e, i) => (e))
+            const combine_menu_2 = filter_cafe.map(menu => menu.arr_menu_2).reduce((prev, curr) => [...prev, ...curr]).map((e, i) => (e))
+            const total_menu_cafe = filter_cafe.reduce((total, arr) => {return total + (arr.qty || 0);}, 0);
+            const total_menu_pen_cafe = filter_cafe.reduce((total, arr) => total + (arr.total_menu || 0), 0);
+            const total_modal_cafe = filter_cafe.reduce((total, arr) => total + (arr.total_modal || 0), 0);
+            const total_keuntungan_cafe = filter_cafe.reduce((total, arr) => total + (arr.total_keuntungan || 0), 0);
+            
+            const menu_terbeli = Array.from(
+                combine_menu_2.reduce((a, {menu, qty}) => {
+                    return a.set(menu, (a.get(menu) || 0) + qty)
+                }, new Map())).map(([menu, qty]) => ({menu, qty}));
+            
+            const total_terbeli_menu = menu_terbeli.map(el => {
+                return `
+                    <li>${el.menu}: <b>${el.qty} Item</b></li>
+                `
+            })
+
+            console.log(menu_terbeli)
+
+            $("#table_cafe").html(data_cafe);
+            $("#total_customer_cafe").html(`${filter_cafe.length} Orang`);
+            $("#total_menu_cafe").html(`${total_menu_cafe} Item`);
+            $("#rata_menu").html(`${frequent(combine_menu)}`);
+            $("#total_pendapatan_cafe").html(`Rp. ${parse_to_rp(total_menu_pen_cafe)}`);
+            $("#total_modal_cafe").html(`Rp. ${parse_to_rp(total_modal_cafe)}`);
+            $("#total_keuntungan_cafe").html(`Rp. ${parse_to_rp(total_keuntungan_cafe)}`);
+            $("#total_terbeli_menu").html(total_terbeli_menu);
+            // end Filter by Cafe Only
 
         });
     </script>

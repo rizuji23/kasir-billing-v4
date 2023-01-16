@@ -5,7 +5,7 @@ import { Harga_Member } from "../entity/Harga_Member";
 import { Member } from "../entity/Member";
 
 
-const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss")
+const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
 
 class MemberSystem {
     static async getPriceMember(tipe_booking):Promise<any> {

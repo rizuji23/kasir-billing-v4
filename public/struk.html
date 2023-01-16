@@ -205,7 +205,7 @@
 
                 $("#item").html(data_item);
                 $("#billing_item").html(data_billing);
-                $("#total_durasi").html(data.billing[0]?.durasi_booking)
+                $("#total_durasi").html(data.billing[0]?.durasi_booking || 0);
                 $("#date").html(date_now[0]);
                 $("#time").html(`${time_now[0]}:${time_now[1]}`);
                 $("#order_id").html(data.struk[0].id_struk);

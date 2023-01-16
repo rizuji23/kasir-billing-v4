@@ -23,7 +23,7 @@ class Stok extends React.Component<any, any> {
             option_menu: "",
             isOpenFilter: false,
             user_in: sessionStorage.getItem('username'),
-            date_now: moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss"),
+            date_now: moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss"),
         }
 
         this.getMenu = this.getMenu.bind(this);
@@ -43,7 +43,7 @@ class Stok extends React.Component<any, any> {
 
     getMenu() {
         const day = {
-            tanggal: moment().tz("Asia/Jakarta").format("DD-MM-YYYY"),
+            tanggal: moment().tz("Asia/Jakarta").format("YYYY-MM-DD"),
         }
         ipcRenderer.invoke("getStok", day).then((result) => {
             console.log(result);
@@ -179,7 +179,7 @@ class Stok extends React.Component<any, any> {
                         <div className="d-flex">
                             <div className="p-2 me-auto">
                                 <h5>Laporan Stok Harian</h5>
-                                <small>Tanggal: {moment().tz("Asia/Jakarta").format("DD-MM-YYYY")}</small>
+                                <small>Tanggal: {moment().tz("Asia/Jakarta").format("YYYY-MM-DD")}</small>
                             </div>
                             <div className="p-2">
                                 <button className="btn btn-primary btn-primary-cozy btn-sm" onClick={this.isOpenFilter}>Filter Laporan</button>

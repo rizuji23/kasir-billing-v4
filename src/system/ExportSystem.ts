@@ -16,6 +16,17 @@ class ExportSystem {
             printWindow.loadFile('../../public/printPdf.html');
             printWindow.webContents.on('did-finish-load', () => {
                 printWindow.webContents.send("message", JSON.stringify(data_transaksi));
+                printWindow.webContents.print({
+                    silent: false,
+                    printBackground: true,
+                    copies: 1,
+                    margins: {
+                        marginType: "none"
+                    },
+                    pageSize: 'A4'
+                }, () => {
+                    return {response: true, data: "printed"};  
+                });
             });
         } catch (err) {
             console.log(err);

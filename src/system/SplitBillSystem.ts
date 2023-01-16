@@ -10,7 +10,7 @@ import { Booking } from "../entity/Booking";
 import { Pesanan } from "../entity/Pesanan";
 import { Struk } from "../entity/Struk";
 
-const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
+const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
 
 class SplitBillSystem {
     static async addSplit(data_bill) {

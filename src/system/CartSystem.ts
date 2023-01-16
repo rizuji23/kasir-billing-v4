@@ -11,7 +11,7 @@ import { Booking } from "../entity/Booking";
 import { Stok_Main } from "../entity/Stok_Main";
 import StokSystem from "./StokSystem";
 
-const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
+const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
 
 
 class CartSystem {
@@ -157,7 +157,7 @@ class CartSystem {
                     }).where('status = :status', {status: 'active'}).execute();
 
                     // increast stok
-                    const get_date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY");
+                    const get_date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD");
                     // update stok
                     const get_cart:any = await service.manager.find(Cart, {
                         where: {

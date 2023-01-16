@@ -24,6 +24,7 @@ import { SerialPort } from 'serialport'
 import LampSystem from './system/LampSystem'
 import FilterSystem from './system/FilterSystem'
 import ExportSystem from './system/ExportSystem'
+import ShiftSystem from './system/ShiftSystem'
 
 //init MainWindow
 let win:any;
@@ -461,7 +462,7 @@ ipcMain.handle("printStruk", async(event, id_struk) => {
 
 ipcMain.handle("check_export", async(event, check_today, check_date, check_month, check_year, data) => {
     if (check_today === true) {
-        return await FilterSystem.getToday();
+        return await FilterSystem.getToday(data);
     } else if (check_date === true) {
         return await FilterSystem.getDate(data);
     } else if (check_month === true) {
@@ -478,6 +479,10 @@ ipcMain.handle("export", async(event, pdf, struk, data) => {
     if (pdf === true) {
         return await ExportSystem.printPDF(data);
     }
-})
+});
+
+ipcMain.handle("getShift", async(event, data) => {
+    return await ShiftSystem.getShift(data);
+});
 
 //endopration

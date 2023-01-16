@@ -23,6 +23,8 @@ class ModalExport extends React.Component<any, any> {
             data: [],
             disabled: true,
             selected: "",
+            start_time: "",
+            end_time: "",
         }
 
         this.handleFilter = this.handleFilter.bind(this);
@@ -36,6 +38,28 @@ class ModalExport extends React.Component<any, any> {
         this.checkTahun = this.checkTahun.bind(this);
         this.checkData = this.checkData.bind(this);
         this.handleExport = this.handleExport.bind(this);
+        this.clearState = this.clearState.bind(this);
+    }
+
+    clearState() {
+        this.setState({
+            export_tipe: "",
+            filter: "",
+            container_filter: "",
+            tanggal: {
+                start: "",
+                end: "",
+            },
+            today: false,
+            bulan: "",
+            tahun: "",
+            shift: "",
+            data: [],
+            disabled: true,
+            selected: "",
+            start_time: "",
+            end_time: "",
+        })
     }
 
     checkData(data) {
@@ -65,8 +89,19 @@ class ModalExport extends React.Component<any, any> {
         if (e.target.value.length === 0) {
             toast.error("Shift Tipe wajib diisi.");
         } else {
-            this.setState({
-                shift: e.target.value,
+            ipcRenderer.invoke("getShift", e.target.value).then((result) => {
+                console.log(result);
+                if (result.response === true) {
+                    this.setState({
+                        shift: e.target.value,
+                        start_time: result.data[0].start_jam,
+                        end_time: result.data[0].end_jam,
+                    });
+                } else {
+                    this.setState({
+                        shift: e.target.value,
+                    })
+                }
             })
         }
     }
@@ -81,11 +116,16 @@ class ModalExport extends React.Component<any, any> {
             const val = e.target.value;
             const date_now = moment().tz("Asia/Jakarta").format("MMMM Do YYYY")
             if (val === "hari_ini") {
-                ipcRenderer.invoke("check_export", true, false, false, false, []).then((result) => {
+                const data = {
+                    shift: this.state.shift,
+                    start: this.state.start_time,
+                    end: this.state.end_time
+                }
+                ipcRenderer.invoke("check_export", true, false, false, false, data).then((result) => {
                     console.log(result);
                     if (result.response === true) {
                         toast.success("Data tersedia.");
-                        const today = moment().tz("Asia/Jakarta").format("DD-MM-YYYY")
+                        const today = moment().tz("Asia/Jakarta").format("YYYY-MM-DD")
 
                         this.setState({
                             container_filter: <>
@@ -162,7 +202,13 @@ class ModalExport extends React.Component<any, any> {
                 bulan: e.target.value,
             });
         } else {
-            ipcRenderer.invoke("check_export", false, false, true, false, e.target.value).then((result) => {
+            const data = {
+                shift: this.state.shift,
+                start: this.state.start_time,
+                end: this.state.end_time,
+                month: e.target.value
+            }
+            ipcRenderer.invoke("check_export", false, false, true, false, data).then((result) => {
                 console.log(e.target.value)
                 if (result.response === true) {
                     toast.success("Data tersedia.")
@@ -229,6 +275,9 @@ class ModalExport extends React.Component<any, any> {
             const data = {
                 start: this.state.tanggal.start,
                 end: this.state.tanggal.end,
+                shift: this.state.shift,
+                start_time: this.state.start_time,
+                end_time: this.state.end_time,
             }
 
             ipcRenderer.invoke("check_export", false, true, false, false, data).then((result) => {
@@ -265,9 +314,16 @@ class ModalExport extends React.Component<any, any> {
     }
 
     checkTahun() {
-        ipcRenderer.invoke("check_export", false, false, false, true, this.state.tahun).then((result) => {
+        const data = {
+            shift: this.state.shift,
+            start: this.state.start_time,
+            end: this.state.end_time,
+            year: this.state.tahun
+        }
+        ipcRenderer.invoke("check_export", false, false, false, true, data).then((result) => {
             console.log(result);
             if (result.response === true) {
+
                 toast.success("Data tersedia.");
                 this.setState({
                     data: result.data,
@@ -289,9 +345,11 @@ class ModalExport extends React.Component<any, any> {
 
     handleExport() {
         if (this.state.export_tipe === "PDF") {
-            ipcRenderer.invoke("export", true, false, { data: this.state.data, selected: this.state.selected, shift: this.state.shift }).then((result) => {
+            ipcRenderer.invoke("export", true, false, { data: this.state.data, selected: this.state.selected, shift: this.state.shift, start_time: this.state.start_time, end_time: this.state.end_time }).then((result) => {
                 console.log(result);
-            })
+                this.clearState();
+                this.props.closeModal();
+            });
         }
     }
 
@@ -318,8 +376,8 @@ class ModalExport extends React.Component<any, any> {
                             <select className="form-control custom-input" onChange={this.handleShift}>
                                 <option value="">Pilih Shift Tipe</option>
                                 <option value="Semua">Semua</option>
-                                <option value="shift_1">Shift Siang</option>
-                                <option value="shift_2">Shift Malam</option>
+                                <option value="Pagi">Shift Pagi</option>
+                                <option value="Malam">Shift Malam</option>
                             </select>
                         </div>
 

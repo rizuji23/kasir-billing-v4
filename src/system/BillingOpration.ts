@@ -13,7 +13,7 @@ import { Struk } from "../entity/Struk";
 import DotAdded from "./DotAdded";
 import StrukSystem from "./StrukSystem";
 
-const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
+const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
 
 interface data_pay {
     id_table: string,
@@ -75,7 +75,7 @@ class BillingOperation {
 
     async inputPrice(data_booking:any):Promise<any> {
         try {
-            const date_now =  moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss")
+            const date_now =  moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
             const data_price:any = await this.checkHarga(1);
             let service = await dataSource;
             const check_booking = await service.manager.find(Booking, {

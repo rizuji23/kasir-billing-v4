@@ -39,6 +39,10 @@ class NavbarKeuangan extends React.Component<any, any> {
                                 <NavLink to={"/transaksi-shift"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2"}>
                                     List Transaksi Shift
                                 </NavLink>
+
+                                <NavLink to={"/laporan-reset"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2"}>
+                                    List Reset
+                                </NavLink>
                             </div>
                         </div>
                         <div className="col-sm">
@@ -48,8 +52,7 @@ class NavbarKeuangan extends React.Component<any, any> {
                                 </div>
 
                                 <div className="p-1">
-                                    <a href="javascript:void(0)" className="btn btn-primary btn-primary-cozy border-r-13 pl-20 pr-20 pt-10 pb-10" onClick={this.handleOpen}>Print
-                                        Transaksi</a>
+                                    <a href="javascript:void(0)" className="btn btn-primary btn-primary-cozy border-r-13 pl-20 pr-20 pt-10 pb-10" onClick={this.handleOpen}>Print Transaksi</a>
                                 </div>
                             </div>
                         </div>

@@ -7,7 +7,7 @@ import { Detail_Cafe } from "../entity/Detail_Cafe";
 import DotAdded from "./DotAdded";
 import { Kategori_Menu } from "../entity/Kategori_Menu";
 
-const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
+const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
 const dot = new DotAdded();
 
 class MenuSystem {

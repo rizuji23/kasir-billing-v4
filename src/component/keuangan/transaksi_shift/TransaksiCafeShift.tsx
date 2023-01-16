@@ -15,6 +15,7 @@ import NavbarTransaksiShift from "./NavbarTransaksiShift";
 import BillingSiang from "./BillingSiang";
 import BillingMalam from "./BillingMalam";
 import CafeSiang from "./CafeSiang";
+import CafeMalam from "./CafeMalam";
 
 class TransaksiCafeShift extends React.Component<any, any> {
     constructor(props: any) {
@@ -44,7 +45,7 @@ class TransaksiCafeShift extends React.Component<any, any> {
                 </div>
                 <div id="malam">
                     <h3 className="text-light"><b>Malam</b></h3>
-                    <BillingMalam />
+                    <CafeMalam />
                 </div>
             </>
         )

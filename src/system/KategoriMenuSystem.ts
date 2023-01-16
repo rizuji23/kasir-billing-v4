@@ -3,7 +3,7 @@ import { dataSource } from "./data-source";
 import shortid from 'shortid';
 import moment from "moment";
 
-const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss")
+const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
 
 class KategoriMenuSystem {
     static async getKategoriMenu():Promise<any> {

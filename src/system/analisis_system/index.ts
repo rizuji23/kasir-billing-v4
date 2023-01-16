@@ -6,7 +6,7 @@ class Cozy {
         return new Promise((res, rej) => {
             // for billing
             data_billing.map((el) => {
-                el['hour'] = moment(el.created_at, "DD-MM-YYYY HH:mm:ss").format("HH");
+                el['hour'] = moment(el.created_at, "YYYY-MM-DD HH:mm:ss").format("HH");
             });
 
             const final_billing = Array.from(
@@ -17,7 +17,7 @@ class Cozy {
 
             // for cafe
             data_cafe.map((el) => {
-                el['hour'] = moment(el.created_at, "DD-MM-YYYY HH:mm:ss").format("HH");
+                el['hour'] = moment(el.created_at, "YYYY-MM-DD HH:mm:ss").format("HH");
             });
 
             const final_cafe = Array.from(
@@ -36,7 +36,7 @@ class Cozy {
         return new Promise((res, rej) => {
             // for billing
             data_billing.map((el) => {
-                el['month'] = moment(el.created_at, "DD-MM-YYYY HH:mm:ss").format("dddd");
+                el['month'] = moment(el.created_at, "YYYY-MM-DD HH:mm:ss").format("dddd");
             });
 
             const final_billing = Array.from(
@@ -47,7 +47,7 @@ class Cozy {
 
             // for cafe
             data_cafe.map((el) => {
-                el['month'] = moment(el.created_at, "DD-MM-YYYY HH:mm:ss").format("dddd");
+                el['month'] = moment(el.created_at, "YYYY-MM-DD HH:mm:ss").format("dddd");
             });
 
             const final_cafe = Array.from(
@@ -86,7 +86,7 @@ class Cozy {
         return new Promise((res, rej) => {
             // for billing
             data_billing.map((el) => {
-                el['month'] = moment(el.created_at, "DD-MM-YYYY HH:mm:ss").format("MMMM");
+                el['month'] = moment(el.created_at, "YYYY-MM-DD HH:mm:ss").format("MMMM");
             });
 
             const final_billing = Array.from(
@@ -97,7 +97,7 @@ class Cozy {
 
             // for cafe
             data_cafe.map((el) => {
-                el['month'] = moment(el.created_at, "DD-MM-YYYY HH:mm:ss").format("MMMM");
+                el['month'] = moment(el.created_at, "YYYY-MM-DD HH:mm:ss").format("MMMM");
             });
 
             const final_cafe = Array.from(

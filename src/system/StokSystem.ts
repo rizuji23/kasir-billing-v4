@@ -7,7 +7,7 @@ import "moment-timezone";
 import { Stok_Keluar } from "../entity/Stok_Keluar";
 import { Stok_Masuk } from "../entity/Stok_Masuk";
 
-const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
+const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
 class StokSystem {
     static async getStok(day):Promise<any> {
         try {
@@ -33,8 +33,8 @@ class StokSystem {
             // get id_menu to stok main
             const get_all_menu = await service.manager.find(Menu);
             // get data previous 
-            const yesterday_date = moment().tz("Asia/Jakarta").subtract(1, "days").format("DD-MM-YYYY");
-            const get_yesterday_stok = await service.manager.query("SELECT *, substr(created_at, 1, 10) AS date_clean FROM stok_main WHERE date_clean = ?", [yesterday_date]);
+            const yesterday_date = moment().tz("Asia/Jakarta").subtract(1, "days").format("YYYY-MM-DD");
+            const get_yesterday_stok = await service.manager.query("SELECT *, date(created_at) AS date_clean FROM stok_main WHERE date_clean = ?", [yesterday_date]);
 
             if (get_yesterday_stok.length !== 0) {
                 // insert to stock main
@@ -186,7 +186,7 @@ class StokSystem {
             console.log(`(${result_id_menu})`)
             
 
-            const get_stok = await service.manager.query("SELECT *, substr(created_at, 1, 10) AS date_clean FROM stok_main WHERE date_clean = ? AND id_menu IN ("+ result_id_menu +")", [tanggal]);
+            const get_stok = await service.manager.query("SELECT *, date(created_at) AS date_clean FROM stok_main WHERE date_clean = ? AND id_menu IN ("+ result_id_menu +")", [tanggal]);
             
             console.log(get_stok);
 

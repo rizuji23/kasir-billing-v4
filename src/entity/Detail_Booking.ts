@@ -39,13 +39,13 @@ export class Detail_Booking {
     @BeforeInsert()
     insertCreated() {
         this.start_duration = moment().tz("Asia/Jakarta").format("HH:mm:ss")
-        this.created_at = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss")
-        this.updated_at = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss")
+        this.created_at = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
+        this.updated_at = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
     }
 
     @BeforeUpdate()
     insertUpdated() {
         this.end_duration = moment().tz("Asia/Jakarta").format("HH:mm:ss")
-        this.updated_at = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss")
+        this.updated_at = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
     }
 }

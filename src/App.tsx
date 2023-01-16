@@ -18,6 +18,7 @@ import List_StokMasukContainer from "./component/stok/List_StokMasuk";
 import List_StokKeluarContainer from "./component/stok/List_StokKeluar";
 import ApiContainer from "./component/pengaturan/api/Api";
 import TentangContainer from "./component/pengaturan/Tentang";
+import LaporanResetContainer from "./component/keuangan/reset/LaporanReset";
 
 class App extends React.Component {
     render() {
@@ -44,6 +45,8 @@ class App extends React.Component {
                     <Route path="/transaksi-shift" element={<TransaksiShiftContainer />}></Route>
 
                     <Route path="/transaksi-shift-cafe" element={<TransaksiCafeShiftContainer />}></Route>
+
+                    <Route path="/laporan-reset" element={<LaporanResetContainer />}></Route>
 
                     <Route path="/analisis" element={<AnalisisContainer />}></Route>
 

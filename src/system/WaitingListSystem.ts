@@ -24,7 +24,7 @@ class WaitingListSystem {
             const service = await dataSource;
 
             const id_waiting = shortid.generate();
-            const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss")
+            const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
             const update_waiting = await service.manager.createQueryBuilder().insert().into(Waiting_List).values({
                 id_waiting: id_waiting,
                 nama_waiting: data_waiting.nama_waiting,

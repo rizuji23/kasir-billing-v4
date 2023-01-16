@@ -28,10 +28,15 @@ class StrukSystem {
                 }
             });
 
+            console.log(check_struk);
+
+
             if (check_struk.length !== 0) {
                 const cart = await service.manager.query("SELECT * FROM cart LEFT OUTER JOIN menu ON cart.id_menu = menu.id_menu WHERE cart.id_pesanan=? ORDER BY cart.id DESC", [check_struk[0].id_pesanan]);
 
-                const billing = await service.manager.query("SELECT * FROM booking LEFT OUTER JOIN detail_booking ON booking.id_booking = detail_booking.id_booking WHERE booking.id_booking=? AND detail_booking.status=? ORDER BY booking.id DESC", [check_struk[0].id_booking, 'active']);
+                const billing = await service.manager.query("SELECT * FROM booking LEFT OUTER JOIN detail_booking ON booking.id_booking = detail_booking.id_booking WHERE booking.id_booking=? AND detail_booking.status=? ORDER BY booking.id DESC", [check_struk[0].id_booking, 'lunas']);
+
+                console.log(check_struk[0].id_booking)
 
                     const data_struk = {
                         response: true,
@@ -71,7 +76,7 @@ class StrukSystem {
                   contextIsolation: false,
                 },
             });
-            const date_now = moment().tz("Asia/Jakarta").format("DD-MM-YYYY HH:mm:ss");
+            const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
 
             let service = await dataSource;
             const check_struk = await service.manager.find(Struk, {
