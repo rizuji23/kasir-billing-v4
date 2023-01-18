@@ -21,6 +21,40 @@ class Laporan {
         }
     }
 
+    static async getLaporanReset():Promise<any> {
+        try {
+            let service = await dataSource;
+
+            const get_reset = await service.manager.query("SELECT * FROM struk LEFT OUTER JOIN pesanan ON struk.id_pesanan = pesanan.id_pesanan LEFT OUTER JOIN booking ON struk.id_booking = booking.id_booking WHERE struk.status_struk = ? AND struk.type_struk = ? ORDER BY id DESC", ['reset', 'table']);
+
+            if (get_reset.length !== 0) {
+                return {response: true, data: get_reset};
+            } else {
+                return {response: false, data: "data is empty"};
+            }
+
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async getLaporanBelumBayar():Promise<any> {
+        try {
+            let service = await dataSource;
+
+            const get_belum = await service.manager.query("SELECT * FROM struk LEFT OUTER JOIN pesanan ON struk.id_pesanan = pesanan.id_pesanan LEFT OUTER JOIN booking ON struk.id_booking = booking.id_booking WHERE struk.status_struk = ? AND struk.type_struk = ? ORDER BY id DESC", ['belum lunas', 'table']);
+
+            if (get_belum.length !== 0) {
+                return {response: true, data: get_belum};
+            } else {
+                return {response: false, data: "data is empty"};
+            }
+
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     static async getDataKeuanganCafe():Promise<any> {
         try {
             let service = await dataSource;

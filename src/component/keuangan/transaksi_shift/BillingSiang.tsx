@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DotAdded from "../../../system/DotAdded";
 import { Header, ModalUser } from "../../header/header";
 import Sidebar from "../../sidebar/sidebar";
@@ -89,27 +89,27 @@ const ExpandableRowComponent: React.FC<any> = ({ data }) => {
         });
     }
 
-    get_cart(data.id_pesanan).then((data: any) => {
-        set_cart(previousState => {
-            return { ...previousState, data_cart: data }
-        })
-    }).catch((rej) => {
-        set_cart(previousState => {
-            return { ...previousState, data_cart: rej }
-        })
-    });
+    useEffect(() => {
+        get_cart(data.id_pesanan).then((data: any) => {
+            set_cart(previousState => {
+                return { ...previousState, data_cart: data }
+            })
+        }).catch((rej) => {
+            set_cart(previousState => {
+                return { ...previousState, data_cart: rej }
+            })
+        });
 
-
-
-    get_detail_billing(data.id_booking).then((data: any) => {
-        set_detail_booking(previousState => {
-            return { ...previousState, data_detail_booking: data }
-        })
-    }).catch((rej) => {
-        set_detail_booking(previousState => {
-            return { ...previousState, data_detail_booking: rej }
-        })
-    });
+        get_detail_billing(data.id_booking).then((data: any) => {
+            set_detail_booking(previousState => {
+                return { ...previousState, data_detail_booking: data }
+            })
+        }).catch((rej) => {
+            set_detail_booking(previousState => {
+                return { ...previousState, data_detail_booking: rej }
+            })
+        });
+    }, []);
 
     async function handlePrintStruk() {
         ipcRenderer.invoke("printStruk", data.id_struk).then((result) => {

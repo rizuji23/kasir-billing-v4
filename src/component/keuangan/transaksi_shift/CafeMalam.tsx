@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DotAdded from "../../../system/DotAdded";
 import { Header, ModalUser } from "../../header/header";
 import Sidebar from "../../sidebar/sidebar";
@@ -99,15 +99,17 @@ const ExpandableRowComponent: React.FC<any> = ({ data }) => {
         })
     }
 
-    get_cart(data.id_pesanan).then((data: any) => {
-        set_cart(previousState => {
-            return { ...previousState, data_cart: data.data, total_keuntungan: data.total_keuntungan, total_modal: data.total_modal }
-        })
-    }).catch((rej) => {
-        set_cart(previousState => {
-            return { ...previousState, data_cart: rej }
-        })
-    });
+    useEffect(() => {
+        get_cart(data.id_pesanan).then((data: any) => {
+            set_cart(previousState => {
+                return { ...previousState, data_cart: data.data, total_keuntungan: data.total_keuntungan, total_modal: data.total_modal }
+            })
+        }).catch((rej) => {
+            set_cart(previousState => {
+                return { ...previousState, data_cart: rej }
+            })
+        });
+    }, [])
 
     async function handlePrintStruk() {
         ipcRenderer.invoke("printStruk", data.id_struk).then((result) => {

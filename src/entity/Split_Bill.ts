@@ -9,6 +9,9 @@ export class Split_Bill {
 
     @Column()
     id_split_bill:string
+
+    @Column()
+    id_booking: string
     
     @Column()
     nama_bill: string
@@ -18,6 +21,9 @@ export class Split_Bill {
 
     @Column()
     type_bill: string
+
+    @Column({nullable: true})
+    user_in: string
 
     @Column()
     created_at: string

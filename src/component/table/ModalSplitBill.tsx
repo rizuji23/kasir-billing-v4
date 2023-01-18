@@ -110,14 +110,11 @@ class ModalSplitBill extends React.Component<any, any> {
                     data_billing: this.props.data_split_billing,
                     data_menu: this.props.data_split_menu,
                     id_booking: this.props.id_booking,
-                    id_pesanan: this.props.id_pesanan
+                    id_pesanan: this.props.id_pesanan,
+                    user_in: sessionStorage.getItem("username"),
                 }
 
-                console.log(data_bill);
-
                 ipcRenderer.invoke("split_bill", data_bill).then((result) => {
-                    console.log(result);
-
                     if (result.response === true) {
                         toast.success("Split Bill berhasil dilakukan");
                         this.clearState();

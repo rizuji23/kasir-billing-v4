@@ -3,130 +3,124 @@ import { Header, ModalUser } from "../../header/header";
 import Sidebar from "../../sidebar/sidebar";
 import NavbarKeuangan from "../NavbarKeuangan";
 import { ToastContainer, toast } from "react-toastify";
-import NavbarTransaksi from "../NavbarTransaksi";
-import DataTable, { createTheme } from "react-data-table-component";
+import DataTable from "react-data-table-component";
 import { ipcRenderer } from "electron";
 import DotAdded from "../../../system/DotAdded";
+import moment from "moment";
+import 'moment-timezone';
 import ModalFilter from "../../pengaturan/ModalFilter";
-
-createTheme('solarized', {
-    background: {
-        default: '#1A1B1F'
-    },
-    text: {
-        primary: '#fff',
-        secondary: '#fff'
-    },
-    context: {
-        background: '#cb4b16',
-        text: '#FFFFFF',
-    },
-    divider: {
-        default: '#fff',
-    },
-    action: {
-        button: 'rgba(0,0,0,.54)',
-        hover: 'rgba(0,0,0,.08)',
-        disabled: '#fff',
-    },
-}, 'dark')
 
 const ExpandableRowComponent: React.FC<any> = ({ data }) => {
     const dot = new DotAdded();
 
-    const [data_cart, set_cart] = useState({
-        data_cart: "Waiting Data..."
+    const [data_booking, set_booking] = useState({
+        data_booking: "Waiting Data...",
+        total_booking: 0,
     });
 
-    const [data_detail_booking, set_detail_booking] = useState({
-        data_detail_booking: "Waiting Data..."
+    const [data_cafe, set_cafe] = useState({
+        data_cafe: "Waiting Data...",
+        total_cafe: 0,
     });
 
 
-    // get cart
-    async function get_cart(data) {
+    async function get_booking(data) {
         return new Promise((res, rej) => {
-            ipcRenderer.invoke("keuangan", false, true, false, data).then((result) => {
+            ipcRenderer.invoke("getDetailSplitBooking", data).then((result) => {
                 if (result.response === true) {
-                    const data = result.data.map((el, i) => {
-                        return (
-                            <>
-                                <li>{el.nama_menu} @{el.qty} Rp. {dot.parse(el.harga_menu)} = Rp. {dot.parse(el.sub_total)}</li>
-                            </>
-                        )
+                    const data = result.data.map(el => {
+                        if (el.id_detail_booking !== null) {
+                            return (
+                                <>
+                                    <li>{el.end_duration} = Rp. {dot.parse(el.harga)}</li>
+                                </>
+                            )
+                        } else {
+                            return (
+                                <></>
+                            )
+                        }
                     });
 
-                    res(data)
+                    const total = result.data.reduce((total, arr) => total + arr.harga, 0);
+                    res({ data: data, total: total });
                 } else {
-                    rej("Data is empty")
+                    rej("Data is empty");
                 }
             });
-        })
+        });
     }
 
-    async function get_detail_billing(data) {
+    async function get_cafe(data) {
         return new Promise((res, rej) => {
-            // get detail booking
-            ipcRenderer.invoke("keuangan", false, false, true, data).then((result) => {
+            ipcRenderer.invoke("getDetailSplitCafe", data).then((result) => {
                 if (result.response === true) {
-                    const data = result.data.map((el, i) => {
-                        return (
-                            <>
-                                <li>{el.end_duration} = Rp. {dot.parse(el.harga)}</li>
-                            </>
-                        )
+                    const data = result.data.map(el => {
+                        if (el.id_cart !== null) {
+                            return (
+                                <>
+                                    <li>{el.nama_menu} @{el.qty} Rp. {dot.parse(el.harga_menu)} = Rp. {dot.parse(el.sub_total)}</li>
+                                </>
+                            )
+                        } else {
+                            return (
+                                <></>
+                            )
+                        }
                     });
 
-                    res(data)
+                    const total = result.data.reduce((total, arr) => total + arr.sub_total, 0);
+                    res({ data: data, total: total });
                 } else {
-                    rej("Data is empty")
+                    rej("Data is empty");
                 }
             });
         });
     }
 
     useEffect(() => {
-        get_cart(data.id_pesanan).then((data: any) => {
-            set_cart(previousState => {
-                return { ...previousState, data_cart: data }
-            })
+        get_booking(data.id_split_bill).then((data: any) => {
+            set_booking(previousState => {
+                return { ...previousState, data_booking: data.data, total_booking: data.total };
+            });
         }).catch((rej) => {
-            set_cart(previousState => {
-                return { ...previousState, data_cart: rej }
-            })
+            set_booking(previousState => {
+                return { ...previousState, data_booking: rej, total_booking: 0 };
+            });
         });
 
-        get_detail_billing(data.id_booking).then((data: any) => {
-            set_detail_booking(previousState => {
-                return { ...previousState, data_detail_booking: data }
-            })
+        get_cafe(data.id_split_bill).then((data: any) => {
+            set_cafe(previousState => {
+                return { ...previousState, data_cafe: data.data, total_cafe: data.total };
+            });
+
+            console.log(data)
         }).catch((rej) => {
-            set_detail_booking(previousState => {
-                return { ...previousState, data_detail_booking: rej }
-            })
+            set_cafe(previousState => {
+                return { ...previousState, data_cafe: rej, total_cafe: 0 };
+            });
         });
-    }, [])
+    }, []);
+
 
     return (
         <>
             <ul className="mt-3 mb-3 list-group">
-                <li className="list-group-item"><small>Order ID</small><br /> <b>{data.id_struk}</b></li>
-                <li className="list-group-item"><small>Table ID</small><br /> <b>{data.id_table}</b></li>
-                <li className="list-group-item"><small>Nama Customer</small><br /> <b>{data.nama_customer}</b></li>
-                <li className="list-group-item"><small>Detail Booking Billing</small><br /> <ul>{data_detail_booking.data_detail_booking}</ul> <br /> Total: <b>Rp. {dot.parse(data.total_harga)}</b></li>
-                <li className="list-group-item"><small>Detail Cafe</small><br /> <ul>{data_cart.data_cart}</ul> <br /> Total: <b>Rp. {data.total !== null ? dot.parse(data.total) : 0}</b></li>
-                <li className="list-group-item"><small>Total Semua</small><br /> <b>Rp. {dot.parse(data.total_struk)}</b></li>
-                <li className="list-group-item"><small>Uang Cash</small><br /> <b>Rp. {dot.parse(data.cash_struk)}</b></li>
-                <li className="list-group-item"><small>Kembalian</small><br /> <b>Rp. {dot.parse(data.kembalian_struk)}</b></li>
+                <li className="list-group-item"><small>Order ID</small><br /> <b>{data.id_split_bill}</b></li>
+                <li className="list-group-item"><small>Nama Customer</small><br /> <b>{data.nama_bill}</b></li>
+                <li className="list-group-item"><small>Detail Booking Billing</small><br /> <ul>{data_booking.data_booking}</ul> <br /> Total: <b>Rp. {dot.parse(data_booking.total_booking) || 0}</b> </li>
+                <li className="list-group-item"><small>Detail Cafe</small><br /> <ul>{data_cafe.data_cafe}</ul> <br /> Total: <b>Rp. {dot.parse(data_cafe.total_cafe) || 0}</b> </li>
+                <li className="list-group-item"><small>Total Semua</small><br /> <b>Rp. {dot.parse(data.total_bill)}</b></li>
                 <li className="list-group-item"><small>Kasir Input</small><br /> <b>{data.user_in}</b></li>
                 <li className="list-group-item"><small>Created At</small><br /> <b>{data.created_at}</b></li>
+
             </ul>
         </>
     )
 }
 
-class LaporanReset extends React.Component<any, any> {
-    constructor(props: any) {
+class LaporanSplitBill extends React.Component<any, any> {
+    constructor(props) {
         super(props);
         this.state = {
             data: [],
@@ -138,17 +132,17 @@ class LaporanReset extends React.Component<any, any> {
                 },
                 {
                     name: "Order ID",
-                    selector: row => row.id_struk,
+                    selector: row => row.id_split_bill,
                     sortable: true,
                 },
                 {
                     name: "Nama",
-                    selector: row => row.nama_customer,
+                    selector: row => row.nama_bill,
                     sortable: true,
                 },
                 {
                     name: "Total",
-                    selector: row => row.total_struk_val,
+                    selector: row => row.total_split_bill,
                     sortable: true,
                 },
                 {
@@ -157,43 +151,42 @@ class LaporanReset extends React.Component<any, any> {
                     sortable: true,
                 }
             ],
-            total_reset: 0,
+            total_split_bill: 0,
             isOpen: false,
+            tanggal: "",
             reset_disable: true,
         }
 
-        this.getDataKeuangan = this.getDataKeuangan.bind(this);
+        this.getSplitBill = this.getSplitBill.bind(this);
+        this.handleFilter = this.handleFilter.bind(this);
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
-        this.handleFilter = this.handleFilter.bind(this);
         this.resetFilter = this.resetFilter.bind(this);
     }
 
-    getDataKeuangan() {
-        const dot = new DotAdded();
-        ipcRenderer.invoke("getLaporanReset").then((result) => {
+    componentDidMount(): void {
+        this.getSplitBill();
+    }
+
+    getSplitBill() {
+        ipcRenderer.invoke("getLaporanSplitBill").then((result) => {
             console.log(result);
             if (result.response === true) {
-                let i = 1;
-                result.data.map((el) => {
-                    el['number'] = i++;
-                    el['total_struk_val'] = `Rp. ${dot.parse(el.total_struk)}`
+                const dot = new DotAdded();
+                let no = 1;
+                result.data.map(el => {
+                    el['number'] = no++;
+                    el['total_split_bill'] = dot.parse(el.total_bill);
                 });
 
-                const total_reset = result.data.reduce((total, arr) => total + arr.total_struk, 0);
+                const total_bill = result.data.reduce((total, arr) => total + arr.total_bill, 0);
 
                 this.setState({
                     data: result.data,
-                    total_reset: dot.parse(total_reset),
-                });
-            } else {
-                toast.error("Data kosong!");
+                    total_split_bill: dot.parse(total_bill),
+                })
             }
-        })
-    }
-
-    componentDidMount(): void {
-        this.getDataKeuangan();
+        });
     }
 
     openModal(): any {
@@ -211,41 +204,52 @@ class LaporanReset extends React.Component<any, any> {
             sampai_tanggal: sampai_tanggal
         }
         const dot = new DotAdded();
-        ipcRenderer.invoke("filterByDateBillingReset", data_filter).then((result) => {
+
+        ipcRenderer.invoke("getFilterSplitBill", data_filter).then((result) => {
             if (result.response === true) {
                 let i = 1;
                 result.data.map((el) => {
                     el['number'] = i++;
-                    el['total_struk_val'] = `Rp. ${dot.parse(el.total_struk)}`
+                    el['total_split_bill'] = `Rp. ${dot.parse(el.total_bill)}`
                 });
 
-                const total_reset = result.data.reduce((total, arr) => total + arr.total_struk, 0);
+                let total_hari = 0;
+                result.data.forEach(el => {
+                    const get_date = el.created_at;
+                    const day_filter = moment(get_date, "YYYY-MM-DD").format("YYYY-MM-DD");
+                    if (day_filter) {
+                        total_hari += el.total_bill;
+                    }
+                })
+
 
                 toast.success("Data berhasil difilter.");
 
                 this.setState({
                     data: result.data,
+                    total_split_bill: dot.parse(total_hari),
+                    tanggal: `${moment(dari_tanggal).format("YYYY-MM-DD")} ~ ${moment(sampai_tanggal).format("YYYY-MM-DD")}`,
                     isOpen: false,
                     reset_disable: false,
-                    total_reset: dot.parse(total_reset),
                 });
             } else {
                 toast.error("Data kosong!");
-                this.getDataKeuangan();
+                this.getSplitBill();
                 this.setState({
                     isOpen: false,
                 });
             }
-        });
+        })
     }
 
     resetFilter() {
         toast.success("Filter berhasil direset.");
-        this.getDataKeuangan();
+        this.getSplitBill();
         this.setState({
             reset_disable: true,
         })
     }
+
 
     render(): React.ReactNode {
         return (
@@ -262,12 +266,13 @@ class LaporanReset extends React.Component<any, any> {
                     pauseOnHover
                     theme="dark"
                 />
+
                 <div className="hr-white"></div>
                 <div className="card card-custom mt-3">
                     <div className="card-body">
                         <div className="title-pemb">
-                            <h4>Total transaksi reset:</h4>
-                            <h4>Rp. <span id="total_hari">{this.state.total_reset}</span></h4>
+                            <h4>Total transaksi split bill:</h4>
+                            <h4>Rp. <span id="total_hari">{this.state.total_split_bill}</span></h4>
                             <p id="date_locale"></p>
                         </div>
                     </div>
@@ -278,7 +283,7 @@ class LaporanReset extends React.Component<any, any> {
                         <div className="card-header">
                             <div className="d-flex">
                                 <div className="p-2 w-100">
-                                    <h4>List Transaksi Reset</h4>
+                                    <h4>List Transaksi Split Bill</h4>
                                 </div>
                                 <div className="p-2 me-auto">
                                     <button className="btn btn-primary btn-primary-cozy" onClick={this.openModal}>Filter</button>
@@ -295,13 +300,14 @@ class LaporanReset extends React.Component<any, any> {
                         </div>
                     </div>
                 </div>
+
                 <ModalFilter openModal={this.openModal} data={this.state.data} handleFilter={this.handleFilter} closeModal={this.closeModal} isOpen={this.state.isOpen} />
             </>
         )
     }
 }
 
-class LaporanResetContainer extends React.Component<any, any> {
+class LaporanSplitBillContainer extends React.Component<any, any> {
     constructor(props) {
         super(props);
     }
@@ -314,7 +320,7 @@ class LaporanResetContainer extends React.Component<any, any> {
                     <Sidebar />
                     <div className="box-bg">
                         <NavbarKeuangan />
-                        <LaporanReset />
+                        <LaporanSplitBill />
                     </div>
                 </div>
                 <ModalUser />
@@ -323,4 +329,4 @@ class LaporanResetContainer extends React.Component<any, any> {
     }
 }
 
-export default LaporanResetContainer;
+export default LaporanSplitBillContainer;

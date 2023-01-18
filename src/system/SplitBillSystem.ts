@@ -9,20 +9,25 @@ import { Cart } from "../entity/Cart";
 import { Booking } from "../entity/Booking";
 import { Pesanan } from "../entity/Pesanan";
 import { Struk } from "../entity/Struk";
+import { Menu } from "electron";
+import DotAdded from "./DotAdded";
 
-const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
 
 class SplitBillSystem {
     static async addSplit(data_bill) {
+        const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
+
         try {
             let service = await dataSource;
             const id_split_bill = shortid.generate();
 
             const add_bill = await service.manager.getRepository(Split_Bill).createQueryBuilder().insert().values({
                 id_split_bill: id_split_bill,
+                id_booking: data_bill.id_booking,
                 nama_bill: data_bill.nama,
-                total_bill: data_bill.total,
+                total_bill: new DotAdded().decode(data_bill.total),
                 type_bill: data_bill.type_bill,
+                user_in: data_bill.user_in,
                 created_at: date_now,
                 updated_at: date_now
             }).execute();
@@ -156,6 +161,97 @@ class SplitBillSystem {
 
             }
 
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async getLaporanSplitBill():Promise<any> {
+        try {
+            let service = await dataSource;
+
+            const get_split_bill = await service.manager.find(Split_Bill);
+            
+            if (get_split_bill.length !== 0) {
+                return {response: true, data: get_split_bill};
+            } else {
+                return {response: false, data: "data is empty"};
+            }
+            
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async getDetailSplitBill(data):Promise<any> {
+        try {
+            let service = await dataSource;
+
+            console.log(data);
+
+            const get_split_bill = await service.manager.query("SELECT * FROM split_bill WHERE id_split_bill = ? ORDER BY id DESC", [data]);
+
+            if (get_split_bill.length !== 0) {
+                return {response: true, data: get_split_bill};
+            } else {
+                return {response: false, data: "data is empty"};
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async getDetailSplitBooking(data):Promise<any> {
+        try {
+            let service = await dataSource;
+
+            console.log(data);
+
+            const get_split_bill = await service.manager.query("SELECT * FROM split_bill_detail LEFT OUTER JOIN detail_booking ON split_bill_detail.id_detail_booking = detail_booking.id_detail_booking WHERE split_bill_detail.id_split_bill = ? ORDER BY id DESC", [data]);
+
+            if (get_split_bill.length !== 0) {
+                return {response: true, data: get_split_bill};
+            } else {
+                return {response: false, data: "data is empty"};
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async getDetailSplitCafe(data):Promise<any> {
+        try {
+            let service = await dataSource;
+
+            console.log(data);
+
+            const get_split_bill = await service.manager.query("SELECT * FROM split_bill_detail LEFT OUTER JOIN cart ON split_bill_detail.id_cart = cart.id_cart LEFT OUTER JOIN menu ON menu.id_menu = cart.id_menu WHERE split_bill_detail.id_split_bill = ? ORDER BY id DESC", [data]);
+
+            if (get_split_bill.length !== 0) {
+                return {response: true, data: get_split_bill};
+            } else {
+                return {response: false, data: "data is empty"};
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async getFilterSplitBill(data):Promise<any> {
+        try {
+            let service = await dataSource;
+
+            const from_date = moment(data.dari_tanggal, "YYYY-MM-DD").format("YYYY-MM-DD")
+            const to_date = moment(data.sampai_tanggal, "YYYY-MM-DD").format("YYYY-MM-DD")
+
+            const get_split_bill = await service.manager.query("SELECT *, date(split_bill.created_at) AS date_clean FROM split_bill WHERE date_clean BETWEEN ? AND ?", [from_date, to_date]);
+            
+            if (get_split_bill.length !== 0) {
+                return {response: true, data: get_split_bill};
+            } else {
+                return {response: false, data: "data is empty"};
+            }
+            
         } catch (err) {
             console.log(err);
         }

@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DotAdded from "../../system/DotAdded";
 import { Header, ModalUser } from "../header/header";
 import Sidebar from "../sidebar/sidebar";
@@ -11,7 +11,6 @@ import moment from "moment";
 import 'moment-timezone';
 import NavbarTransaksi from "./NavbarTransaksi";
 import ModalFilter from "../pengaturan/ModalFilter";
-import FilterTransaksi from "./system/FilterTransaksi";
 
 createTheme('solarized', {
     background: {
@@ -72,6 +71,7 @@ const ExpandableRowComponent: React.FC<any> = ({ data }) => {
         return new Promise((res, rej) => {
             // get detail booking
             ipcRenderer.invoke("keuangan", false, false, true, data).then((result) => {
+                console.log(result)
                 if (result.response === true) {
                     const data = result.data.map((el, i) => {
                         return (
@@ -89,27 +89,29 @@ const ExpandableRowComponent: React.FC<any> = ({ data }) => {
         });
     }
 
-    get_cart(data.id_pesanan).then((data: any) => {
-        set_cart(previousState => {
-            return { ...previousState, data_cart: data }
-        })
-    }).catch((rej) => {
-        set_cart(previousState => {
-            return { ...previousState, data_cart: rej }
-        })
-    });
+    useEffect(() => {
+        get_cart(data.id_pesanan).then((data: any) => {
+            set_cart(previousState => {
+                return { ...previousState, data_cart: data }
+            })
+        }).catch((rej) => {
+            set_cart(previousState => {
+                return { ...previousState, data_cart: rej }
+            })
+        });
+
+        get_detail_billing(data.id_booking).then((data: any) => {
+            set_detail_booking(previousState => {
+                return { ...previousState, data_detail_booking: data }
+            })
+        }).catch((rej) => {
+            set_detail_booking(previousState => {
+                return { ...previousState, data_detail_booking: rej }
+            })
+        });
+    }, [])
 
 
-
-    get_detail_billing(data.id_booking).then((data: any) => {
-        set_detail_booking(previousState => {
-            return { ...previousState, data_detail_booking: data }
-        })
-    }).catch((rej) => {
-        set_detail_booking(previousState => {
-            return { ...previousState, data_detail_booking: rej }
-        })
-    });
 
     async function handlePrintStruk() {
         ipcRenderer.invoke("printStruk", data.id_struk).then((result) => {

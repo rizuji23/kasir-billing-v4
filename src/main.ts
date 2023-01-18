@@ -485,4 +485,40 @@ ipcMain.handle("getShift", async(event, data) => {
     return await ShiftSystem.getShift(data);
 });
 
+ipcMain.handle("getLaporanReset", async(event) => {
+    return await Laporan.getLaporanReset();
+});
+
+ipcMain.handle("getLaporanBelumBayar", async(event) => {
+    return await Laporan.getLaporanBelumBayar();
+});
+
+ipcMain.handle("filterByDateBillingReset", async(event, data) => {
+    return await FilterTransaksi.filterByDateBillingReset(data);
+});
+
+ipcMain.handle("filterByDateBillingBelumBayar", async(event, data) => {
+    return await FilterTransaksi.filterByDateBillingBelumBayar(data);
+});
+
+ipcMain.handle("getLaporanSplitBill", async(event) => {
+    return await SplitBillSystem.getLaporanSplitBill();
+});
+
+ipcMain.handle("getDetailSplitBill", async(event, data) => {
+    return await SplitBillSystem.getDetailSplitBill(data);
+});
+
+ipcMain.handle("getFilterSplitBill", async(event, data) => {
+    return await SplitBillSystem.getFilterSplitBill(data);
+});
+
+ipcMain.handle("getDetailSplitBooking", async(event, data) => {
+    return await SplitBillSystem.getDetailSplitBooking(data);
+});
+
+ipcMain.handle("getDetailSplitCafe", async(event, data) => {
+    return await SplitBillSystem.getDetailSplitCafe(data);
+})
+
 //endopration

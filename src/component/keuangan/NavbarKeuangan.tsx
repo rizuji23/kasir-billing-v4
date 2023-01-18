@@ -29,24 +29,35 @@ class NavbarKeuangan extends React.Component<any, any> {
         return (
             <>
                 <div className="overview-pemb mb-1">
-                    <div className="row">
-                        <div className="col-sm">
-                            <div className="d-flex mb-2">
-                                <NavLink to={"/keuangan"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10"}>
-                                    List Transaksi
-                                </NavLink>
+                    <div className="d-flex mb-2">
+                        <div className="me-auto">
+                            <NavLink to={"/laporan-summary"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10"}>
+                                Summary
+                            </NavLink>
 
-                                <NavLink to={"/transaksi-shift"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2"}>
-                                    List Transaksi Shift
-                                </NavLink>
+                            <NavLink to={"/keuangan"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2"}>
+                                List Transaksi
+                            </NavLink>
 
-                                <NavLink to={"/laporan-reset"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2"}>
-                                    List Reset
-                                </NavLink>
-                            </div>
+                            <NavLink to={"/transaksi-shift"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2"}>
+                                List Transaksi Shift
+                            </NavLink>
+
+                            <NavLink to={"/laporan-split-bill"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2"}>
+                                List Split Bill
+                            </NavLink>
+
+                            <NavLink to={"/laporan-belum-bayar"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2"}>
+                                List Belum Bayar
+                            </NavLink>
+
+                            <NavLink to={"/laporan-reset"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2"}>
+                                List Reset
+                            </NavLink>
                         </div>
-                        <div className="col-sm">
-                            <div className="d-flex mb-2 float-end">
+
+                        <div className="flex-shrink-1">
+                            <div className="d-flex mb-2 text-end">
                                 <div className="p-1">
                                     <a href="javascript:void(0)" className="btn btn-primary btn-primary-cozy border-r-13 pl-20 pr-20 pt-10 pb-10" id="refresh_page"><img src="assets/img/icon/refresh-ccw.png" alt="" /></a>
                                 </div>
@@ -56,8 +67,13 @@ class NavbarKeuangan extends React.Component<any, any> {
                                 </div>
                             </div>
                         </div>
+
                     </div>
+
+
                 </div>
+
+
 
                 <ModalExport isOpen={this.state.isOpen} closeModal={this.handleClose} />
             </>
