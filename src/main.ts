@@ -25,6 +25,7 @@ import LampSystem from './system/LampSystem'
 import FilterSystem from './system/FilterSystem'
 import ExportSystem from './system/ExportSystem'
 import ShiftSystem from './system/ShiftSystem'
+import { dataSource } from './system/data-source'
 
 //init MainWindow
 let win:any;
@@ -519,6 +520,26 @@ ipcMain.handle("getDetailSplitBooking", async(event, data) => {
 
 ipcMain.handle("getDetailSplitCafe", async(event, data) => {
     return await SplitBillSystem.getDetailSplitCafe(data);
-})
+});
+
+ipcMain.handle("getFilterMonthSplitBill", async(event, data) => {
+    return await SplitBillSystem.getFilterMonthSplitBill(data);
+});
+
+ipcMain.handle("filterByMonthBilling", async(event, data) => {
+    return await FilterTransaksi.filterByMonthBilling(data);
+});
+
+ipcMain.handle("filterByMonthCafe", async(event, data) => {
+    return await FilterTransaksi.filterByMonthCafe(data);
+});
+
+ipcMain.handle("filterByMonthBillingReset", async(event, data) => {
+    return await FilterTransaksi.filterByMonthBillingReset(data);
+});
+
+ipcMain.handle("filterByMonthBillingBelumBayar", async(event, data) => {
+    return await FilterTransaksi.filterByMonthBillingBelumBayar(data);
+});
 
 //endopration

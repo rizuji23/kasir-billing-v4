@@ -55,7 +55,7 @@ const ExpandableRowComponent: React.FC<any> = ({ data }) => {
                     const data = result.data.map((el, i) => {
                         return (
                             <>
-                                <li>{el.nama_menu} @{el.qty} Rp. {dot.parse(el.harga_menu)} = Rp. {dot.parse(el.sub_total)}</li>
+                                <li>{el.nama_menu} @{el.qty} Rp. {dot.parse(el.harga_menu)} = Rp. {dot.parse(el.sub_total)} {el.type_bill === "split_bill" ? <span className="badge text-bg-success">Split Bill - <b>Lunas</b></span> : <></>}</li>
                             </>
                         )
                     });
@@ -76,7 +76,7 @@ const ExpandableRowComponent: React.FC<any> = ({ data }) => {
                     const data = result.data.map((el, i) => {
                         return (
                             <>
-                                <li>{el.end_duration} = Rp. {dot.parse(el.harga)}</li>
+                                <li>{el.end_duration} = Rp. {dot.parse(el.harga)} {el.type_bill === "split_bill" ? <span className="badge text-bg-success">Split Bill - <b>Lunas</b></span> : <></>}</li>
                             </>
                         )
                     });

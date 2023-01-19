@@ -29,6 +29,9 @@ export class Detail_Booking {
     @Column()
     end_duration:string
 
+    @Column({nullable: true})
+    type_bill: string
+
     @Column()
     created_at:string
 

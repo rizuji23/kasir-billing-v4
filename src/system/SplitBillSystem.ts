@@ -76,11 +76,13 @@ class SplitBillSystem {
                 if (insert_detail) {
                     // Update all Cart and Detail_Booking to lunas/terbayar
                      const update_billing = await service.manager.createQueryBuilder().update(Detail_Booking).set({
+                        type_bill: "split_bill",
                         status: 'lunas',
                         updated_at: date_now
                      }).where("id_detail_booking IN (:...id)", {id: id_billing}).execute();
 
                      const update_cart = await service.manager.createQueryBuilder().update(Cart).set({
+                        type_bill: "split_bill",
                         status: 'lunas',
                         updated_at: date_now
                      }).where("id_cart IN (:...id)", {id: id_menu}).execute();
@@ -252,6 +254,24 @@ class SplitBillSystem {
                 return {response: false, data: "data is empty"};
             }
             
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async getFilterMonthSplitBill(data):Promise<any> {
+        try {
+            let service = await dataSource;
+
+            const month =  moment(data.month, "YYYY-MM").format("MM-YYYY");
+
+            const get_split_bill = await service.manager.query("SELECT *, strftime('%m-%Y', split_bill.created_at) AS date_clean FROM split_bill WHERE date_clean = ?", [month]);
+            
+            if (get_split_bill.length !== 0) {
+                return {response: true, data: get_split_bill};
+            } else {
+                return {response: false, data: "data is empty"};
+            }
         } catch (err) {
             console.log(err);
         }

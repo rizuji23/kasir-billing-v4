@@ -25,6 +25,9 @@ export class Cart {
     @Column()
     id_pesanan:string
 
+    @Column({nullable: true})
+    type_bill: string
+
     @Column()
     user_in:string
 

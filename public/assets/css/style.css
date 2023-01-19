@@ -1319,3 +1319,7 @@ select {
     width: 800px;
 }
 
+::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
