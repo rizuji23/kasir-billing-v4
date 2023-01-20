@@ -334,11 +334,26 @@ class Menu extends React.Component<any, any> {
                 if (willDelete) {
                     const dot = new DotAdded();
                     if (this.state.type_pemesanan === 'Cafe Only') {
+                        const shift_pagi = JSON.parse(localStorage.getItem("shift_pagi"));
+                        const shift_malam = JSON.parse(localStorage.getItem("shift_malam"));
+
+                        const hours = moment().tz("Asia/Jakarta").format("HH");
+                        var shift_now = "";
+
+                        if (hours >= shift_pagi.start_jam.split(':')[0] && hours < shift_pagi.end_jam.split(':')[0]) {
+                            shift_now = "pagi";
+                            console.log("PAGI")
+                        } else if (hours >= shift_malam.start_jam.split(':')[0] || hours < shift_malam.end_jam.split(':')[0]) {
+                            shift_now = "malam";
+                            console.log("MALAM")
+                        }
+
                         const data_cart = {
                             total: dot.decode(this.state.total_harga),
                             uang_cash: dot.decode(this.state.data_cafe.uang_cash),
                             uang_kembalian: dot.decode(this.state.data_cafe.kembalian),
-                            user_in: this.state.user_in
+                            user_in: this.state.user_in,
+                            shift: shift_now
                         }
 
                         ipcRenderer.invoke("pesanan", false, false, false, false, false, true, false, data_cart).then((result) => {
@@ -353,10 +368,24 @@ class Menu extends React.Component<any, any> {
                             }
                         });
                     } else if (this.state.type_pemesanan === 'With Table') {
+                        const shift_pagi = JSON.parse(localStorage.getItem("shift_pagi"));
+                        const shift_malam = JSON.parse(localStorage.getItem("shift_malam"));
+
+                        const hours = moment().tz("Asia/Jakarta").format("HH");
+                        var shift_now = "";
+
+                        if (hours >= shift_pagi.start_jam.split(':')[0] && hours < shift_pagi.end_jam.split(':')[0]) {
+                            shift_now = "pagi";
+                            console.log("PAGI")
+                        } else if (hours >= shift_malam.start_jam.split(':')[0] || hours < shift_malam.end_jam.split(':')[0]) {
+                            shift_now = "malam";
+                            console.log("MALAM")
+                        }
                         const data_cart = {
                             total_harga: this.state.total_harga,
                             id_booking: this.state.data_table.table_booking,
-                            user_id: this.state.user_in
+                            user_id: this.state.user_in,
+                            shift: shift_now
                         }
 
                         ipcRenderer.invoke("pesanan", false, false, false, false, false, false, true, data_cart).then((result) => {

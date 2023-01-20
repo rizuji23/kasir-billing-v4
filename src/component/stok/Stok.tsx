@@ -24,6 +24,8 @@ class Stok extends React.Component<any, any> {
             isOpenFilter: false,
             user_in: sessionStorage.getItem('username'),
             date_now: moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss"),
+            disabled_new: true,
+            disabled_masuk: "",
         }
 
         this.getMenu = this.getMenu.bind(this);
@@ -45,46 +47,83 @@ class Stok extends React.Component<any, any> {
         const day = {
             tanggal: moment().tz("Asia/Jakarta").format("YYYY-MM-DD"),
         }
+
+        const shift_pagi = JSON.parse(localStorage.getItem("shift_pagi"));
+        const shift_malam = JSON.parse(localStorage.getItem("shift_malam"));
+
+        const hours = moment().tz("Asia/Jakarta").format("HH");
+        var shift_now = "";
+
+        if (hours >= shift_pagi.start_jam.split(':')[0] && hours < shift_pagi.end_jam.split(':')[0]) {
+            shift_now = "pagi";
+            console.log("PAGI")
+            this.setState({
+                disabled_masuk: false,
+            })
+        } else if (hours >= shift_malam.start_jam.split(':')[0] || hours < shift_malam.end_jam.split(':')[0]) {
+            shift_now = "malam";
+            console.log("MALAM")
+            this.setState({
+                disabled_masuk: true,
+            })
+        }
+
         ipcRenderer.invoke("getStok", day).then((result) => {
             console.log(result);
-
             if (result.response === true) {
                 let no = 1;
-                const component_menu = result.data.map((el, i) => {
-                    console.log(el.shift);
+                var night = Array<any>();
+                var day = Array<any>();
+                result.data.forEach(el => {
+                    if (el.shift === "pagi") {
+                        day.push(el);
+                    } else if (el.shift === "malam") {
+                        night.push(el);
+                    }
+                });
 
-                    return (
-                        <>
-                            <tr>
-                                <td className="border-end">{no++}</td>
-                                <td className="border-end text-start">{el.nama_menu}</td>
-                                <td className="border-end">{el.stok_awal}</td>
-                                <td>{el.stok_masuk}</td>
-                                <td className="border-start">{el.terjual}</td>
-                                <td>{el.sisa}</td>
-                                <td className="border-start">2</td>
-                                <td>3</td>
-                                <td className="border-start border-end">{el.stok_akhir}</td>
-                                <td></td>
-                            </tr>
-                        </>
-                    )
+                const component_menu = day.map((el, i) => {
+                    console.log(el.shift);
+                    if (el.shift === "pagi") {
+                        return (
+                            <>
+                                <tr>
+                                    <td className="border-end">{no++}</td>
+                                    <td className="border-end text-start">{el.nama_menu}</td>
+                                    <td className="border-end">{el.stok_awal}</td>
+                                    <td>{el.stok_masuk}</td>
+                                    <td className="border-start">{el.terjual}</td>
+                                    <td>{el.sisa}</td>
+                                    <td className="border-start">{night[i].terjual}</td>
+                                    <td>{night[i].sisa}</td>
+                                    <td className="border-start border-end">{el.stok_akhir}</td>
+                                    <td></td>
+                                </tr>
+                            </>
+                        )
+                    }
                 });
 
                 const option_menu = result.data.map((el, i) => {
-                    return (
-                        <>
-                            <option value={`["${el.id_menu}", "${el.id_stok_main}"]`}>{el.nama_menu}</option>
-                        </>
-                    )
+                    if (el.shift === "pagi") {
+                        return (
+                            <>
+                                <option value={`["${el.id_menu}", "${el.id_stok_main}"]`}>{el.nama_menu}</option>
+                            </>
+                        )
+                    }
                 })
 
                 this.setState({
                     data_menu: component_menu,
-                    option_menu: option_menu
+                    option_menu: option_menu,
+                    disabled_new: true,
                 })
             } else {
-                toast.error("Buku stok belum ditambahkan atau Kosong!");
+                this.setState({
+                    disabled_new: false,
+                })
+                toast.error("Buku stok belum ditambahkan atau Kosong.");
             }
         })
     }
@@ -92,7 +131,7 @@ class Stok extends React.Component<any, any> {
     handleOpenNewStok() {
         swal({
             title: "Apa kamu yakin?",
-            text: "Buku stok baru akan dibuat!",
+            text: "Buku stok baru akan dibuat.",
             icon: "warning",
             buttons: ["Batal", true],
             dangerMode: true,
@@ -104,7 +143,6 @@ class Stok extends React.Component<any, any> {
                 }
                 ipcRenderer.invoke("newBookStok", day).then((result) => {
                     console.log(result);
-
                     if (result.response === true) {
                         toast.success("Buku Stok Dibuat..");
                         this.getMenu();
@@ -167,13 +205,7 @@ class Stok extends React.Component<any, any> {
                     pauseOnHover
                     theme="dark"
                 />
-                <NavbarStok handleOpenNewStok={this.handleOpenNewStok} />
-
-
-                <div className="alert alert-warning" role="alert">
-                    <span>Untuk setiap penggantian <b>Shift</b> maka klik tombol <b>Buka Stok Baru</b>, dibagian atas ini.</span>
-                </div>
-
+                <NavbarStok handleOpenNewStok={this.handleOpenNewStok} disabled_new={this.state.disabled_new} />
                 <div className="card card-custom-dark mb-5">
                     <div className="card-header">
                         <div className="d-flex">
@@ -204,11 +236,9 @@ class Stok extends React.Component<any, any> {
                                             <div className="hr-white"></div>
                                             <ul className="list-group list-group-dark mt-3">
                                                 <li className="list-group-item"><small>Total Stok Masuk:</small> <br /> <b>30 item</b></li>
-                                                <li className="list-group-item"><small>Totak Terjual:</small> <br /> <b>35 item</b></li>
-                                                <li className="list-group-item"><small>Kasir Shift 1:</small> <br /> <b>Aye Shabira</b></li>
-                                                <li className="list-group-item"><small>Kasir Shift 2:</small> <br /> <b>Saha Weh</b> </li>
-                                                <li className="list-group-item"><small>Tanggal Pembuatan:</small> <br /> <b></b></li>
-                                                <li className="list-group-item"><small>Tanggal Update:</small> <br /> <b></b></li>
+                                                <li className="list-group-item"><small>Total Terjual:</small> <br /> <b>35 item</b></li>
+                                                <li className="list-group-item"><small>Tanggal Pembuatan:</small> <br /> <b>23-05-2023 09:00:00</b></li>
+                                                <li className="list-group-item"><small>Tanggal Update:</small> <br /> <b>23-05-2023 20:00:00</b></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -220,14 +250,15 @@ class Stok extends React.Component<any, any> {
                                         <div className="detail-laporan-stok">
                                             <h5>Management Stok: </h5>
                                             <div className="hr-white"></div>
-                                            <div className="card card-custom-dark">
-                                                <div className="d-flex ps-3">
-                                                    <div className="p-1">
-                                                        <button className="btn btn-primary btn-sm" onClick={this.isOpenMasuk}>Tambah Stok Masuk</button>
+                                            <div className="card card-custom-dark p-3">
+                                                {this.state.disabled_masuk === true && <><div className="alert alert-danger"><span><b>Tambah Stok Masuk</b> hanya bisa saat shift <b>Pagi</b></span>.</div></>}
+                                                <div className="d-flex">
+                                                    <div className="">
+                                                        <button className="btn btn-primary btn-sm" disabled={this.state.disabled_masuk} onClick={this.isOpenMasuk}>Tambah Stok Masuk</button>
                                                     </div>
-                                                    <div className="p-1">
+                                                    {/* <div className="p-1">
                                                         <button className="btn btn-success btn-sm" onClick={this.isOpenMasukEdit}>Edit Stok Masuk</button>
-                                                    </div>
+                                                    </div> */}
                                                 </div>
                                             </div>
                                         </div>

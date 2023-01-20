@@ -31,7 +31,7 @@ class NavbarStok extends React.Component<any, any> {
                                     <a href="javascript:void(0)" className="btn btn-primary btn-primary-cozy border-r-13 pl-20 pr-20 pt-10 pb-10" id="refresh_page"><img src="assets/img/icon/refresh-ccw.png" alt="" /></a>
                                 </div>
                                 <div className="p-1">
-                                    <a href="javascript:void(0)" onClick={this.props.handleOpenNewStok} className="btn btn-primary btn-primary-cozy-dark border-r-13 pl-20 pr-20 pt-10 pb-10" id="refresh_page">Buka Stok Baru</a>
+                                    <button className="btn btn-primary btn-primary-cozy-dark border-r-13 pl-20 pr-20 pt-10 pb-10" disabled={this.props.disabled_new} onClick={this.props.handleOpenNewStok}>Buka Stok Baru</button>
                                 </div>
                             </div>
                         </div>

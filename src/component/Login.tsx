@@ -22,6 +22,7 @@ class Login extends React.Component<any, any> {
         this.handlePassword = this.handlePassword.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
         this.clearState = this.clearState.bind(this)
+        this.getShift = this.getShift.bind(this)
     }
 
     clearState() {
@@ -32,6 +33,20 @@ class Login extends React.Component<any, any> {
             error: "",
             isError: false,
             disabled: false
+        })
+    }
+
+    componentDidMount(): void {
+        this.getShift();
+    }
+
+    async getShift() {
+        await ipcRenderer.invoke("getShift", "Pagi").then((result) => {
+            localStorage.setItem("shift_pagi", `{"start_jam": "${result.data[0].start_jam}", "end_jam": "${result.data[0].end_jam}"}`);
+        });
+
+        await ipcRenderer.invoke("getShift", "Malam").then((result) => {
+            localStorage.setItem("shift_malam", `{"start_jam": "${result.data[0].start_jam}", "end_jam": "${result.data[0].end_jam}"}`);
         })
     }
 
@@ -75,12 +90,8 @@ class Login extends React.Component<any, any> {
                         this.clearState();
                     }
                 }, 1000)
-
-
             }
         })
-
-
     }
 
     render() {

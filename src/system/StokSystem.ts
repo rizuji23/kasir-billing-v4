@@ -7,7 +7,6 @@ import "moment-timezone";
 import { Stok_Keluar } from "../entity/Stok_Keluar";
 import { Stok_Masuk } from "../entity/Stok_Masuk";
 
-const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
 class StokSystem {
     static async getStok(day):Promise<any> {
         try {
@@ -34,11 +33,12 @@ class StokSystem {
             const get_all_menu = await service.manager.find(Menu);
             // get data previous 
             const yesterday_date = moment().tz("Asia/Jakarta").subtract(1, "days").format("YYYY-MM-DD");
-            const get_yesterday_stok = await service.manager.query("SELECT *, date(created_at) AS date_clean FROM stok_main WHERE date_clean = ?", [yesterday_date]);
+            const get_yesterday_stok = await service.manager.query("SELECT *, date(created_at) AS date_clean FROM stok_main WHERE date_clean = ? AND shift = ?", [yesterday_date, "pagi"]);
 
             if (get_yesterday_stok.length !== 0) {
                 // insert to stock main
                 const data_all = Array<any>();
+                const data_all_night = Array<any>();
 
                 await get_yesterday_stok.forEach(el => {
                     data_all.push({
@@ -55,17 +55,35 @@ class StokSystem {
                         created_at: day.date_now,
                         updated_at: day.date_now,
                     });
+
+                    data_all_night.push({
+                        id_stok_main: id_stok_main,
+                        id_menu: el.id_menu,
+                        stok_awal:  el.stok_akhir,
+                        stok_masuk: 0,
+                        terjual: 0,
+                        sisa: 0,
+                        stok_akhir: el.stok_akhir,
+                        keterangan: "",
+                        shift: "malam",
+                        user_in: day.user_in,
+                        created_at: day.date_now,
+                        updated_at: day.date_now,
+                    })
                 });
 
                 const input_menu = await service.manager.createQueryBuilder().insert().into(Stok_Main).values(data_all).execute();
+                const input_menu_night = await service.manager.createQueryBuilder().insert().into(Stok_Main).values(data_all_night).execute();
 
-                if (input_menu) {
+
+                if (input_menu && input_menu_night) {
                     return {response: true, data: "data is saved"}
                 } else {
                     return {response: false, data: "data is not saved"}
                 }
             } else {
                 const data_all = Array<any>();
+                const data_all_night = Array<any>();
 
                 await get_all_menu.forEach(el => {
                     data_all.push({
@@ -82,11 +100,27 @@ class StokSystem {
                         created_at: day.date_now,
                         updated_at: day.date_now,
                     });
+
+                    data_all_night.push({
+                        id_stok_main: id_stok_main,
+                        id_menu: el.id_menu,
+                        stok_awal: 0,
+                        stok_masuk: 0,
+                        terjual: 0,
+                        sisa: 0,
+                        stok_akhir: 0,
+                        keterangan: "",
+                        shift: "malam",
+                        user_in: day.user_in,
+                        created_at: day.date_now,
+                        updated_at: day.date_now,
+                    })
                 });
 
                 const input_menu = await service.manager.createQueryBuilder().insert().into(Stok_Main).values(data_all).execute();
+                const input_menu_night = await service.manager.createQueryBuilder().insert().into(Stok_Main).values(data_all_night).execute();
 
-                if (input_menu) {
+                if (input_menu && input_menu_night) {
                     return {response: true, data: "data is saved 2"}
                 } else {
                     return {response: false, data: "data is not saved 2"}
@@ -121,6 +155,7 @@ class StokSystem {
     }
 
     static async addStokMasuk(data):Promise<any> {
+        const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
         try {
             let service = await dataSource;
             // get previous stok
@@ -148,7 +183,7 @@ class StokSystem {
                 id_menu: data.id_menu,
                 stok_masuk: data.stok_masuk,
                 keterangan: data.keterangan,
-                shift: "",
+                shift: data.shift,
                 user_in: data.user_in,
                 created_at: date_now,
                 updated_at: date_now,
@@ -166,6 +201,7 @@ class StokSystem {
     }
 
     static async addTerjual(data_cart, tanggal, user_in, shift, keterangan):Promise<any> {
+        const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
         try {
             let service = await dataSource;
             const arr_id_menu = Array<any>();
@@ -186,31 +222,41 @@ class StokSystem {
             console.log(`(${result_id_menu})`)
             
 
-            const get_stok = await service.manager.query("SELECT *, date(created_at) AS date_clean FROM stok_main WHERE date_clean = ? AND id_menu IN ("+ result_id_menu +")", [tanggal]);
+            const get_stok = await service.manager.query("SELECT *, date(created_at) AS date_clean FROM stok_main WHERE date_clean = ? AND id_menu IN ("+ result_id_menu +") AND shift = ?", [tanggal, shift]);
             
             console.log(get_stok);
 
             if (get_stok.length !== 0) {
                 // calculate sum all qty and stok akhir by id_menu
                 const id_stok_keluar = shortid.generate();
-                const arr_result = Array<any>();
                 const arr_out = Array<any>();
 
                 for (var i = 0; i <= get_stok.length - 1; i++) {
                     if (get_stok[i].id_menu === data_cart[i].id_menu) {
-                        arr_result.push({
-                            id_stok_main: get_stok[i].id_stok_main, 
-                            id_menu: get_stok[i].id_menu, 
-                            stok_akhir: get_stok[i].stok_akhir - data_cart[i].qty, 
-                            sisa: get_stok[i].stok_akhir - data_cart[i].qty, 
-                            terjual: get_stok[i].stok_akhir - data_cart[i].qty
-                        });
-
-                        await service.manager.createQueryBuilder().update(Stok_Main).set({
-                            stok_akhir: get_stok[i].stok_akhir - data_cart[i].qty, 
-                            sisa: get_stok[i].stok_akhir - data_cart[i].qty, 
-                            terjual: get_stok[i].terjual + data_cart[i].qty
-                        }).where('id_menu = :id AND id_stok_main = :id2', {id: get_stok[i].id_menu, id2: get_stok[i].id_stok_main}).execute();
+                        if (shift === "pagi") {
+                            const data_stok_akhir = get_stok[i].stok_akhir - data_cart[i].qty
+                            await service.manager.createQueryBuilder().update(Stok_Main).set({
+                                stok_akhir: data_stok_akhir, 
+                                sisa: get_stok[i].stok_akhir - data_cart[i].qty, 
+                                terjual: get_stok[i].terjual + data_cart[i].qty,
+                                updated_at: date_now
+                            }).where('id_menu = :id AND id_stok_main = :id2 AND shift = :shift', {id: get_stok[i].id_menu, id2: get_stok[i].id_stok_main, shift: "pagi"}).execute();
+                            await service.manager.createQueryBuilder().update(Stok_Main).set({
+                                stok_akhir: data_stok_akhir,
+                                updated_at: date_now
+                            }).where('id_menu = :id AND id_stok_main = :id2 AND shift = :shift', {id: get_stok[i].id_menu, id2: get_stok[i].id_stok_main, shift: "malam"}).execute();
+                        } else if (shift === "malam") {
+                            await service.manager.createQueryBuilder().update(Stok_Main).set({
+                                stok_akhir: get_stok[i].stok_akhir - data_cart[i].qty, 
+                                sisa: get_stok[i].stok_akhir - data_cart[i].qty, 
+                                terjual: get_stok[i].terjual + data_cart[i].qty,
+                                updated_at: date_now
+                            }).where('id_menu = :id AND id_stok_main = :id2 AND shift = :shift', {id: get_stok[i].id_menu, id2: get_stok[i].id_stok_main, shift: shift}).execute();
+                            await service.manager.createQueryBuilder().update(Stok_Main).set({
+                                stok_akhir: get_stok[i].stok_akhir - data_cart[i].qty,
+                                updated_at: date_now
+                            }).where('id_menu = :id AND id_stok_main = :id2 AND shift = :shift', {id: get_stok[i].id_menu, id2: get_stok[i].id_stok_main, shift: "pagi"}).execute();
+                        }
 
                         arr_out.push({
                             id_stok_keluar: id_stok_keluar,
@@ -226,7 +272,6 @@ class StokSystem {
                     }
                 }
                 
-                console.log(arr_result);
                 console.log(arr_id_menu);
                 const insert_out = await service.manager.getRepository(Stok_Keluar).createQueryBuilder().insert().values(arr_out).execute();
 

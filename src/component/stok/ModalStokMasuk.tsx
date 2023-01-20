@@ -1,8 +1,10 @@
 import { ipcRenderer } from "electron";
+import moment from "moment";
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { toast } from "react-toastify";
 import swal from "sweetalert";
+import 'moment-timezone';
 
 class ModalStokMasuk extends React.Component<any, any> {
     constructor(props: any) {
@@ -17,18 +19,35 @@ class ModalStokMasuk extends React.Component<any, any> {
                 keterangan: "",
             },
             user_in: sessionStorage.getItem("username"),
+            disabled: true,
         }
 
         this.handleMenu = this.handleMenu.bind(this);
         this.handleMasukInput = this.handleMasukInput.bind(this);
         this.handleKeterangan = this.handleKeterangan.bind(this);
         this.handleTambah = this.handleTambah.bind(this);
+        this.validation = this.validation.bind(this);
+    }
+
+    isObjectEmpty(value) {
+        return Object.values(value).every(x => x !== '');
+    }
+
+    validation() {
+        if (this.isObjectEmpty({ id_stok_main: this.state.id_stok_main, masuk_input: this.state.data_stok.masuk_input })) {
+            this.setState({
+                disabled: false,
+            })
+        } else {
+            this.setState({
+                disabled: true,
+            })
+        }
     }
 
     handleMenu(e) {
         // [0] is id_menu [1] is id_stok_main
         const parseArr = JSON.parse(e.target.value);
-
         ipcRenderer.invoke("fetchStokMenu", { id_menu: parseArr[0], id_stok_main: parseArr[1] }).then((result) => {
             if (result.response === true) {
                 const total_stok = result.data[0].stok_awal + result.data[0].stok_masuk;
@@ -38,7 +57,11 @@ class ModalStokMasuk extends React.Component<any, any> {
                     id_menu: parseArr[0],
                     id_stok_main: parseArr[1],
                     masuk_input: total_stok,
+                }, () => {
+                    this.validation()
                 });
+
+
             }
         })
     }
@@ -47,6 +70,8 @@ class ModalStokMasuk extends React.Component<any, any> {
         if (e.target.value.length === 0) {
             this.setState({
                 masuk_input: e.target.value,
+            }, () => {
+                this.validation()
             });
             toast.error("Stok Masuk harus diisi");
 
@@ -56,7 +81,10 @@ class ModalStokMasuk extends React.Component<any, any> {
                     ...prevState.data_stok,
                     masuk_input: e.target.value,
                 }
-            }));
+            }), () => {
+                this.validation()
+            });
+
         }
     }
 
@@ -78,12 +106,27 @@ class ModalStokMasuk extends React.Component<any, any> {
             dangerMode: true,
         }).then((willDelete) => {
             if (willDelete) {
+                const shift_pagi = JSON.parse(localStorage.getItem("shift_pagi"));
+                const shift_malam = JSON.parse(localStorage.getItem("shift_malam"));
+
+                const hours = moment().tz("Asia/Jakarta").format("HH");
+                var shift_now = "";
+
+                if (hours >= shift_pagi.start_jam.split(':')[0] && hours < shift_pagi.end_jam.split(':')[0]) {
+                    shift_now = "pagi";
+                    console.log("PAGI")
+                } else if (hours >= shift_malam.start_jam.split(':')[0] || hours < shift_malam.end_jam.split(':')[0]) {
+                    shift_now = "malam";
+                    console.log("MALAM")
+                }
+
                 const data = {
                     id_menu: this.state.id_menu,
                     id_stok_main: this.state.id_stok_main,
                     stok_masuk: this.state.data_stok.masuk_input,
                     keterangan: this.state.data_stok.keterangan,
                     user_in: this.state.user_in,
+                    shift: shift_now
                 }
 
                 ipcRenderer.invoke("addStokMasuk", data).then((result) => {
@@ -155,7 +198,7 @@ class ModalStokMasuk extends React.Component<any, any> {
                     <Modal.Footer>
                         <button type="button" className="btn btn-primary btn-primary-cozy-dark"
                             data-bs-dismiss="modal" onClick={this.props.closeModalMasuk} id="close-modal-active">Close</button>
-                        <button className="btn btn-primary btn-primary-cozy" onClick={this.handleTambah}>Tambah</button>
+                        <button className="btn btn-primary btn-primary-cozy" disabled={this.state.disabled} onClick={this.handleTambah}>Tambah</button>
                     </Modal.Footer>
                 </Modal>
             </>

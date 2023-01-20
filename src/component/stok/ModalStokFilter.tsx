@@ -13,7 +13,8 @@ class ModalStokFilter extends React.Component<any, any> {
                     show={this.props.isOpenFilter}
                     keyboard={false}
                     onHide={this.props.closeModalFilter}
-                    size="lg">
+                    size="lg"
+                    centered>
                     <Modal.Header closeButton onClick={this.props.closeModalFilter}>
                         <Modal.Title>Filter Stok</Modal.Title>
                     </Modal.Header>
@@ -23,15 +24,6 @@ class ModalStokFilter extends React.Component<any, any> {
                                 <div className="form-group">
                                     <label htmlFor="">Tanggal</label>
                                     <input type="date" className="form-control custom-input" />
-                                </div>
-
-                                <div className="form-group mt-3">
-                                    <label htmlFor="">Shift</label>
-                                    <select name="" className="form-control custom-input" id="">
-                                        <option value="">Pilih Shift</option>
-                                        <option value="Siang">Siang</option>
-                                        <option value="Malam">Malam</option>
-                                    </select>
                                 </div>
                             </div>
                         </div>

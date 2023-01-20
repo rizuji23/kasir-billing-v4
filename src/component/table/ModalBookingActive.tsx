@@ -10,6 +10,8 @@ import SelectSearch from "react-select-search";
 import 'react-select-search/style.css'
 import LoadingButton from "../LoadingButton";
 import { Dot } from "recharts";
+import moment from "moment";
+import 'moment-timezone';
 
 class ModalBookingActive extends React.Component<any, any> {
     constructor(props) {
@@ -166,11 +168,29 @@ class ModalBookingActive extends React.Component<any, any> {
                 ipcRenderer.invoke("pesanan", false, true, false, false, false, false, false, data).then((result) => {
                     console.log(result);
                     if (result.response === true) {
+                        const shift_pagi = JSON.parse(localStorage.getItem("shift_pagi"));
+                        const shift_malam = JSON.parse(localStorage.getItem("shift_malam"));
+
+                        const hours = moment().tz("Asia/Jakarta").format("HH");
+                        var shift_now = "";
+
+                        if (hours >= shift_pagi.start_jam.split(':')[0] && hours < shift_pagi.end_jam.split(':')[0]) {
+                            shift_now = "pagi";
+                            console.log("PAGI")
+                        } else if (hours >= shift_malam.start_jam.split(':')[0] || hours < shift_malam.end_jam.split(':')[0]) {
+                            shift_now = "malam";
+                            console.log("MALAM")
+                        }
+
                         const data_table = {
                             id_booking: this.props.id_booking,
                             total_harga: new DotAdded().parse(this.state.data_menu.sub_total),
-                            user_id: sessionStorage.getItem("username")
+                            user_id: sessionStorage.getItem("username"),
+                            shift: shift_now,
+                            cart: result.data,
                         }
+
+                        console.log(result.data)
                         ipcRenderer.invoke("pesanan", false, false, false, false, false, false, true, data_table).then((result) => {
                             if (result.response === true) {
                                 toast.success("Menu sudah dipesan.");

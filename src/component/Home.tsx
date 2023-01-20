@@ -36,8 +36,20 @@ class Home extends React.Component<any, any> {
         super(props);
         this.state = {
             loading_show: false,
-            loading_title: ''
+            loading_title: '',
+            timer: {
+                table001: "",
+                table002: "",
+            },
+            isUse: {
+                table001: "",
+                table002: "",
+            },
+            booking_aktif: "Loading...",
         }
+
+        this.getTime = this.getTime.bind(this);
+        this.getAllTable = this.getAllTable.bind(this);
     }
 
     continueTimer() {
@@ -87,6 +99,58 @@ class Home extends React.Component<any, any> {
                     }
                 }
             });
+    }
+
+    getTime(time, isUse, table_id) {
+        console.log(isUse)
+        if (table_id === "table001") {
+            this.setState(prevState => ({
+                timer: {
+                    ...prevState.timer,
+                    table001: time,
+                }
+            }));
+
+            this.setState(prevState => ({
+                isUse: {
+                    ...prevState.isUse,
+                    table001: isUse
+                }
+            }))
+        } else if (table_id === "table002") {
+            this.setState(prevState => ({
+                timer: {
+                    ...prevState.timer,
+                    table002: time,
+                }
+            }));
+            this.setState(prevState => ({
+                isUse: {
+                    ...prevState.isUse,
+                    table002: isUse
+                }
+            }));
+        }
+    }
+
+    componentDidMount(): void {
+        this.getAllTable();
+    }
+
+    getAllTable(): void {
+        ipcRenderer.invoke("getAllTable", true).then((result) => {
+            var active = 0;
+            const all = result.data.length;
+            result.data.forEach(el => {
+                if (el.status === "active") {
+                    active += 1;
+                }
+            });
+
+            this.setState({
+                booking_aktif: `${active} / ${all}`,
+            });
+        });
     }
 
     render(): React.ReactNode {
@@ -145,21 +209,122 @@ class Home extends React.Component<any, any> {
                         <div id="error_handler">
                         </div>
                     </div>
-                    <div className="row row-cols-1 row-cols-sm-3 g-4" id="table_billiard">
-                        <Table_01 />
-                        <Table_02 />
-                        {/* <Table_02/>
-                    <Table_03/>
-                    <Table_04/>
-                    <Table_05/>
-                    <Table_06/>
-                    <Table_07/>
-                    <Table_08/>
-                    <Table_09/>
-                    <Table_10/>
-                    <Table_11/>
-                    <Table_12/> */}
+
+                    <div className="d-flex">
+                        <div className="p-2 me-auto w-100 table-box">
+                            <div className="row row-cols-1 row-cols-sm-3 g-4" id="table_billiard">
+                                <Table_01 getTime={this.getTime} />
+                                <Table_02 getTime={this.getTime} />
+
+                            </div>
+                        </div>
+                        <div className="p-2">
+                            <div className="side-home">
+                                <div className="booking-count">
+                                    <h4>Total Booking Aktif</h4>
+                                    <h1>{this.state.booking_aktif}</h1>
+                                </div>
+
+                                <div className="list-booking">
+                                    <h5>No Table: </h5>
+                                    <div className="d-flex">
+                                        <div className="">
+                                            <div className="content-list text-center">
+                                                <p>Table 01</p>
+                                                <span>{this.state.timer.table001}</span>
+                                                {this.state.isUse.table001 === true ? <span className="badge rounded-pill text-bg-danger">Terpakai</span> : <span className="badge rounded-pill text-bg-success">Tersedia</span>}
+
+
+                                            </div>
+                                        </div>
+                                        <div className="">
+                                            <div className="content-list text-center">
+                                                <p>Table 02</p>
+                                                <span>{this.state.timer.table002}</span>
+                                                {this.state.isUse.table002 === true ? <span className="badge rounded-pill text-bg-danger">Terpakai</span> : <span className="badge rounded-pill text-bg-success">Tersedia</span>}
+                                            </div>
+                                        </div>
+                                        <div className="">
+                                            <div className="content-list text-center">
+                                                <p>Table 01</p>
+                                                <span>00:00:00</span>
+                                                <span className="badge rounded-pill text-bg-success">Tersedia</span>
+                                            </div>
+                                        </div>
+                                        <div className="">
+                                            <div className="content-list text-center">
+                                                <p>Table 01</p>
+                                                <span>00:00:00</span>
+                                                <span className="badge rounded-pill text-bg-success">Tersedia</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="d-flex">
+                                        <div className="">
+                                            <div className="content-list text-center">
+                                                <p>Table 01</p>
+                                                <span>00:00:00</span>
+                                                <span className="badge rounded-pill text-bg-success">Tersedia</span>
+                                            </div>
+                                        </div>
+                                        <div className="">
+                                            <div className="content-list text-center">
+                                                <p>Table 01</p>
+                                                <span>00:00:00</span>
+                                                <span className="badge rounded-pill text-bg-success">Tersedia</span>
+                                            </div>
+                                        </div>
+                                        <div className="">
+                                            <div className="content-list text-center">
+                                                <p>Table 01</p>
+                                                <span>00:00:00</span>
+                                                <span className="badge rounded-pill text-bg-success">Tersedia</span>
+                                            </div>
+                                        </div>
+                                        <div className="">
+                                            <div className="content-list text-center">
+                                                <p>Table 01</p>
+                                                <span>00:00:00</span>
+                                                <span className="badge rounded-pill text-bg-success">Tersedia</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="d-flex">
+                                        <div className="">
+                                            <div className="content-list text-center">
+                                                <p>Table 01</p>
+                                                <span>00:00:00</span>
+                                                <span className="badge rounded-pill text-bg-success">Tersedia</span>
+                                            </div>
+                                        </div>
+                                        <div className="">
+                                            <div className="content-list text-center">
+                                                <p>Table 01</p>
+                                                <span>00:00:00</span>
+                                                <span className="badge rounded-pill text-bg-success">Tersedia</span>
+                                            </div>
+                                        </div>
+                                        <div className="">
+                                            <div className="content-list text-center">
+                                                <p>Table 01</p>
+                                                <span>00:00:00</span>
+                                                <span className="badge rounded-pill text-bg-success">Tersedia</span>
+                                            </div>
+                                        </div>
+                                        <div className="">
+                                            <div className="content-list text-center">
+                                                <p>Table 01</p>
+                                                <span>00:00:00</span>
+                                                <span className="badge rounded-pill text-bg-success">Tersedia</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+
                 </div>
             </>
         )

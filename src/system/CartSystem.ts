@@ -54,11 +54,19 @@ class CartSystem {
                     created_at: date_now,
                     updated_at: date_now
                 }).execute();
+                
+                const get_cart = await service.manager.find(Cart, {
+                    where: {
+                        id_cart: id_cart
+                    }
+                })
+
                 if (add_cart) {
-                    return {response: true, data: 'cart is saved'};
+                    return {response: true, data: get_cart};
                 } else {
                     return {response: false, data: 'cart is not saved'};
                 }
+
             } else {
                 const total_new = check_cart[0].sub_total + data_cart.sub_total;
                 const qty_new = check_cart[0].qty + data_cart.qty;
@@ -174,7 +182,8 @@ class CartSystem {
                     console.log(arr_cart);
 
                     if (cart) {
-                        StokSystem.addTerjual(arr_cart, get_date_now, data_cart.user_in, "", "cafe only")
+                        
+                        StokSystem.addTerjual(arr_cart, get_date_now, data_cart.user_in, data_cart.shift, "cafe only")
                         StrukSystem.print(id_struk);
                         return {response: true, data: 'pesanan selesai'};
                     } else {
@@ -231,6 +240,16 @@ class CartSystem {
                         updated_at: date_now,
                     }).where('id_booking = :id', {id: data_cart.id_booking}).execute();
 
+                    // increast stok
+                    const get_date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD");
+                    // update stok
+
+                    const arr_cart = await Array.from(
+                        data_cart.cart.reduce((a, {id_menu, qty}) => {
+                            return a.set(id_menu, (a.get(id_menu) || 0) + qty);
+                        }, new Map())
+                    ).map(([id_menu, qty]) => ({id_menu, qty}));
+
                     if (update_pesanan) {
                         const check_booking = await service.manager.find(Booking, {
                             where: {
@@ -245,6 +264,8 @@ class CartSystem {
                         }).where('id_booking = :id', {id: data_cart.id_booking}).execute();
 
                             if (update_struk && check_booking) {
+                                StokSystem.addTerjual(arr_cart, get_date_now, data_cart.user_in, data_cart.shift, "table")
+
                                 return {response: true, data: 'pesanan selesai'};
                             } else {
                                 return {response: false, data: 'pesanan is not complite'};
@@ -276,6 +297,15 @@ class CartSystem {
                         updated_at: date_now
                     }).where('id_booking = :id', {id: data_cart.id_booking}).execute();
 
+                    // increast stok
+                    const get_date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD");
+
+                    const arr_cart = await Array.from(
+                        data_cart.cart.reduce((a, {id_menu, qty}) => {
+                            return a.set(id_menu, (a.get(id_menu) || 0) + qty);
+                        }, new Map())
+                    ).map(([id_menu, qty]) => ({id_menu, qty}));
+
                     if (update_struk) {
                         const cart = await service.manager.createQueryBuilder().update(Cart).set({
                             id_pesanan: id_pesanan,
@@ -283,6 +313,8 @@ class CartSystem {
                         }).where('status = :status', {status: 'active'}).execute();
                         
                         if (cart) {
+                            StokSystem.addTerjual(arr_cart, get_date_now, data_cart.user_in, data_cart.shift, "table")
+
                             return {response: true, data: 'pesanan selesai'};
                         } else {
                             return {response: false, data: 'pesanan is not complite'};

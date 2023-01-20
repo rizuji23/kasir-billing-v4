@@ -548,7 +548,7 @@ class Table_01 extends React.Component<any, any> {
 
                 } else if (msg.mode === 'regular') {
                     localStorage.setItem(this.state.table_id, `[active,${msg.data.split(':')[0]}:${msg.data.split(':')[1]}, Regular]`)
-                    this.setState({ disabled: true, isUse: true, time_running: true, disabled_add: true })
+                    this.setState({ disabled: true, isUse: true, time_running: true, disabled_add: true }, () => this.props.getTime(msg.data, this.state.isUse, this.state.table_id))
                 }
             } else {
                 localStorage.setItem(this.state.table_id, `[not_active,00:00]`)

@@ -32,7 +32,7 @@ let win:any;
 const gotTheLock = app.requestSingleInstanceLock();
 var printer_list;
 
-app.on('ready', () => {
+app.on('ready', async() => {
    win = new BrowserWindow({
         width:800,
         height:600,
@@ -53,8 +53,6 @@ app.on('ready', () => {
         process.exit(1)
     });
 
-    console.log(win);
-
     win.on("did-finish-load", () => {
         printer_list = win.getPrintersAsync();
     });
@@ -70,12 +68,6 @@ if (!gotTheLock) {
         }
     })
 }
-
-
-
-ipcMain.handle("get_data",async (event) => {
-    return "HEHEHE";
-})
 
 //init Billing Arduino Port
 var billingArduino:any;
