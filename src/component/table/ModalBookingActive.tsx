@@ -339,13 +339,28 @@ class ModalBookingActive extends React.Component<any, any> {
                     swal("Gagal", "Masukan Qty lebih dari 1", "error");
 
                 } else {
+                    const shift_pagi = JSON.parse(localStorage.getItem("shift_pagi"));
+                    const shift_malam = JSON.parse(localStorage.getItem("shift_malam"));
+
+                    const hours = moment().tz("Asia/Jakarta").format("HH");
+                    var shift_now = "";
+
+                    if (hours >= shift_pagi.start_jam.split(':')[0] && hours < shift_pagi.end_jam.split(':')[0]) {
+                        shift_now = "pagi";
+                        console.log("PAGI")
+                    } else if (hours >= shift_malam.start_jam.split(':')[0] || hours < shift_malam.end_jam.split(':')[0]) {
+                        shift_now = "malam";
+                        console.log("MALAM")
+                    }
+
                     const total_new = menu.harga_menu * value;
                     const data_cart = {
                         qty: value,
                         sub_total: total_new,
                         user_in: this.state.user_in,
                         id_cart: menu.id_cart,
-                        id_booking: this.props.id_booking
+                        id_booking: this.props.id_booking,
+                        shift: shift_now,
                     }
 
                     ipcRenderer.invoke("pesanan_edit", true, false, data_cart).then((result) => {

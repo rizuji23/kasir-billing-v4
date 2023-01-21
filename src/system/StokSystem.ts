@@ -165,16 +165,62 @@ class StokSystem {
                     id_stok_main: data.id_stok_main,
                 }
             });
+            
+            var sisa = 0;
+            var get_stok;
+
+            if (data.shift === "pagi") {
+                get_stok = await service.manager.find(Stok_Main, {
+                    where: {
+                        id_menu: data.id_menu,
+                        id_stok_main: data.id_stok_main,
+                        shift: "pagi",
+                    }
+                });
+
+                console.log("PAGI");
+                console.log("1", ( parseInt(data.stok_masuk) + get_stok[0].stok_akhir))
+                console.log("2", get_stok[0].terjual)
+
+                sisa =  parseInt(data.stok_masuk) + get_stok[0].stok_akhir;
+
+                await service.manager.createQueryBuilder().update(Stok_Main).set({
+                    sisa: sisa
+                }).where("id_menu = :id_menu AND id_stok_main = :id_stok_main AND shift = :shift", {id_menu: data.id_menu, id_stok_main: data.id_stok_main, shift: "pagi"}).execute();
+
+                await service.manager.createQueryBuilder().update(Stok_Main).set({
+                    sisa: sisa
+                }).where("id_menu = :id_menu AND id_stok_main = :id_stok_main AND shift = :shift", {id_menu: data.id_menu, id_stok_main: data.id_stok_main, shift: "malam"}).execute();
+
+            } else if (data.shift === "malam") {
+                get_stok = await service.manager.find(Stok_Main, {
+                    where: {
+                        id_menu: data.id_menu,
+                        id_stok_main: data.id_stok_main,
+                        shift: "malam",
+                    }
+                });
+                console.log("MALAM");
+
+
+                sisa =  parseInt(data.stok_masuk) + get_stok[0].stok_akhir;
+
+                await service.manager.createQueryBuilder().update(Stok_Main).set({
+                    sisa: sisa
+                }).where("id_menu = :id_menu AND id_stok_main = :id_stok_main AND shift = :shift", {id_menu: data.id_menu, id_stok_main: data.id_stok_main, shift: "malam"}).execute();
+
+            }
 
             // sum old and new data
             const sum_masuk = parseInt(data.stok_masuk) + get_data_stok[0].stok_masuk;
-
             const sum_akhir = parseInt(data.stok_masuk) + get_data_stok[0].stok_akhir;
+            console.log("sum_akhir", sum_akhir)
             // update into stok main
             const update_stok = await service.manager.createQueryBuilder().update(Stok_Main).set({
                 stok_masuk: sum_masuk,
                 stok_akhir: sum_akhir,
             }).where("id_menu = :id_menu AND id_stok_main = :id_stok_main", {id_menu: data.id_menu, id_stok_main: data.id_stok_main}).execute();
+
 
             const id_stok_masuk = shortid.generate();
             const insert_masuk = await service.manager.getRepository(Stok_Masuk).createQueryBuilder().insert().values({
@@ -243,6 +289,7 @@ class StokSystem {
                             }).where('id_menu = :id AND id_stok_main = :id2 AND shift = :shift', {id: get_stok[i].id_menu, id2: get_stok[i].id_stok_main, shift: "pagi"}).execute();
                             await service.manager.createQueryBuilder().update(Stok_Main).set({
                                 stok_akhir: data_stok_akhir,
+                                sisa: get_stok[i].stok_akhir - data_cart[i].qty,
                                 updated_at: date_now
                             }).where('id_menu = :id AND id_stok_main = :id2 AND shift = :shift', {id: get_stok[i].id_menu, id2: get_stok[i].id_stok_main, shift: "malam"}).execute();
                         } else if (shift === "malam") {
@@ -262,6 +309,7 @@ class StokSystem {
                             id_stok_keluar: id_stok_keluar,
                             id_stok_main: get_stok[i].id_stok_main,
                             id_menu: data_cart[i].id_menu,
+                            id_cart: data_cart[i].id_cart,
                             stok_keluar: data_cart[i].qty,
                             keterangan: keterangan,
                             shift: shift,
@@ -272,7 +320,8 @@ class StokSystem {
                     }
                 }
                 
-                console.log(arr_id_menu);
+                console.log(arr_out);
+                console.log("keterangan", keterangan)
                 const insert_out = await service.manager.getRepository(Stok_Keluar).createQueryBuilder().insert().values(arr_out).execute();
 
                 if (insert_out) {

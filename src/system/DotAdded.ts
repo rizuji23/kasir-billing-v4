@@ -22,6 +22,10 @@ class DotAdded {
     isNegative(number:number) {
         return !Object.is(Math.abs(number), +number); 
     }
+
+    static arrayMax(values) {
+        return values.reduce((a, b) => (a >= b ? a : b), values[0]);
+    }
 }
 
 // const dot = new DotAdded();

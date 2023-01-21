@@ -11,6 +11,8 @@ import ModalStokMasuk from "./ModalStokMasuk";
 import ModalEditStokMasuk from "./ModalEditStokMasuk";
 import ModalStokFilter from "./ModalStokFilter";
 import swal from "sweetalert";
+import DotAdded from "../../system/DotAdded";
+import ModalStokExport from "./ModalStokExport";
 
 class Stok extends React.Component<any, any> {
     constructor(props: any) {
@@ -25,47 +27,89 @@ class Stok extends React.Component<any, any> {
             user_in: sessionStorage.getItem('username'),
             date_now: moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss"),
             disabled_new: true,
-            disabled_masuk: "",
+            disabled_masuk: false,
+            total_stok_masuk: "",
+            total_stok_keluar: "",
+            tanggal_pembuatan: "",
+            tanggal_update: "",
+            disabled_filter: true,
+            tanggal_now: moment().tz("Asia/Jakarta").format("YYYY-MM-DD"),
+            disabled_reset: false,
+            isOpenExport: false,
         }
 
         this.getMenu = this.getMenu.bind(this);
         this.closeModalMasuk = this.closeModalMasuk.bind(this);
         this.isOpenMasuk = this.isOpenMasuk.bind(this);
+        this.closeModalExport = this.closeModalExport.bind(this);
+        this.isOpenExport = this.isOpenExport.bind(this);
         this.closeModalMasukEdit = this.closeModalMasukEdit.bind(this);
         this.isOpenMasukEdit = this.isOpenMasukEdit.bind(this);
         this.closeModalFilter = this.closeModalFilter.bind(this);
         this.isOpenFilter = this.isOpenFilter.bind(this);
         this.handleOpenNewStok = this.handleOpenNewStok.bind(this);
+        this.handleDateFilter = this.handleDateFilter.bind(this);
+        this.getFilterDate = this.getFilterDate.bind(this);
+        this.resetFilter = this.resetFilter.bind(this);
     }
 
     componentDidMount(): void {
-        this.getMenu();
+        this.getMenu(true);
     }
 
-
-    getMenu() {
+    handleDateFilter(date) {
         const day = {
-            tanggal: moment().tz("Asia/Jakarta").format("YYYY-MM-DD"),
+            tanggal: date,
         }
 
-        const shift_pagi = JSON.parse(localStorage.getItem("shift_pagi"));
-        const shift_malam = JSON.parse(localStorage.getItem("shift_malam"));
+        ipcRenderer.invoke("getStok", day).then((result) => {
+            console.log(result);
+            if (result.response === true) {
+                toast.success("Data tersedia");
+                this.setState({
+                    disabled_filter: false,
+                });
+            } else {
+                toast.error("Data tidak tersedia");
+                this.setState({
+                    disabled_filter: true,
+                })
+            }
+        })
+    }
 
-        const hours = moment().tz("Asia/Jakarta").format("HH");
-        var shift_now = "";
+    getFilterDate(date) {
+        this.getMenu(false, date);
+        toast.success("Stok berhasil difilter.")
+        this.setState({
+            disabled_masuk: true,
+            tanggal_now: date,
+            disabled_reset: true,
+        }, () => {
+            this.closeModalFilter();
+        });
+    }
 
-        if (hours >= shift_pagi.start_jam.split(':')[0] && hours < shift_pagi.end_jam.split(':')[0]) {
-            shift_now = "pagi";
-            console.log("PAGI")
-            this.setState({
-                disabled_masuk: false,
-            })
-        } else if (hours >= shift_malam.start_jam.split(':')[0] || hours < shift_malam.end_jam.split(':')[0]) {
-            shift_now = "malam";
-            console.log("MALAM")
-            this.setState({
-                disabled_masuk: true,
-            })
+    resetFilter() {
+        this.getMenu(true);
+        toast.success("Stok berhasil direset");
+        this.setState({
+            disabled_masuk: false,
+            tanggal_now: moment().tz("Asia/Jakarta").format("YYYY-MM-DD"),
+            disabled_reset: false,
+        });
+    }
+
+    getMenu(date, val?) {
+        var day;
+        if (date) {
+            day = {
+                tanggal: moment().tz("Asia/Jakarta").format("YYYY-MM-DD"),
+            }
+        } else {
+            day = {
+                tanggal: val
+            }
         }
 
         ipcRenderer.invoke("getStok", day).then((result) => {
@@ -82,9 +126,11 @@ class Stok extends React.Component<any, any> {
                     }
                 });
 
+                var total_stok_masuk = 0;
+
                 const component_menu = day.map((el, i) => {
-                    console.log(el.shift);
                     if (el.shift === "pagi") {
+                        total_stok_masuk += el.stok_masuk
                         return (
                             <>
                                 <tr>
@@ -112,12 +158,19 @@ class Stok extends React.Component<any, any> {
                             </>
                         )
                     }
-                })
+                });
+
+                const total_stok_keluar = result.data.reduce((total, arr) => total + arr.terjual || 0, 0);
+                const tanggal_update = DotAdded.arrayMax(result.data)
 
                 this.setState({
                     data_menu: component_menu,
                     option_menu: option_menu,
                     disabled_new: true,
+                    total_stok_masuk: total_stok_masuk,
+                    total_stok_keluar: total_stok_keluar,
+                    tanggal_pembuatan: result.data[0].created_at,
+                    tanggal_update: tanggal_update.updated_at
                 })
             } else {
                 this.setState({
@@ -145,12 +198,24 @@ class Stok extends React.Component<any, any> {
                     console.log(result);
                     if (result.response === true) {
                         toast.success("Buku Stok Dibuat..");
-                        this.getMenu();
+                        this.getMenu(true);
                     }
                 });
             }
         });
 
+    }
+
+    isOpenExport() {
+        this.setState({
+            isOpenExport: true,
+        })
+    }
+
+    closeModalExport() {
+        this.setState({
+            isOpenExport: false,
+        })
     }
 
     isOpenMasuk() {
@@ -211,13 +276,18 @@ class Stok extends React.Component<any, any> {
                         <div className="d-flex">
                             <div className="p-2 me-auto">
                                 <h5>Laporan Stok Harian</h5>
-                                <small>Tanggal: {moment().tz("Asia/Jakarta").format("YYYY-MM-DD")}</small>
+                                <small>Tanggal: {this.state.tanggal_now}</small>
                             </div>
                             <div className="p-2">
                                 <button className="btn btn-primary btn-primary-cozy btn-sm" onClick={this.isOpenFilter}>Filter Laporan</button>
                             </div>
+                            {
+                                this.state.disabled_reset === true ? <div className="p-2">
+                                    <button className="btn btn-danger" onClick={this.resetFilter}>Reset Filter</button>
+                                </div> : <></>
+                            }
                             <div className="p-2">
-                                <button className="btn btn-primary btn-primary-cozy-dark btn-sm">Export Laporan</button>
+                                <button className="btn btn-primary btn-primary-cozy-dark btn-sm" onClick={this.isOpenExport}>Export Laporan</button>
                             </div>
 
                         </div>
@@ -235,10 +305,10 @@ class Stok extends React.Component<any, any> {
                                             <h5>Detail Laporan: </h5>
                                             <div className="hr-white"></div>
                                             <ul className="list-group list-group-dark mt-3">
-                                                <li className="list-group-item"><small>Total Stok Masuk:</small> <br /> <b>30 item</b></li>
-                                                <li className="list-group-item"><small>Total Terjual:</small> <br /> <b>35 item</b></li>
-                                                <li className="list-group-item"><small>Tanggal Pembuatan:</small> <br /> <b>23-05-2023 09:00:00</b></li>
-                                                <li className="list-group-item"><small>Tanggal Update:</small> <br /> <b>23-05-2023 20:00:00</b></li>
+                                                <li className="list-group-item"><small>Total Stok Masuk:</small> <br /> <b>{this.state.total_stok_masuk} item</b></li>
+                                                <li className="list-group-item"><small>Total Terjual:</small> <br /> <b>{this.state.total_stok_keluar} item</b></li>
+                                                <li className="list-group-item"><small>Tanggal Pembuatan:</small> <br /> <b>{this.state.tanggal_pembuatan}</b></li>
+                                                <li className="list-group-item"><small>Tanggal Update:</small> <br /> <b>{this.state.tanggal_update}</b></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -251,7 +321,7 @@ class Stok extends React.Component<any, any> {
                                             <h5>Management Stok: </h5>
                                             <div className="hr-white"></div>
                                             <div className="card card-custom-dark p-3">
-                                                {this.state.disabled_masuk === true && <><div className="alert alert-danger"><span><b>Tambah Stok Masuk</b> hanya bisa saat shift <b>Pagi</b></span>.</div></>}
+
                                                 <div className="d-flex">
                                                     <div className="">
                                                         <button className="btn btn-primary btn-sm" disabled={this.state.disabled_masuk} onClick={this.isOpenMasuk}>Tambah Stok Masuk</button>
@@ -270,7 +340,8 @@ class Stok extends React.Component<any, any> {
                 </div>
                 <ModalStokMasuk isOpenMasuk={this.state.isOpenMasuk} closeModalMasuk={this.closeModalMasuk} getMenu={this.getMenu} option_menu={this.state.option_menu} />
                 <ModalEditStokMasuk isOpenMasukEdit={this.state.isOpenMasukEdit} closeModalMasukEdit={this.closeModalMasukEdit} option_menu={this.state.option_menu} />
-                <ModalStokFilter isOpenFilter={this.state.isOpenFilter} closeModalFilter={this.closeModalFilter} />
+                <ModalStokFilter isOpenFilter={this.state.isOpenFilter} closeModalFilter={this.closeModalFilter} handleDateFilter={this.handleDateFilter} getFilterDate={this.getFilterDate} disabled_filter={this.state.disabled_filter} />
+                <ModalStokExport isOpenExport={this.state.isOpenExport} closeModalExport={this.closeModalExport} handleDateFilter={this.handleDateFilter} getFilterDate={this.getFilterDate} disabled_filter={this.state.disabled_filter} />
 
             </>
         )

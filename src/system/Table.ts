@@ -9,7 +9,6 @@ import DotAdded from "./DotAdded";
 import BillingOperation from "./BillingOpration";
 import { Struk } from "../entity/Struk";
 
-
 class TableRegular {
     private ms_all:number;
     private ms_delay:number;

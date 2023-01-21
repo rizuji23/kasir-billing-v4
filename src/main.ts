@@ -534,4 +534,8 @@ ipcMain.handle("filterByMonthBillingBelumBayar", async(event, data) => {
     return await FilterTransaksi.filterByMonthBillingBelumBayar(data);
 });
 
+ipcMain.handle("printStok", async(event, data) => {
+    return await ExportSystem.printStok(data);
+})
+
 //endopration

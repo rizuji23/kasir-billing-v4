@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Stok</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/boxicons.min.css">
+
+    <style>
+        @media print {
+            @page {
+                size: "landscape";
+            }
+        }
+
+        ul li {
+            list-style-type: none;
+            font-size: 14px;
+        }
+
+        ul {
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 30px;
+        }
+
+        p {
+            font-size: 14px;
+        }
+
+        h3 {
+            font-size: 20px;
+        }
+        small {
+            font-size: 12px;
+        }
+        
+
+        .table-custom {
+            background-color: #cfe2ff !important;
+            border-radius: 8px !important;
+        }
+
+        .table-custom td {
+            background-color: #606060 !important;
+            font-size: 12px;
+            color: white;
+        }
+
+        .table>:not(caption)>*>* {
+            text-align: center;
+        }
+
+        .table-custom .no-border {
+            border-bottom-width: 0px !important;
+        }
+
+        .table-custom th {
+            color: black;
+            font-size: 14px;
+        }
+
+        .table {
+            margin-top: 20px;
+            border: 1px solid black;
+        }
+
+        .table tr td {
+            border-left: 1px solid black;
+            border-bottom: 1px solid black;
+            font-size: 12px;
+
+        }
+
+        .border-end {
+            border: 1px solid black !important;
+        }
+
+        .border-start {
+            border: 1px solid black !important;
+
+        }
+
+        .table tr th {
+            font-size: 14px;
+            border-left: 1px solid black;
+            border-bottom: 1px solid black;
+        }
+
+    </style>
+</head>
+
+<div class="">
+    <div class="box-billing_cafe mb-5">
+        <div class="d-flex">
+            <div class="me-3 align-self-center">
+                <img src="assets/img/logo-print.png" width="120" alt="">
+            </div>
+
+            <div>
+                <div class="box-title">
+                    <h1><b>Laporan Stok</b></h1>
+                    <p class="mb-0">Tanggal: <b class="tanggal"></b></p>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="tables">
+            <table class="table">
+                <thead class="table-primary">
+                    <tr>
+                        <th rowspan="2">No</th>
+                        <th rowspan="2">Nama Barang</th>
+                        <th rowspan="2">Stok Awal</th>
+                        <th rowspan="2">Barang Masuk</th>
+                        <th colspan="2">Shift 1</th>
+                        <th colspan="2">Shift 2</th>
+                        <th rowspan="2">Stok Akhir</th>
+                        <th rowspan="2">Keterangan</th>
+                    </tr>
+                    <tr>
+                        <th>Terjual</th>
+                        <th>Sisa</th>
+                        <th>Terjual</th>
+                        <th>Sisa</th>
+                    </tr>
+                </thead>
+                <tbody id="table_stok">
+                    
+                </tbody>
+            </table>
+
+              <div class="d-flex">
+                <div class="">
+                    <ul>
+                        <li>Total Stok Masuk: <b id="total_stok_masuk"></b></li>
+                        <li>Total Terjual: <b id="total_stok_keluar"></b></li>
+                        <li>Tanggal Pembuatan: <b id="tanggal_pembuatan"></b></li>
+                        <li>Tanggal Update: <b id="tanggal_update"></b></li>
+                    </ul>
+                </div>
+              </div>                
+        </div>
+
+        <div style="break-after:page"></div>
+
+        <div class="box-billing_cafe mb-5">
+            <div class="d-flex">
+                <div class="me-3 align-self-center">
+                    <img src="assets/img/logo-print.png" width="120" alt="">
+                </div>
+    
+                <div>
+                    <div class="box-title">
+                        <h1><b>Rekapan Penjualan</b></h1>
+                        <p class="mb-0">Tanggal: <b class="tanggal"></b></p>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="tables">
+                
+                <table class="table">
+                    <thead class="table-primary">
+                        <tr>
+                          <th scope="col">No</th>
+                          <th scope="col">Cafe</th>
+                          <th scope="col">Terjual Shift 1</th>
+                          <th scope="col">Total</th>
+                          <th scope="col">Terjual Shift 2</th>
+                        </tr>
+                      </thead>
+                      <tbody id="rekapan">
+                        
+                      </tbody>
+                  </table>
+                  
+            </div>
+    </div>
+</div>
+
+<body>
+    
+    <script>
+        if (typeof module === 'object') {
+            window.module = module;
+            module = undefined;
+        }
+    </script>
+    <script src="assets/js/jquery-3.6.0.min.js"></script>
+    <script src="assets/js/popper.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script>
+        if (window.module) module = window.module;
+    </script>
+    <script type="module">
+        const { ipcRenderer } = require("electron");
+        const moment = require('moment');
+
+        ipcRenderer.on('message', (event, message) => {
+            const data = JSON.parse(message);
+            console.log(data);
+
+            let no = 1;
+            var night = [];
+            var day = [];
+            data.data.forEach(el => {
+                if (el.shift === "pagi") {
+                    day.push(el);
+                } else if (el.shift === "malam") {
+                    night.push(el);
+                }
+            });
+
+            var total_stok_masuk = 0;
+            const component_menu = day.map((el, i) => {
+                if (el.shift === "pagi") {
+                    total_stok_masuk += el.stok_masuk
+                    return `
+                                <tr>
+                                    <td>${no++}</td>
+                                    <td class="text-start">${el.nama_menu}</td>
+                                    <td>${el.stok_awal}</td>
+                                    <td>${el.stok_masuk}</td>
+                                    <td>${el.terjual}</td>
+                                    <td>${el.sisa}</td>
+                                    <td>${night[i].terjual}</td>
+                                    <td>${night[i].sisa}</td>
+                                    <td>${el.stok_akhir}</td>
+                                    <td></td>
+                                </tr>
+                            `
+                    }
+            });
+
+            console.log(component_menu)
+            let no_r = 1;
+
+            const total_all = Array.from(
+                data.data.reduce((a, {nama_menu, terjual}) => {
+                    return a.set(nama_menu, (a.get(nama_menu) || 0) + terjual)
+                }, new Map())).map(([nama_menu, terjual]) => ({nama_menu, terjual}))
+
+            console.log(total_all)
+
+            const rekapan = day.map((el, i) => {
+                return `
+                    <tr>
+                        <td>${no_r++}</td>
+                        <td class="text-start">${el.nama_menu}</td>
+                        <td>${el.terjual}</td>
+                        <td>${total_all[i].terjual}</td>
+                        <td>${night[i].terjual}</td>
+                    </tr>
+                `
+            })
+
+
+            $("#table_stok").html(component_menu)
+            $("#total_stok_keluar").html(`${data.info.total_stok_keluar} Item`)
+            $("#total_stok_masuk").html(`${total_stok_masuk} Item`)
+            $("#tanggal_pembuatan").html(data.data[0].created_at)
+            $("#tanggal_update").html(data.info.tanggal_update.updated_at)
+            $(".tanggal").html(data.tanggal)
+
+            $("#rekapan").html(rekapan)
+        });
+    </script>
+</body>
+</html>

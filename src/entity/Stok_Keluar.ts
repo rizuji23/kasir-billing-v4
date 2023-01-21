@@ -18,6 +18,9 @@ export class Stok_Keluar {
     @Column()
     id_menu: string
 
+    @Column({nullable: true})
+    id_cart: string
+
     @Column()
     stok_keluar: number
 

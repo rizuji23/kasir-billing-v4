@@ -133,7 +133,7 @@ class ModalStokMasuk extends React.Component<any, any> {
                     console.log(result);
                     if (result.response === true) {
                         toast.success("Stok masuk berhasil ditambah.");
-                        this.props.getMenu();
+                        this.props.getMenu(true);
                         this.props.closeModalMasuk();
                     }
                 })

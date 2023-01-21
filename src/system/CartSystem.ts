@@ -10,8 +10,8 @@ import StrukSystem from "./StrukSystem";
 import { Booking } from "../entity/Booking";
 import { Stok_Main } from "../entity/Stok_Main";
 import StokSystem from "./StokSystem";
+import { Stok_Keluar } from "../entity/Stok_Keluar";
 
-const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
 
 
 class CartSystem {
@@ -31,6 +31,8 @@ class CartSystem {
     }
 
     static async addCart(data_cart):Promise<any> {
+        const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
+
         try {
             let service = await dataSource;
             const id_cart = shortid.generate();
@@ -90,6 +92,8 @@ class CartSystem {
     }
 
     static async editCart(data_cart):Promise<any> {
+        const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
+
         try {
             let service = await dataSource;
             const edit_cart = await service.manager.createQueryBuilder().update(Cart).set({
@@ -124,6 +128,8 @@ class CartSystem {
     }
 
     static async addPesananCafeOnly(data_cart):Promise<any> {
+        const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
+
         try {
             let service = await dataSource;
             const id_pesanan = shortid.generate();
@@ -199,6 +205,8 @@ class CartSystem {
     }
 
     static async addPesananTable(data_cart):Promise<any> {
+        const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
+
         try {
             let service = await dataSource;
             const dot = new DotAdded();
@@ -264,7 +272,7 @@ class CartSystem {
                         }).where('id_booking = :id', {id: data_cart.id_booking}).execute();
 
                             if (update_struk && check_booking) {
-                                StokSystem.addTerjual(arr_cart, get_date_now, data_cart.user_in, data_cart.shift, "table")
+                                StokSystem.addTerjual(data_cart.cart, get_date_now, data_cart.user_in, data_cart.shift, "table")
 
                                 return {response: true, data: 'pesanan selesai'};
                             } else {
@@ -345,6 +353,8 @@ class CartSystem {
     }
 
     static async deleteCartTable(data_cart):Promise<any> {
+        const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
+
         try {
             let service = await dataSource;
             const check_pesanan = await service.manager.find(Pesanan, {
@@ -411,6 +421,9 @@ class CartSystem {
     }
 
     static async editCartTable(data_cart):Promise<any> {
+        const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
+        const date_clean = moment().tz("Asia/Jakarta").format("YYYY-MM-DD");
+
         try {
             let service = await dataSource;
             const check_pesanan = await service.manager.find(Pesanan, {
@@ -418,6 +431,88 @@ class CartSystem {
                     id_booking: data_cart.id_booking
                 }
             });
+
+            // get cart
+            const get_cart = await service.manager.find(Cart, {
+                where: {
+                    id_cart: data_cart.id_cart,
+                }
+            });
+
+            // get data stok main
+            const get_stok = await service.manager.query("SELECT *, date(stok_main.created_at) AS date_clean FROM stok_main WHERE id_menu = ? AND date_clean = ?", [get_cart[0].id_menu, date_clean]);
+            console.log("Stok_main", get_stok)
+            
+            // process stoking
+            if (get_cart[0].qty > data_cart.qty) {
+                console.log("ditambah");
+                const filter_day = await get_stok.filter(el => el.shift === data_cart.shift);
+                console.log(filter_day)
+                const terjual = await filter_day[0].terjual - data_cart.qty;
+                const sisa = await filter_day[0].sisa + data_cart.qty;
+                const stok_akhir = data_cart.qty + sisa;
+
+                const update_stok = await service.manager.createQueryBuilder().update(Stok_Main).set({
+                    sisa: sisa,
+                    terjual: terjual,
+                }).where('id_menu = :id', {id: get_cart[0].id_menu}).andWhere('date(stok_main.created_at) = :date', {date: date_clean}).andWhere('shift = :shift', {shift: data_cart.shift}).execute();
+
+                const get_stok_akhir = await service.manager.find(Stok_Keluar, {
+                    where: {
+                        id_cart: data_cart.id_cart,
+                    }
+                });
+
+                const stok_keluar_2 = await get_stok_akhir[0].stok_keluar - data_cart.qty;
+                const update_stok_akhir = await service.manager.createQueryBuilder().update(Stok_Keluar).set({
+                    stok_keluar: stok_keluar_2,
+                    updated_at: date_now,
+                }).where('id_cart = :id', {id: data_cart.id_cart}).execute();
+
+                if (update_stok_akhir && update_stok) {
+                    // update stok_akhir in stok_main table
+                    await service.manager.createQueryBuilder().update(Stok_Main).set({
+                        stok_akhir: stok_akhir,
+                        updated_at: date_now,
+                    }).where('id_menu = :id', {id: get_cart[0].id_menu}).andWhere('date(stok_main.created_at) = :date', {date: date_clean}).execute();
+                }
+
+            } else if (get_cart[0].qty < data_cart.qty) {
+                console.log("dikurang");
+                const filter_day = await get_stok.filter(el => el.shift === data_cart.shift);
+                console.log(filter_day)
+
+                const terjual = await filter_day[0].terjual + data_cart.qty;
+                const sisa = await filter_day[0].sisa - data_cart.qty;
+                const stok_akhir = sisa - data_cart.qty;
+
+                const update_stok = await service.manager.createQueryBuilder().update(Stok_Main).set({
+                    sisa: sisa,
+                    terjual: terjual,
+                }).where('id_menu = :id', {id: get_cart[0].id_menu}).andWhere('date(stok.created_at) = :date', {date: date_clean}).andWhere('shift = :shift', {shift: data_cart.shift}).execute();
+
+                const get_stok_akhir = await service.manager.find(Stok_Keluar, {
+                    where: {
+                        id_cart: data_cart.id_cart,
+                    }
+                });
+
+                const stok_keluar_2 = await get_stok_akhir[0].stok_keluar - data_cart.qty;
+                const update_stok_akhir = await service.manager.createQueryBuilder().update(Stok_Keluar).set({
+                    stok_keluar: stok_keluar_2,
+                    updated_at: date_now,
+                }).where('id_cart = :id', {id: data_cart.id_cart}).execute();
+
+                if (update_stok_akhir && update_stok) {
+                    // update stok_akhir in stok_main table
+                    await service.manager.createQueryBuilder().update(Stok_Main).set({
+                        stok_akhir: stok_akhir,
+                        updated_at: date_now,
+                    }).where('id_menu = :id', {id: get_cart[0].id_menu}).andWhere('date(stok.created_at) = :date', {date: date_clean}).execute();
+                }
+            } else {
+                console.log("pass");
+            }
 
             if (check_pesanan.length !== 0) {
                 const edit_cart = await service.manager.createQueryBuilder().update(Cart).set({
