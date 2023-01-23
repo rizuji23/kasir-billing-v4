@@ -1,12 +1,14 @@
 class TimeConvert {
     static textToMS(val, table) {
         var a = val[1].split(":");
-        var seconds;
-        if (a[0] !== "00") {
-            seconds = +a[0] * 60 * 60 + +a[0] * 60;
-        } else {
-            seconds = +a[1] * 60;
-        }
+        // const second_1 = +a[0] * 60 * 60 + +a[0] * 60;
+        // const second_2 = +a[1] * 60
+        const seconds = Number(a[0]) * 60 * 60 + Number(a[1]) * 60;
+        // if (a[0] !== "00") {
+        //     seconds = +a[0] * 60 * 60 + +a[0] * 60;
+        // } else {
+        //     seconds = +a[1] * 60;
+        // }
         
         var milliseconds = seconds * 1000;
         console.log(seconds);

@@ -1381,3 +1381,16 @@ select {
     font-family: 'Inter-Bold';
     font-size: 15px;
 }
+
+.swal-modal {
+    z-index: 99999999 !important;
+}
+
+.perhatian-box {
+    margin-top: 20px;
+}
+
+.perhatian-box h5 {
+    font-family: 'Inter-Bold';
+    color: #FFFFFF;
+}

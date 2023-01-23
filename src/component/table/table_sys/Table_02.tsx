@@ -9,6 +9,8 @@ import swal from 'sweetalert';
 import { turnon, showLoading } from "../ContinueTimer";
 import TimeConvert from "../../../system/TimeConvert";
 import { Dot } from "recharts";
+import moment from "moment";
+import 'moment-timezone';
 
 class Table_01 extends React.Component<any, any> {
     constructor(props) {
@@ -157,7 +159,32 @@ class Table_01 extends React.Component<any, any> {
 
         } else {
             this.setState({ jam: e.target.value, modal_close: false });
-            ipcRenderer.invoke("checkHarga", e.target.value).then((result) => {
+            const shift_pagi = JSON.parse(localStorage.getItem("shift_pagi"));
+            const shift_malam = JSON.parse(localStorage.getItem("shift_malam"));
+
+            const hours = moment().tz("Asia/Jakarta").format("HH");
+            var shift_now;
+
+            if (hours >= shift_pagi.start_jam.split(':')[0] && hours < shift_pagi.end_jam.split(':')[0]) {
+                shift_now = {
+                    shift: "pagi",
+                    durasi: e.target.value,
+                    start_jam: shift_pagi.start_jam.split(':')[0],
+                    end_jam: shift_pagi.end_jam.split(':')[0]
+                }
+                console.log(shift_now)
+                console.log("Pagi")
+            } else if (hours >= shift_malam.start_jam.split(':')[0] || hours < shift_malam.end_jam.split(':')[0]) {
+                shift_now = {
+                    shift: "malam",
+                    durasi: e.target.value,
+                    start_jam: shift_malam.start_jam.split(':')[0],
+                    end_jam: shift_malam.end_jam.split(':')[0]
+                }
+                console.log("malam")
+                console.log(shift_now)
+            }
+            ipcRenderer.invoke("checkHarga", shift_now).then((result) => {
                 console.log(result);
                 var data_new = ""
                 if (result.response) {
@@ -695,7 +722,7 @@ class Table_01 extends React.Component<any, any> {
         if (this.state.isUse === false) {
             modal = <ModalBooking table_name={this.state.table_name} handleMode={this.handleMode} mode={this.state.mode} handleJam={this.handleJam} startTimer={this.startTimer} handleNama={this.handleNama} disableSubmit={this.state.disabled} harga_detail={this.state.harga_detail} total_harga={this.state.total_harga} jam={this.state.jam} handleBlink={this.handleBlink} table_id={this.state.table_id} isOpen={this.state.isOpen} closeModal={this.closeModal} mode_loss={this.state.mode_loss} startTimerLoss={this.startTimerLoss} handleMember={this.handleMember} member={this.state.member} handleInputMember={this.handleInputMember} nama_member={this.state.nama_member} disabled_voucher={this.state.disabled_voucher} handleVoucher={this.handleVoucher} handleCheckVoucher={this.handleCheckVoucher} potongan={this.state.potongan} loading={this.state.loading} />
         } else if (this.state.isUse === true) {
-            modal = <ModalBookingActive table_name={this.state.table_name} name_customer={this.state.nama} id_booking={this.state.id_booking} table_id={this.state.table_id} stopTimer={this.stopTimer} stopTimerLoss={this.stopTimerLoss} handlePindah={this.handlePindah} jam={this.state.jam_add} harga_detail={this.state.harga_detail} total_harga_add={this.state.total_harga_add} total_harga={this.state.total_harga} handleJam={this.handleJamAdd} isOpen={this.state.isOpen} closeModal={this.closeModal} handleBlinkAdd={this.handleBlinkAdd} addOn={this.addOn} disabled_add={this.state.disabled_add} resetTable={this.resetTable} mode={this.state.mode} time_running={this.state.time_running} continueTimer={this.continueTimer} />
+            modal = <ModalBookingActive table_name={this.state.table_name} name_customer={this.state.nama} id_booking={this.state.id_booking} table_id={this.state.table_id} stopTimer={this.stopTimer} stopTimerLoss={this.stopTimerLoss} handlePindah={this.handlePindah} jam={this.state.jam_add} harga_detail={this.state.harga_detail} total_harga_add={this.state.total_harga_add} total_harga={this.state.total_harga} handleJam={this.handleJamAdd} isOpen={this.state.isOpen} closeModal={this.closeModal} handleBlinkAdd={this.handleBlinkAdd} addOn={this.addOn} disabled_add={this.state.disabled_add} resetTable={this.resetTable} mode={this.state.mode} time_running={this.state.time_running} continueTimer={this.continueTimer} getDataTable={this.getDataTable} />
         }
 
         if (this.state.isUse) {

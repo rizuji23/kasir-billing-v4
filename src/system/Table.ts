@@ -214,6 +214,68 @@ class TableRegular {
           );
     }
 
+    // table_timer_1 = table mati, table_timer_2 = table nyala
+    async pindahMeja(data_booking, table_timer_1):Promise<any> {
+        try {
+            console.log("data_booking", data_booking)
+            let service = await dataSource;
+            const turn_all = this.ms_delay + this.ms_all;
+            const count_time = turn_all / 3600000;
+            const duration = 3600 * count_time;
+            let start = Date.now();
+            let diff, min, sec;
+
+            // update booking
+            const update_booking = await service.manager.createQueryBuilder().update(Booking).set({
+                id_table: this.id_table,
+                updated_at: this.date_now,
+            }).where("id_booking = :id", {id: data_booking.id_booking}).execute();
+
+            if (update_booking) {
+                // get table_booking 1
+                const get_table_1 = await service.manager.find(Table_Billiard, {
+                    where: {
+                        id_table: data_booking.id_table_1,
+                    }
+                });
+
+                // update table_booking 2
+                const update_table_2 = await service.manager.createQueryBuilder().update(Table_Billiard).set({
+                    id_booking: get_table_1[0].id_booking,
+                    durasi: get_table_1[0].durasi,
+                    status: "active",
+                    created_at: this.date_now,
+                    updated_at: this.date_now
+                }).where("id_table = :id", {id: this.id_table}).execute();
+
+                // update table_booking 1
+                const update_table_1 = await service.manager.createQueryBuilder().update(Table_Billiard).set({
+                    id_booking: "",
+                    durasi: 0,
+                    status: "not_active",
+                    updated_at: this.date_now,
+                }).where("id_table = :id", {id: data_booking.id_table_1}).execute();
+
+                if (update_table_1 && update_table_2) {
+                    // stop table 1
+                    const table_number_1 = data_booking.id_table_1.split('table0').join('');
+                    clearInterval(table_timer_1);
+                    console.log("table_timer_1", table_timer_1)
+                    await this.port.write(`of ${table_number_1}`);
+
+                    // start table 1
+                    const table_number_2 = this.id_table.split('table0').join('');
+                    this.timerInit(diff, duration, start)
+                    this.table_timer = setInterval(this.table_timer, 1000);
+                    await this.port.write(`on ${table_number_2}`);
+                    return this.table_timer;
+                }
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     async continueTimer(ms_delay:number, ms_add:number):Promise<any> {
         const turn_all = ms_add + ms_delay + this.ms_all;
         const count_time = turn_all / 3600000;
@@ -351,7 +413,7 @@ class TablePersonal extends TableRegular {
     async startTimer(data_booking:any) {
         const id_booking = shortid.generate();
         const bill = new BillingOperation();
-        const harga = await bill.checkHarga(1);
+        const harga = await bill.checkHarga(data_booking.shift);
 
         (await dataSource).createQueryBuilder().update(Table_Billiard).set({
             id_booking: id_booking,

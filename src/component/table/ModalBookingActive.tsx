@@ -12,6 +12,7 @@ import LoadingButton from "../LoadingButton";
 import { Dot } from "recharts";
 import moment from "moment";
 import 'moment-timezone';
+import ModalChangeName from "./ModalChangeName";
 
 class ModalBookingActive extends React.Component<any, any> {
     constructor(props) {
@@ -45,7 +46,9 @@ class ModalBookingActive extends React.Component<any, any> {
                 qty: "",
                 harga: "",
                 sub_total: "",
-            }
+            },
+            isOpenChange: false,
+            nama: this.props.name_customer,
         }
 
         this.getAllTable = this.getAllTable.bind(this);
@@ -62,6 +65,10 @@ class ModalBookingActive extends React.Component<any, any> {
         this.handlePesan = this.handlePesan.bind(this);
         this.clearState = this.clearState.bind(this);
         this.clearSplitBill = this.clearSplitBill.bind(this);
+        this.handleChangeName = this.handleChangeName.bind(this);
+        this.openChangeName = this.openChangeName.bind(this);
+        this.closeChangeName = this.closeChangeName.bind(this);
+        this.getCustomerName = this.getCustomerName.bind(this);
     }
 
     clearSplitBill() {
@@ -82,6 +89,19 @@ class ModalBookingActive extends React.Component<any, any> {
                 sub_total: "",
             }
         })
+    }
+
+    getCustomerName() {
+        ipcRenderer.invoke("getDataTable", this.props.table_id).then((result) => {
+            console.log(result);
+            if (result.response === true) {
+                this.setState({
+                    nama: result.data[0].nama_booking
+                });
+            } else {
+                toast.error("Terjadi kesalahan (getCustomerName)")
+            }
+        });
     }
 
     getMenu() {
@@ -190,7 +210,6 @@ class ModalBookingActive extends React.Component<any, any> {
                             cart: result.data,
                         }
 
-                        console.log(result.data)
                         ipcRenderer.invoke("pesanan", false, false, false, false, false, false, true, data_table).then((result) => {
                             if (result.response === true) {
                                 toast.success("Menu sudah dipesan.");
@@ -394,10 +413,25 @@ class ModalBookingActive extends React.Component<any, any> {
             dangerMode: true,
         })
             .then((willDelete) => {
+                const shift_pagi = JSON.parse(localStorage.getItem("shift_pagi"));
+                const shift_malam = JSON.parse(localStorage.getItem("shift_malam"));
+
+                const hours = moment().tz("Asia/Jakarta").format("HH");
+                var shift_now = "";
+
+                if (hours >= shift_pagi.start_jam.split(':')[0] && hours < shift_pagi.end_jam.split(':')[0]) {
+                    shift_now = "pagi";
+                    console.log("PAGI")
+                } else if (hours >= shift_malam.start_jam.split(':')[0] || hours < shift_malam.end_jam.split(':')[0]) {
+                    shift_now = "malam";
+                    console.log("MALAM")
+                }
+
                 const data_cart = {
                     user_in: this.state.user_in,
                     id_cart: menu.id_cart,
-                    id_booking: this.props.id_booking
+                    id_booking: this.props.id_booking,
+                    shift: shift_now,
                 }
 
                 if (willDelete) {
@@ -501,6 +535,7 @@ class ModalBookingActive extends React.Component<any, any> {
         this.getAllTable()
         this.getListMenuCafe()
         this.getMenu()
+        this.getCustomerName()
     }
 
     getAllTable(): void {
@@ -521,7 +556,7 @@ class ModalBookingActive extends React.Component<any, any> {
             this.setState({
                 list_table: data_
             })
-        })
+        });
     }
 
     componentDidUpdate(prevProps, prevState): void {
@@ -552,7 +587,6 @@ class ModalBookingActive extends React.Component<any, any> {
             this.getListMenuCafe();
             console.log("CLOSEDDD")
         }
-
     }
 
     openModal(): any {
@@ -631,11 +665,61 @@ class ModalBookingActive extends React.Component<any, any> {
         });
     }
 
-    render(): React.ReactNode {
+    openChangeName() {
+        this.setState({
+            isOpenChange: true,
+        });
+    }
 
+    closeChangeName() {
+        this.setState({
+            isOpenChange: false,
+        })
+    }
+
+    handleChangeName() {
+        swal({
+            text: "Masukan nama customer",
+            content: {
+                element: "input",
+                attributes: {
+                    placeholder: "Nama Customer",
+                    type: "text",
+                    value: this.props.name_customer
+                },
+            },
+            buttons: ["Batal", true],
+            dangerMode: true,
+        }).then((value) => {
+            if (value) {
+                if (value.length === 0) {
+                    swal("Gagal", "Nama tidak boleh kosong", "error");
+                } else {
+                    const data = {
+                        nama: value,
+                        id_booking: this.props.id_booking,
+                    }
+
+                    ipcRenderer.invoke("changeName", data).then((result) => {
+                        console.log(result);
+                        if (result.response === true) {
+                            toast.success("Nama Customer berhasil diubah.");
+                            this.getListBilling()
+                            this.getAllTable()
+                            this.getListMenuCafe()
+                            this.getMenu()
+                        } else {
+                            toast.error("Nama Customer gagal diubah.");
+                        }
+                    })
+                }
+            }
+        });
+    }
+
+    render(): React.ReactNode {
         return (
             <>
-
                 <Modal
                     show={this.props.isOpen}
                     keyboard={false}
@@ -719,12 +803,13 @@ class ModalBookingActive extends React.Component<any, any> {
                                         <div className="mt-2">
                                             <label >Pilih Meja</label>
                                             <select name="" onChange={this.props.handlePindah} className="form-control custom-input" id="pilih_meja">
+                                                <option value="">Pilih Meja</option>
                                                 {this.state.list_table}
                                             </select>
                                         </div>
                                         <div className="mt-2  text-end">
                                             <div className="">
-                                                <button id="pindah_meja_btn" className="btn btn-primary btn-primary-cozy">Pindah
+                                                <button id="pindah_meja_btn" className="btn btn-primary btn-primary-cozy" onClick={this.props.handlePindahTable}>Pindah
                                                     Meja</button>
                                             </div>
                                         </div>
@@ -810,7 +895,7 @@ class ModalBookingActive extends React.Component<any, any> {
                                         <p>Tanggal Mulai: <span id="jam_mulai_active">{this.state.start_time}</span></p>
                                         <ul className="list-group" id="detail_struk_table">
                                             <li className="list-group-item"><small>Nama Pemesan</small> <br /><span
-                                                id="nama_pemesan_active"></span> {this.props.name_customer} ({this.props.id_booking})</li>
+                                                id="nama_pemesan_active"></span> {this.state.nama} ({this.props.id_booking}) | <a href="javascript:void(0)" onClick={this.openChangeName}>Edit</a></li>
                                             <li className="list-group-item"><small>List Billing</small> <br />
                                                 <ul>
                                                     <div id="list_billing">{this.state.list_billing}</div>
@@ -859,9 +944,6 @@ class ModalBookingActive extends React.Component<any, any> {
                                 </div>
                             </div>
                         </div>
-
-
-
                     </Modal.Body>
                     <Modal.Footer>
                         <button type="button" className="btn btn-primary btn-primary-cozy-dark"
@@ -871,6 +953,7 @@ class ModalBookingActive extends React.Component<any, any> {
                 </Modal>
                 {/* <div className="modal-backdrop fade show"></div> */}
                 <ModalSplitBill isOpenSplit={this.state.isOpenSplit} closeModalSplit={this.closeModal} data_split_billing={this.state.data_split_billing} data_split_menu={this.state.data_split_menu} id_booking={this.props.id_booking} id_pesanan={this.state.id_pesanan} clearSplitBill={this.clearSplitBill} />
+                <ModalChangeName isOpenChange={this.state.isOpenChange} closeChangeName={this.closeChangeName} id_booking={this.props.id_booking} nama={this.state.nama} getCustomerName={this.getCustomerName} />
             </>
         )
     }

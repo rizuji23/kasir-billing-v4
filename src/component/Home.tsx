@@ -215,7 +215,6 @@ class Home extends React.Component<any, any> {
                             <div className="row row-cols-1 row-cols-sm-3 g-4" id="table_billiard">
                                 <Table_01 getTime={this.getTime} />
                                 <Table_02 getTime={this.getTime} />
-
                             </div>
                         </div>
                         <div className="p-2">
@@ -233,8 +232,6 @@ class Home extends React.Component<any, any> {
                                                 <p>Table 01</p>
                                                 <span>{this.state.timer.table001}</span>
                                                 {this.state.isUse.table001 === true ? <span className="badge rounded-pill text-bg-danger">Terpakai</span> : <span className="badge rounded-pill text-bg-success">Tersedia</span>}
-
-
                                             </div>
                                         </div>
                                         <div className="">
@@ -246,14 +243,14 @@ class Home extends React.Component<any, any> {
                                         </div>
                                         <div className="">
                                             <div className="content-list text-center">
-                                                <p>Table 01</p>
+                                                <p>Table 03</p>
                                                 <span>00:00:00</span>
                                                 <span className="badge rounded-pill text-bg-success">Tersedia</span>
                                             </div>
                                         </div>
                                         <div className="">
                                             <div className="content-list text-center">
-                                                <p>Table 01</p>
+                                                <p>Table 04</p>
                                                 <span>00:00:00</span>
                                                 <span className="badge rounded-pill text-bg-success">Tersedia</span>
                                             </div>
@@ -262,28 +259,28 @@ class Home extends React.Component<any, any> {
                                     <div className="d-flex">
                                         <div className="">
                                             <div className="content-list text-center">
-                                                <p>Table 01</p>
+                                                <p>Table 05</p>
                                                 <span>00:00:00</span>
                                                 <span className="badge rounded-pill text-bg-success">Tersedia</span>
                                             </div>
                                         </div>
                                         <div className="">
                                             <div className="content-list text-center">
-                                                <p>Table 01</p>
+                                                <p>Table 06</p>
                                                 <span>00:00:00</span>
                                                 <span className="badge rounded-pill text-bg-success">Tersedia</span>
                                             </div>
                                         </div>
                                         <div className="">
                                             <div className="content-list text-center">
-                                                <p>Table 01</p>
+                                                <p>Table 07</p>
                                                 <span>00:00:00</span>
                                                 <span className="badge rounded-pill text-bg-success">Tersedia</span>
                                             </div>
                                         </div>
                                         <div className="">
                                             <div className="content-list text-center">
-                                                <p>Table 01</p>
+                                                <p>Table 08</p>
                                                 <span>00:00:00</span>
                                                 <span className="badge rounded-pill text-bg-success">Tersedia</span>
                                             </div>
@@ -292,33 +289,38 @@ class Home extends React.Component<any, any> {
                                     <div className="d-flex">
                                         <div className="">
                                             <div className="content-list text-center">
-                                                <p>Table 01</p>
+                                                <p>Table 09</p>
                                                 <span>00:00:00</span>
                                                 <span className="badge rounded-pill text-bg-success">Tersedia</span>
                                             </div>
                                         </div>
                                         <div className="">
                                             <div className="content-list text-center">
-                                                <p>Table 01</p>
+                                                <p>Table 10</p>
                                                 <span>00:00:00</span>
                                                 <span className="badge rounded-pill text-bg-success">Tersedia</span>
                                             </div>
                                         </div>
                                         <div className="">
                                             <div className="content-list text-center">
-                                                <p>Table 01</p>
+                                                <p>Table 11</p>
                                                 <span>00:00:00</span>
                                                 <span className="badge rounded-pill text-bg-success">Tersedia</span>
                                             </div>
                                         </div>
                                         <div className="">
                                             <div className="content-list text-center">
-                                                <p>Table 01</p>
+                                                <p>Table 12</p>
                                                 <span>00:00:00</span>
                                                 <span className="badge rounded-pill text-bg-success">Tersedia</span>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+
+                                <div className="perhatian-box">
+                                    <h5>Perhatian: </h5>
+                                    <div className="alert alert-danger"></div>
                                 </div>
                             </div>
                         </div>

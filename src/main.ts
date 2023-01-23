@@ -82,11 +82,121 @@ System.getSelectedPort().then((result) => {
 
 
 //set Regular Timer Billing
-var table_01_time:any, table_02_time:any, table_03_time:any
+var table_01_time:any, table_02_time:any, table_03_time:any, table_04_time:any, table_05_time:any, table_06_time:any, table_07_time:any, table_08_time:any, table_09_time:any, table_10_time:any, table_11_time:any, table_12_time:any;
 
-ipcMain.handle("start", async (event, id_table:any, ms_all:any, ms_delay:any, blink:any, stop:any, add_on:any, ms_delay_add:any, ms_add:any, data_booking:any, continuetime:boolean, reset:boolean, startnew:boolean) => {
+
+
+ipcMain.handle("start", async (event, id_table:any, ms_all:any, ms_delay:any, blink:any, stop:any, add_on:any, ms_delay_add:any, ms_add:any, data_booking:any, continuetime:boolean, reset:boolean, startnew:boolean, pindah:boolean) => {
+    const getVariableTime = (id) => {
+        switch (id) {
+            case "table001": {
+                return table_01_time;
+                break;
+            }
+    
+            case "table002": {
+                console.log("IN")
+                return table_02_time;
+                break;
+            }
+    
+            case "table003": {
+                return table_03_time;
+                break;
+            } 
+    
+            case "table004": {
+                return table_04_time;
+                break;
+            }
+    
+            case "table005": {
+                return table_05_time;
+                break;
+            }
+    
+            case "table006": {
+                return table_06_time;
+                break;
+            }
+    
+            case "table007": {
+                return table_07_time;
+                break;
+            }
+    
+            case "table008": {
+                return table_08_time;
+                break;
+            }
+    
+            case "table009": {
+                return table_09_time;
+                break;
+            }
+    
+            case "table010": {
+                return table_10_time;
+                break;
+            }
+    
+            case "table011": {
+                return table_11_time;
+                break;
+            }
+    
+            case "table012": {
+                return table_12_time;
+                break;
+            }
+        }
+    }
+
+    const setVariableTime = (id, value) => {
+        if (id === "table001") {
+            table_01_time = value;
+            return true;
+        } else if (id === "table002") {
+            table_02_time = value;
+            return true;
+        } else if (id === "table003") {
+            table_03_time = value;
+            return true;
+        }  else if (id === "table004") {
+            table_04_time = value;
+            return true;
+        } else if (id === "table005") {
+            table_05_time = value;
+            return true;
+        } else if (id === "table006") {
+            table_06_time = value;
+            return true;
+        } else if (id === "table007") {
+            table_07_time = value;
+            return true;
+        } else if (id === "table008") {
+            table_08_time = value;
+            return true;
+        } else if (id === "table009") {
+            table_09_time = value;
+            return true;
+        } else if (id === "table010") {
+            table_10_time = value;
+            return true;
+        } else if (id === "table011") {
+            table_11_time = value;
+            return true;
+        } else if (id === "table012") {
+            table_12_time = value;
+            return true;
+        }
+    }
+
     if (id_table === "table001") {
-        const table_01 = new TableRegular(id_table, ms_all, ms_delay, blink, arduino.path, win);
+        var table_01;
+        if (pindah !== true) {
+            table_01 = new TableRegular(id_table, ms_all, ms_delay, blink, arduino.path, win);
+        }
         if (stop === true) {
             table_01.stopTimer(table_01_time, true)
         } else {
@@ -101,6 +211,21 @@ ipcMain.handle("start", async (event, id_table:any, ms_all:any, ms_delay:any, bl
             } else if (reset === true) {
                 console.log('test')
                 table_01_time = await table_01.resetTable(data_booking, table_01_time, true)
+            } else if (pindah === true) {
+                var get_off = getVariableTime(data_booking.id_table_1);
+                console.log(table_01_time);
+                console.log("data_booking.id_table_1", data_booking.id_table_1);
+                console.log("get_off", get_off);
+                const table = new TableRegular(data_booking.pindah, ms_all, ms_delay, data_booking.blink, arduino.path, win);
+                var get_on = getVariableTime(data_booking.pindah);
+                get_on = setVariableTime(data_booking.pindah, await table.pindahMeja(data_booking, get_off));
+                console.log("get_on", get_on);
+                console.log(table_02_time);
+                if (get_on) {
+                    return {response: true, data: "success"};
+                } else {
+                    return {response: false, data: "failed"};
+                }
             }
         }
     } else if (id_table === 'table002') {
@@ -123,6 +248,19 @@ ipcMain.handle("start", async (event, id_table:any, ms_all:any, ms_delay:any, bl
         }
     }
 });
+
+// ipcMain.handle("pindahMeja", async (event, id_table:any, ms_all:any, ms_delay:any, data_booking:any) => {
+//     var get_off = getVariableTime(data_booking.id_table_1);
+//     console.log(get_off)
+//     var get_on = getVariableTime(id_table);
+//     const table = new TableRegular(id_table, ms_all, ms_delay, data_booking.blink, arduino.path, win);
+//     get_on = await table.pindahMeja(data_booking, get_off);
+//     if (get_on) {
+//         return {response: true, data: "success"};
+//     } else {
+//         return {response: false, data: "failed"};
+//     }
+// });
 
 //set Loss Timer Billing
 var table_01_time_loss:any
@@ -154,8 +292,8 @@ ipcMain.handle("login",async (event, username, password) => {
     return await data_user.goAuth()
 });
 
-ipcMain.handle("checkHarga", async(event, durasi) => {
-    return await bill.checkHarga(durasi);
+ipcMain.handle("checkHarga", async(event, data) => {
+    return await bill.checkHarga(data);
 });
 
 ipcMain.handle("getDataTable", async (event, id_table) => {
@@ -174,8 +312,8 @@ ipcMain.handle("getDetailPriceBill", async (event, id_booking) => {
     return await bill.getDetailPriceBill(id_booking);
 });
 
-ipcMain.handle("inputPrice", async (event, data_booking) => {
-    return await bill.inputPrice(data_booking);
+ipcMain.handle("inputPrice", async (event, data_booking, shift_now) => {
+    return await bill.inputPrice(data_booking, shift_now);
 });
 
 ipcMain.handle("getActiveTable", async (event) => {
@@ -536,6 +674,10 @@ ipcMain.handle("filterByMonthBillingBelumBayar", async(event, data) => {
 
 ipcMain.handle("printStok", async(event, data) => {
     return await ExportSystem.printStok(data);
-})
+});
+
+ipcMain.handle("changeName", async(event, data) => {
+    return await BillingOperation.changeName(data);
+});
 
 //endopration

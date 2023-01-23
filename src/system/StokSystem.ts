@@ -270,7 +270,7 @@ class StokSystem {
 
             const get_stok = await service.manager.query("SELECT *, date(created_at) AS date_clean FROM stok_main WHERE date_clean = ? AND id_menu IN ("+ result_id_menu +") AND shift = ?", [tanggal, shift]);
             
-            console.log(get_stok);
+            console.log("STOK MAIN DUDE", get_stok, get_stok.length);
 
             if (get_stok.length !== 0) {
                 // calculate sum all qty and stok akhir by id_menu

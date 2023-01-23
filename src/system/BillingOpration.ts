@@ -13,7 +13,6 @@ import { Struk } from "../entity/Struk";
 import DotAdded from "./DotAdded";
 import StrukSystem from "./StrukSystem";
 
-const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
 
 interface data_pay {
     id_table: string,
@@ -25,7 +24,7 @@ interface data_pay {
 }
 
 class BillingOperation {
-    async checkHarga(durasi:number):Promise<any> {
+    async checkHarga(data):Promise<any> {
         try {
             let service = await dataSource;
             const jam = moment().tz("Asia/Jakarta");
@@ -35,7 +34,7 @@ class BillingOperation {
             const harga_detail = [];
             var total_harga = 0;
     
-                for (var i = 0; i<durasi; i++) {
+                for (var i = 0; i<data.durasi; i++) {
                     const jam_estimasi = moment().tz("Asia/Jakarta").set('minutes', i * 60).format('HH');
                     const jam_full = moment().tz("Asia/Jakarta").set('minutes', i * 60).format('HH:mm:ss');
                     const split_jam = jam_full.split(':')
@@ -45,7 +44,7 @@ class BillingOperation {
 
                     console.log(jam_all)
     
-                    if (jam_estimasi <= '16') {
+                    if (jam_estimasi >= data.start_jam && jam_estimasi < data.end_jam) {
                         const result = await service.manager.find(Harga_Billing, {
                             where: {
                                 tipe_durasi: "Siang"
@@ -54,7 +53,7 @@ class BillingOperation {
     
                         harga_detail.push({'tipe': "Siang", harga: result[0].harga, durasi: 1, start_duration: jam_sekarang, end_duration: jam_all})
                         total_harga += result[0].harga;
-                    } else if (jam_estimasi >= '16') {
+                    } else if (jam_estimasi >= data.start_jam || jam_estimasi < data.end_jam) {
                         const result = await service.manager.find(Harga_Billing, {
                             where: {
                                 tipe_durasi: "Malam"
@@ -73,10 +72,11 @@ class BillingOperation {
         }
     }
 
-    async inputPrice(data_booking:any):Promise<any> {
+    async inputPrice(data_booking:any, shift_now):Promise<any> {
         try {
             const date_now =  moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss")
-            const data_price:any = await this.checkHarga(1);
+            const data_price:any = await this.checkHarga(shift_now);
+            console.log(data_price)
             let service = await dataSource;
             const check_booking = await service.manager.find(Booking, {
                 where: {
@@ -124,7 +124,7 @@ class BillingOperation {
                         const dd_booking:any = check_detail_booking;
                         const total_booking = dd_booking.reduce((total, arr) => {
                             return total + arr.harga
-                        });
+                        }, 0);
 
                         var total_all;
 
@@ -139,7 +139,7 @@ class BillingOperation {
                             const dd_cart:any = check_cart;
                             const total_cart = dd_cart.reduce((total, arr) => {
                                 return total + arr.sub_total;
-                            });
+                            }, 0);
 
                             total_all = total_cart + total_booking;
                         } else {
@@ -308,6 +308,8 @@ class BillingOperation {
 
 
     static async sendPayNow(data_pay:data_pay):Promise<any> {
+        const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
+
         try {
             let service = await dataSource;
 
@@ -354,6 +356,27 @@ class BillingOperation {
             const get_harga = await service.manager.find(Harga_Billing);
 
             return {response: true, data: get_harga};
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async changeName(data):Promise<any> {
+        const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
+
+        try {
+            let service = await dataSource;
+
+            const change_name = await service.manager.createQueryBuilder().update(Booking).set({
+                nama_booking: data.nama,
+                updated_at: date_now
+            }).where('id_booking = :id', {id: data.id_booking}).execute();
+
+            if (change_name) {
+                return {response: true, data: "data saved"};
+            } else {
+                return {response: false, data: "data is not saved"};
+            }
         } catch (err) {
             console.log(err);
         }

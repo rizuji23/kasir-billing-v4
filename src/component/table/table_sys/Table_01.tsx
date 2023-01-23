@@ -9,6 +9,8 @@ import swal from 'sweetalert';
 import { turnon, showLoading } from "../ContinueTimer";
 import TimeConvert from "../../../system/TimeConvert";
 import { Dot } from "recharts";
+import moment from "moment";
+import 'moment-timezone';
 
 class Table_01 extends React.Component<any, any> {
     constructor(props) {
@@ -77,6 +79,7 @@ class Table_01 extends React.Component<any, any> {
         this.handleInputMember = this.handleInputMember.bind(this);
         this.handleVoucher = this.handleVoucher.bind(this);
         this.handleCheckVoucher = this.handleCheckVoucher.bind(this);
+        this.handlePindahTable = this.handlePindahTable.bind(this);
     }
 
     validation() {
@@ -157,7 +160,33 @@ class Table_01 extends React.Component<any, any> {
 
         } else {
             this.setState({ jam: e.target.value, modal_close: false });
-            ipcRenderer.invoke("checkHarga", e.target.value).then((result) => {
+            const shift_pagi = JSON.parse(localStorage.getItem("shift_pagi"));
+            const shift_malam = JSON.parse(localStorage.getItem("shift_malam"));
+
+            const hours = moment().tz("Asia/Jakarta").format("HH");
+            var shift_now;
+
+            if (hours >= shift_pagi.start_jam.split(':')[0] && hours < shift_pagi.end_jam.split(':')[0]) {
+                shift_now = {
+                    shift: "pagi",
+                    durasi: e.target.value,
+                    start_jam: shift_pagi.start_jam.split(':')[0],
+                    end_jam: shift_pagi.end_jam.split(':')[0]
+                }
+                console.log(shift_now)
+                console.log("Pagi")
+            } else if (hours >= shift_malam.start_jam.split(':')[0] || hours < shift_malam.end_jam.split(':')[0]) {
+                shift_now = {
+                    shift: "malam",
+                    durasi: e.target.value,
+                    start_jam: shift_malam.start_jam.split(':')[0],
+                    end_jam: shift_malam.end_jam.split(':')[0]
+                }
+                console.log("malam")
+                console.log(shift_now)
+            }
+
+            ipcRenderer.invoke("checkHarga", shift_now).then((result) => {
                 console.log(result);
                 var data_new = ""
                 if (result.response) {
@@ -452,27 +481,75 @@ class Table_01 extends React.Component<any, any> {
 
     startTimerLoss() {
         if (this.state.mode !== '' && this.state.nama !== '') {
-            setTimeout(() => {
-                const durasi_minute = 1 * 60;
-                const minutetoms = durasi_minute * 60000;
-
-                const data_booking = {
-                    nama: this.state.nama,
-                    durasi_booking: 1,
-                    total_harga: this.state.total_harga,
-                    tipe_booking: this.state.mode,
-                    user_in: sessionStorage.getItem('username'),
-                }
-
-                if (this.state.mode === 'Loss') {
-                    ipcRenderer.invoke("start_loss", this.state.table_id, true, false, data_booking, false, false).then(() => {
-                        console.log("start loss 01 is created");
-                        toast.success(this.state.table_name + " berhasil dibooking (Loss).");
-                        this.getDataTable();
-                        this.setState({ disabled: false, isUse: true, modal_close: true, isOpen: true })
+            swal({
+                title: "Apa kamu yakin?",
+                text: "Data tidak akan bisa diubah..",
+                icon: "warning",
+                buttons: ["Batal", true],
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    this.setState({
+                        loading: true,
+                        disabled: true,
                     });
+
+                    toast.success("Progress: Menyimpan Data... (30%)");
+
+                    setTimeout(() => {
+                        toast.success("Progress: Menyimpan Table Lampu... (80%)");
+                    }, 1000)
+
+                    setTimeout(() => {
+                        const durasi_minute = 1 * 60;
+                        const minutetoms = durasi_minute * 60000;
+
+                        const shift_pagi = JSON.parse(localStorage.getItem("shift_pagi"));
+                        const shift_malam = JSON.parse(localStorage.getItem("shift_malam"));
+
+                        const hours = moment().tz("Asia/Jakarta").format("HH");
+                        var shift_now;
+
+                        if (hours >= shift_pagi.start_jam.split(':')[0] && hours < shift_pagi.end_jam.split(':')[0]) {
+                            shift_now = {
+                                shift: "pagi",
+                                durasi: 1,
+                                start_jam: shift_pagi.start_jam.split(':')[0],
+                                end_jam: shift_pagi.end_jam.split(':')[0]
+                            }
+                            console.log(shift_now)
+                            console.log("Pagi")
+                        } else if (hours >= shift_malam.start_jam.split(':')[0] || hours < shift_malam.end_jam.split(':')[0]) {
+                            shift_now = {
+                                shift: "malam",
+                                durasi: 1,
+                                start_jam: shift_malam.start_jam.split(':')[0],
+                                end_jam: shift_malam.end_jam.split(':')[0]
+                            }
+                            console.log("malam")
+                            console.log(shift_now)
+                        }
+
+                        const data_booking = {
+                            nama: this.state.nama,
+                            durasi_booking: 1,
+                            total_harga: this.state.total_harga,
+                            tipe_booking: this.state.mode,
+                            user_in: sessionStorage.getItem('username'),
+                            shift: shift_now,
+                        }
+
+                        if (this.state.mode === 'Loss') {
+                            ipcRenderer.invoke("start_loss", this.state.table_id, true, false, data_booking, false, false).then(() => {
+                                console.log("start loss 01 is created");
+                                toast.success(`Progress: ${this.state.table_name} berhasil dinyalakan. (100%)`);
+                                this.getDataTable();
+                                this.setState({ disabled: false, isUse: true, modal_close: true, loading: false, })
+                            });
+                        }
+                    }, 3000);
                 }
-            }, 1000);
+            })
         } else {
             toast.error('Nama atau Mode harus diisi!');
         }
@@ -526,9 +603,36 @@ class Table_01 extends React.Component<any, any> {
             if (msg.reponse === true) {
                 if (msg.mode === 'loss') {
                     localStorage.setItem(this.state.table_id, `[active,${msg.data.split(':')[0]}:${msg.data.split(':')[1]}, Loss]`)
-                    this.setState({ disabled: true, isUse: true, time_running: true, disabled_add: true })
-                    if (msg.data.split(':')[1] === '59' && msg.data.split(':')[2] === '00') {
+                    this.setState({ disabled: true, isUse: true, time_running: true, disabled_add: true }, () => this.props.getTime(msg.data, this.state.isUse, this.state.table_id))
+                    if (msg.data.split(':')[1] === '02' && msg.data.split(':')[2] === '00') {
                         console.log('test loss')
+
+                        const shift_pagi = JSON.parse(localStorage.getItem("shift_pagi"));
+                        const shift_malam = JSON.parse(localStorage.getItem("shift_malam"));
+
+                        const hours = moment().tz("Asia/Jakarta").format("HH");
+                        var shift_now;
+
+                        if (hours >= shift_pagi.start_jam.split(':')[0] && hours < shift_pagi.end_jam.split(':')[0]) {
+                            shift_now = {
+                                shift: "pagi",
+                                durasi: 1,
+                                start_jam: shift_pagi.start_jam.split(':')[0],
+                                end_jam: shift_pagi.end_jam.split(':')[0]
+                            }
+                            console.log(shift_now)
+                            console.log("Pagi")
+                        } else if (hours >= shift_malam.start_jam.split(':')[0] || hours < shift_malam.end_jam.split(':')[0]) {
+                            shift_now = {
+                                shift: "malam",
+                                durasi: 1,
+                                start_jam: shift_malam.start_jam.split(':')[0],
+                                end_jam: shift_malam.end_jam.split(':')[0]
+                            }
+                            console.log("malam")
+                            console.log(shift_now)
+                        }
+
                         const data_booking = {
                             nama: this.state.nama,
                             total_harga: this.state.total_harga_add,
@@ -536,7 +640,7 @@ class Table_01 extends React.Component<any, any> {
                             id_booking: this.state.id_booking,
                         }
 
-                        ipcRenderer.invoke('inputPrice', data_booking).then((result) => {
+                        ipcRenderer.invoke('inputPrice', data_booking, shift_now).then((result) => {
                             if (result.response === true) {
                                 this.getDataTable();
                             } else {
@@ -694,12 +798,55 @@ class Table_01 extends React.Component<any, any> {
         });
     }
 
+    handlePindahTable() {
+        swal({
+            title: "Apa kamu yakin?",
+            text: "Data tidak akan bisa diubah..",
+            icon: "warning",
+            buttons: ["Batal", true],
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                const data = {
+                    id_booking: this.state.id_booking,
+                    id_table_1: this.state.table_id,
+                    blink: this.state.blink,
+                    pindah: this.state.pindah,
+                }
+                var data_time = localStorage.getItem(this.state.table_id).replace(/\[|\]/g, '').split(',');
+                const time = TimeConvert.textToMS(data_time, this.state.table_id);
+
+                console.log(time.milliseconds);
+
+                ipcRenderer.invoke("start", this.state.table_id, time.milliseconds, 0, this.state.blink, false, false, 0, 0, data, false, false, false, true)
+                    .then((result) => {
+                        console.log(result);
+                        if (result.response === true) {
+                            localStorage.setItem(this.state.table_id, "[not_active,00:00]");
+                            window.location.reload();
+                        } else {
+                            toast.error("Terjadi kesalahan");
+                        }
+                    });
+                // ipcRenderer.invoke("pindahMeja", this.state.pindah, time.milliseconds, 0, data).then((result) => {
+                //     console.log(result);
+                //     if (result.response === true) {
+                //         localStorage.setItem(this.state.table_id, "[not_active,00:00]");
+                //         window.location.reload();
+                //     } else {
+                //         toast.error("Terjadi kesalahan");
+                //     }
+                // })
+            }
+        });
+    }
+
     render(): React.ReactNode {
         let modal, badges, badges_mode;
         if (this.state.isUse === false) {
             modal = <ModalBooking table_name={this.state.table_name} handleMode={this.handleMode} mode={this.state.mode} handleJam={this.handleJam} startTimer={this.startTimer} handleNama={this.handleNama} disableSubmit={this.state.disabled} harga_detail={this.state.harga_detail} total_harga={this.state.total_harga} jam={this.state.jam} handleBlink={this.handleBlink} table_id={this.state.table_id} isOpen={this.state.isOpen} closeModal={this.closeModal} mode_loss={this.state.mode_loss} startTimerLoss={this.startTimerLoss} handleMember={this.handleMember} member={this.state.member} handleInputMember={this.handleInputMember} nama_member={this.state.nama_member} disabled_voucher={this.state.disabled_voucher} handleVoucher={this.handleVoucher} handleCheckVoucher={this.handleCheckVoucher} potongan={this.state.potongan} loading={this.state.loading} />
         } else if (this.state.isUse === true) {
-            modal = <ModalBookingActive table_name={this.state.table_name} name_customer={this.state.nama} id_booking={this.state.id_booking} table_id={this.state.table_id} stopTimer={this.stopTimer} stopTimerLoss={this.stopTimerLoss} handlePindah={this.handlePindah} jam={this.state.jam_add} harga_detail={this.state.harga_detail} total_harga_add={this.state.total_harga_add} total_harga={this.state.total_harga} handleJam={this.handleJamAdd} isOpen={this.state.isOpen} closeModal={this.closeModal} handleBlinkAdd={this.handleBlinkAdd} addOn={this.addOn} disabled_add={this.state.disabled_add} resetTable={this.resetTable} mode={this.state.mode} time_running={this.state.time_running} continueTimer={this.continueTimer} loading_addon={this.state.loading_addon} />
+            modal = <ModalBookingActive table_name={this.state.table_name} name_customer={this.state.nama} id_booking={this.state.id_booking} table_id={this.state.table_id} stopTimer={this.stopTimer} stopTimerLoss={this.stopTimerLoss} handlePindah={this.handlePindah} jam={this.state.jam_add} harga_detail={this.state.harga_detail} total_harga_add={this.state.total_harga_add} total_harga={this.state.total_harga} handleJam={this.handleJamAdd} isOpen={this.state.isOpen} closeModal={this.closeModal} handleBlinkAdd={this.handleBlinkAdd} addOn={this.addOn} disabled_add={this.state.disabled_add} resetTable={this.resetTable} mode={this.state.mode} time_running={this.state.time_running} continueTimer={this.continueTimer} loading_addon={this.state.loading_addon} getDataTable={this.getDataTable} handlePindahTable={this.handlePindahTable} />
         }
 
         if (this.state.isUse) {
