@@ -55,7 +55,7 @@ class Menu extends React.Component<any, any> {
     }
 
     clearState() {
-        this.setState(prevState => ({
+        this.setState({
             loading_menu: false,
             data_cart: [],
             total_harga: '',
@@ -64,18 +64,16 @@ class Menu extends React.Component<any, any> {
             disabled_batal: true,
             type_pemesanan: '',
             select_container: '',
-            ...prevState.data_cafe,
             data_cafe: {
                 uang_cash: '',
                 kembalian: '',
             },
             text_submit: 'Pesan',
-            ...prevState.data_table,
             data_table: {
                 table_booking: ''
             }
 
-        }))
+        })
     }
 
     isObjectEmpty(value) {

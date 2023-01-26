@@ -12,10 +12,10 @@ class FilterTransaksiShift {
             const get_data = await service.manager.query("SELECT *, date(struk.created_at) AS date_clean FROM struk LEFT OUTER JOIN pesanan ON struk.id_pesanan = pesanan.id_pesanan LEFT OUTER JOIN booking ON struk.id_booking = booking.id_booking WHERE struk.status_struk = ? AND struk.type_struk = ? AND date_clean BETWEEN ? AND ? ORDER BY id DESC", ['lunas', 'table', from_date, to_date]);
 
             get_data.map((el, i) => {
-                const time = moment(el.created_at, "YYYY-MM-DD HH:mm:ss").format("HH:mm");
-                if (time <= "16") {
+                const time = moment(el.created_at, "YYYY-MM-DD HH:mm:ss").format("HH");
+                if (time >= data.shift.start_jam.split(':')[0] && time < data.shift.end_jam.split(':')[0]) {
                     el['shift'] = "siang";
-                } else if (time >= "16") {
+                } else if (time >= data.shift.start_jam.split(':')[0] || time < data.shift.end_jam.split(':')[0]) {
                     el['shift'] = "malam";
                 }
             })
@@ -39,10 +39,10 @@ class FilterTransaksiShift {
             const get_data = await service.manager.query("SELECT *, date(struk.created_at) AS date_clean FROM struk LEFT OUTER JOIN pesanan ON struk.id_pesanan = pesanan.id_pesanan WHERE struk.status_struk = ? AND struk.type_struk = ? AND date_clean BETWEEN ? AND ? ORDER BY id DESC", ['lunas', 'cafe only', from_date, to_date]);
 
             get_data.map((el, i) => {
-                const time = moment(el.created_at, "YYYY-MM-DD HH:mm:ss").format("HH:mm");
-                if (time <= "16") {
+                const time = moment(el.created_at, "YYYY-MM-DD HH:mm:ss").format("HH");
+                if (time >= data.shift.start_jam.split(':')[0] && time < data.shift.end_jam.split(':')[0]) {
                     el['shift'] = "siang";
-                } else if (time >= "16") {
+                } else if (time >= data.shift.start_jam.split(':')[0] || time < data.shift.end_jam.split(':')[0]) {
                     el['shift'] = "malam";
                 }
             })

@@ -564,14 +564,20 @@ class ModalBookingActive extends React.Component<any, any> {
         //     this.close()
         // }
 
+        if (this.props.id_booking !== prevProps.id_booking) {
+            this.getAllTable();
+        }
+
         if (this.props.harga_detail !== prevProps.harga_detail) {
             this.getListBilling();
             this.getListMenuCafe();
+            this.getAllTable();
         }
 
         if (this.props.isOpen !== prevProps.isOpen) {
             this.getListBilling();
             this.getListMenuCafe();
+            this.getAllTable();
         }
 
         if (this.props.total_harga !== prevProps.total_harga) {
@@ -753,7 +759,7 @@ class ModalBookingActive extends React.Component<any, any> {
                                         <label className="label-white mb-2" >Table terpilih</label>
                                         <div className="detail-table">
                                             <p><img src="assets/img/icon/archive.png" alt="" /><span
-                                                id="table_ids_active"> {this.props.table_name}</span>
+                                                id="table_ids_active"> {this.props.table_name} ({this.props.mode})</span>
                                             </p>
                                         </div>
                                         <div className="d-flex">
@@ -782,7 +788,7 @@ class ModalBookingActive extends React.Component<any, any> {
                                                 </div>
                                             </div>
 
-                                            <div className="p-1">
+                                            {/* <div className="p-1">
                                                 <div className="mt-2">
                                                     <div>
                                                         <button onClick={this.props.continueTimer} className="btn btn-primary btn-sm">Turn On</button>
@@ -796,7 +802,7 @@ class ModalBookingActive extends React.Component<any, any> {
                                                         <button onClick={this.props.continueTimer} className="btn btn-danger btn-sm">Turn Off</button>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> */}
                                         </div>
                                         <h5 className="mt-2">Pindah Table</h5>
                                         <div className="hr-white"></div>
@@ -840,20 +846,16 @@ class ModalBookingActive extends React.Component<any, any> {
                                     <div className="booking-content">
                                         <h5>Tambah Durasi Table</h5>
                                         <div className="hr-white"></div>
-                                        {this.props.time_running ? <Alert key={'danger'} variant={'danger'}>Penambahan Durasi hanya bisa saat <strong>Waktu</strong> sudah habis!.</Alert> : ''}
+                                        {this.props.disabled_addOn === true ? <Alert key={'danger'} variant={'danger'}>Penambahan Durasi hanya bisa saat <strong>Waktu</strong> sudah  15 menit terakhir!.</Alert> : ''}
                                         <label className="label-white mb-2 mt-3">Tambah Durasi penyewaan
                                         </label><br />
                                         <label className="label-white-regular mb-1">Durasi (Per jam)</label>
-                                        <div id="peringatan">
-
-                                        </div>
-
                                         <div className="input-group mb-3">
                                             <span className="input-group-text" id="inputGroup-sizing-default"><img
                                                 src="assets/img/icon/clock2.png" width="20" alt="" /></span>
                                             <input type="number" onChange={this.props.handleJam} className="form-control group-input-custom"
                                                 aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
-                                                id="durasi_booking_active" disabled={this.props.time_running} />
+                                                id="durasi_booking_active" disabled={this.props.disabled_addOn} />
                                         </div>
                                         <label className="label-white mb-2">Detail harga</label>
 
@@ -871,7 +873,7 @@ class ModalBookingActive extends React.Component<any, any> {
                                         </div>
                                         <input type="hidden" id="harga_booking_active" />
                                         <div className="form-group-2 mt-4">
-                                            <select name="" className="form-control custom-input" id="input_setting_blink_active" disabled={this.props.time_running}>
+                                            <select name="" className="form-control custom-input" id="input_setting_blink_active" disabled={this.props.disabled_addOn}>
                                                 <option value="">Pilih Setting Blink</option>
                                                 <option value="Iya">Iya</option>
                                                 <option value="Tidak">Tidak</option>

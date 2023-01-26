@@ -53,7 +53,7 @@ class StrukSystem {
                             printWindow.webContents.print({
                                 silent: true,
                                 printBackground: true,
-                                copies: 1,
+                                copies: 0,
                                 deviceName: result.data[0].url,
                                 margins: {
                                 marginType: "none",
@@ -124,7 +124,7 @@ class StrukSystem {
                             printWindow.webContents.print({
                                 silent: true,
                                 printBackground: true,
-                                copies: 1,
+                                copies: 0,
                                 deviceName: result.data[0].url,
                                 margins: {
                                 marginType: "none",

@@ -39,11 +39,14 @@ class LaporanShift {
             const get_data = await service.manager.query("SELECT * FROM struk LEFT OUTER JOIN pesanan ON struk.id_pesanan = pesanan.id_pesanan WHERE struk.status_struk = ? AND struk.type_struk = ? ORDER BY id DESC", ['lunas', 'cafe only']);
 
             // filter all data to time
-            get_data.map((el, i) => {
-                const time = moment(el.created_at, "YYYY-MM-DD HH:mm:ss").format("HH:mm");
-                if (time <= "16") {
+            const get_shift = await service.manager.find(Shift);
+            console.log(get_shift)
+            // filter all data to time
+            get_data.map((el) => {
+                const time = moment(el.created_at, "YYYY-MM-DD HH:mm:ss").format("HH");
+                if (time >= get_shift[0].start_jam.split(':')[0] && time < get_shift[0].end_jam.split(':')[0]) {
                     el['shift'] = "siang";
-                } else if (time >= "16") {
+                } else if (time >= get_shift[1].start_jam.split(':')[0] || time < get_shift[1].end_jam.split(':')[0]) {
                     el['shift'] = "malam";
                 }
             });

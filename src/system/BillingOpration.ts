@@ -328,7 +328,10 @@ class BillingOperation {
                         updated_at: date_now,
                         cash_struk: dot.decode(data_pay.uang_cash),
                         kembalian_struk: dot.decode(data_pay.kembalian)
-                    }).where('id_booking = :id', {id: data_pay.id_booking}).orWhere('id_pesanan = :id', {id: data_pay.id_pesanan}).execute();
+                    }).where('id_booking = :id', {id: data_pay.id_booking}).execute();
+
+                    console.log("data_pay.id_booking", data_pay.id_booking)
+
                     const get_struk = await service.manager.find(Struk, {
                         where: {
                             id_booking: data_pay.id_booking,

@@ -18,7 +18,7 @@ class Sidebar extends React.Component<any, any> {
                             </NavLink>
 
                             <NavLink to="/waiting-list" className={({ isActive }) => isActive ? "nav_link active" : "nav_link"}>
-                                <i className='bx bx-home-alt nav_icon'></i>
+                                <i className='bx bx-notepad nav_icon'></i>
                                 <span className="nav_name">Waiting List</span>
                             </NavLink>
 

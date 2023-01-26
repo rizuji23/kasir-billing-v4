@@ -30,6 +30,12 @@ class Navbar_Menu extends React.Component<any, any> {
                 </div>
 
                 <div className="p-1">
+                    <NavLink to="/admin" className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy border-r-13 pl-20 pr-20 pt-10 pb-10" : "btn btn-primary btn-primary-cozy-dark border-r-13 pl-20 pr-20 pt-10 pb-10"}>
+                        Admin
+                    </NavLink>
+                </div>
+
+                <div className="p-1">
                     <NavLink to="/tentang" className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy border-r-13 pl-20 pr-20 pt-10 pb-10" : "btn btn-primary btn-primary-cozy-dark border-r-13 pl-20 pr-20 pt-10 pb-10"}>
                         Tentang Aplikasi
                     </NavLink>

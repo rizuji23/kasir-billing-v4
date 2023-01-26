@@ -26,6 +26,7 @@ import FilterSystem from './system/FilterSystem'
 import ExportSystem from './system/ExportSystem'
 import ShiftSystem from './system/ShiftSystem'
 import { dataSource } from './system/data-source'
+import AdminSystem from './system/AdminSystem'
 
 //init MainWindow
 let win:any;
@@ -201,7 +202,7 @@ ipcMain.handle("start", async (event, id_table:any, ms_all:any, ms_delay:any, bl
             table_01.stopTimer(table_01_time, true)
         } else {
             if (add_on === true) {
-                table_01_time = await table_01.addOn(ms_delay_add, ms_add, data_booking);
+                table_01_time = await table_01.addOn(ms_delay_add, ms_add, table_01_time, data_booking);
             } else if (startnew === true) {
                 table_01_time = await table_01.startTimer(data_booking);
             }
@@ -209,18 +210,12 @@ ipcMain.handle("start", async (event, id_table:any, ms_all:any, ms_delay:any, bl
             if (continuetime === true) {
                 table_01_time = await table_01.continueTimer(ms_delay, ms_add);
             } else if (reset === true) {
-                console.log('test')
                 table_01_time = await table_01.resetTable(data_booking, table_01_time, true)
             } else if (pindah === true) {
                 var get_off = getVariableTime(data_booking.id_table_1);
-                console.log(table_01_time);
-                console.log("data_booking.id_table_1", data_booking.id_table_1);
-                console.log("get_off", get_off);
                 const table = new TableRegular(data_booking.pindah, ms_all, ms_delay, data_booking.blink, arduino.path, win);
                 var get_on = getVariableTime(data_booking.pindah);
                 get_on = setVariableTime(data_booking.pindah, await table.pindahMeja(data_booking, get_off));
-                console.log("get_on", get_on);
-                console.log(table_02_time);
                 if (get_on) {
                     return {response: true, data: "success"};
                 } else {
@@ -234,7 +229,7 @@ ipcMain.handle("start", async (event, id_table:any, ms_all:any, ms_delay:any, bl
             table_02.stopTimer(table_02_time, true)
         } else {
             if (add_on === true) {
-                table_02_time = await table_02.addOn(ms_delay_add, ms_add, data_booking);
+                table_02_time = await table_02.addOn(ms_delay_add, ms_add, table_02_time, data_booking);
             } else if (startnew === true) {
                 table_02_time = await table_02.startTimer(data_booking);
             }
@@ -242,8 +237,287 @@ ipcMain.handle("start", async (event, id_table:any, ms_all:any, ms_delay:any, bl
             if (continuetime === true) {
                 table_02_time = await table_02.continueTimer(ms_delay, ms_add);
             } else if (reset === true) {
-                console.log('test')
                 table_02_time = await table_02.resetTable(data_booking, table_02_time, true)
+            } else if (pindah === true) {
+                var get_off = getVariableTime(data_booking.id_table_1);
+                const table = new TableRegular(data_booking.pindah, ms_all, ms_delay, data_booking.blink, arduino.path, win);
+                var get_on = getVariableTime(data_booking.pindah);
+                get_on = setVariableTime(data_booking.pindah, await table.pindahMeja(data_booking, get_off));
+                if (get_on) {
+                    return {response: true, data: "success"};
+                } else {
+                    return {response: false, data: "failed"};
+                }
+            }
+        }
+    }  else if (id_table === 'table003') {
+        const table_03 = new TableRegular(id_table, ms_all, ms_delay, blink, arduino.path, win);
+        if (stop === true) {
+            table_03.stopTimer(table_03_time, true)
+        } else {
+            if (add_on === true) {
+                table_03_time = await table_03.addOn(ms_delay_add, ms_add, table_03_time, data_booking);
+            } else if (startnew === true) {
+                table_03_time = await table_03.startTimer(data_booking);
+            }
+            
+            if (continuetime === true) {
+                table_03_time = await table_03.continueTimer(ms_delay, ms_add);
+            } else if (reset === true) {
+                table_03_time = await table_03.resetTable(data_booking, table_03_time, true)
+            } else if (pindah === true) {
+                var get_off = getVariableTime(data_booking.id_table_1);
+                const table = new TableRegular(data_booking.pindah, ms_all, ms_delay, data_booking.blink, arduino.path, win);
+                var get_on = getVariableTime(data_booking.pindah);
+                get_on = setVariableTime(data_booking.pindah, await table.pindahMeja(data_booking, get_off));
+                if (get_on) {
+                    return {response: true, data: "success"};
+                } else {
+                    return {response: false, data: "failed"};
+                }
+            }
+        }
+    }  else if (id_table === 'table004') {
+        const table_04 = new TableRegular(id_table, ms_all, ms_delay, blink, arduino.path, win);
+        if (stop === true) {
+            table_04.stopTimer(table_04_time, true)
+        } else {
+            if (add_on === true) {
+                table_04_time = await table_04.addOn(ms_delay_add, ms_add, table_04_time, data_booking);
+            } else if (startnew === true) {
+                table_04_time = await table_04.startTimer(data_booking);
+            }
+            
+            if (continuetime === true) {
+                table_04_time = await table_04.continueTimer(ms_delay, ms_add);
+            } else if (reset === true) {
+                table_04_time = await table_04.resetTable(data_booking, table_04_time, true)
+            } else if (pindah === true) {
+                var get_off = getVariableTime(data_booking.id_table_1);
+                const table = new TableRegular(data_booking.pindah, ms_all, ms_delay, data_booking.blink, arduino.path, win);
+                var get_on = getVariableTime(data_booking.pindah);
+                get_on = setVariableTime(data_booking.pindah, await table.pindahMeja(data_booking, get_off));
+                if (get_on) {
+                    return {response: true, data: "success"};
+                } else {
+                    return {response: false, data: "failed"};
+                }
+            }
+        }
+    }  else if (id_table === 'table005') {
+        const table_05 = new TableRegular(id_table, ms_all, ms_delay, blink, arduino.path, win);
+        if (stop === true) {
+            table_05.stopTimer(table_05_time, true)
+        } else {
+            if (add_on === true) {
+                table_05_time = await table_05.addOn(ms_delay_add, ms_add, table_05_time, data_booking);
+            } else if (startnew === true) {
+                table_05_time = await table_05.startTimer(data_booking);
+            }
+            
+            if (continuetime === true) {
+                table_05_time = await table_05.continueTimer(ms_delay, ms_add);
+            } else if (reset === true) {
+                table_05_time = await table_05.resetTable(data_booking, table_05_time, true)
+            } else if (pindah === true) {
+                var get_off = getVariableTime(data_booking.id_table_1);
+                const table = new TableRegular(data_booking.pindah, ms_all, ms_delay, data_booking.blink, arduino.path, win);
+                var get_on = getVariableTime(data_booking.pindah);
+                get_on = setVariableTime(data_booking.pindah, await table.pindahMeja(data_booking, get_off));
+                if (get_on) {
+                    return {response: true, data: "success"};
+                } else {
+                    return {response: false, data: "failed"};
+                }
+            }
+        }
+    }  else if (id_table === 'table006') {
+        const table_06 = new TableRegular(id_table, ms_all, ms_delay, blink, arduino.path, win);
+        if (stop === true) {
+            table_06.stopTimer(table_06_time, true)
+        } else {
+            if (add_on === true) {
+                table_06_time = await table_06.addOn(ms_delay_add, ms_add, table_06_time, data_booking);
+            } else if (startnew === true) {
+                table_06_time = await table_06.startTimer(data_booking);
+            }
+            
+            if (continuetime === true) {
+                table_06_time = await table_06.continueTimer(ms_delay, ms_add);
+            } else if (reset === true) {
+                table_06_time = await table_06.resetTable(data_booking, table_06_time, true)
+            } else if (pindah === true) {
+                var get_off = getVariableTime(data_booking.id_table_1);
+                const table = new TableRegular(data_booking.pindah, ms_all, ms_delay, data_booking.blink, arduino.path, win);
+                var get_on = getVariableTime(data_booking.pindah);
+                get_on = setVariableTime(data_booking.pindah, await table.pindahMeja(data_booking, get_off));
+                if (get_on) {
+                    return {response: true, data: "success"};
+                } else {
+                    return {response: false, data: "failed"};
+                }
+            }
+        }
+    }  else if (id_table === 'table007') {
+        const table_07 = new TableRegular(id_table, ms_all, ms_delay, blink, arduino.path, win);
+        if (stop === true) {
+            table_07.stopTimer(table_07_time, true)
+        } else {
+            if (add_on === true) {
+                table_07_time = await table_07.addOn(ms_delay_add, ms_add, table_07_time, data_booking);
+            } else if (startnew === true) {
+                table_07_time = await table_07.startTimer(data_booking);
+            }
+            
+            if (continuetime === true) {
+                table_07_time = await table_07.continueTimer(ms_delay, ms_add);
+            } else if (reset === true) {
+                table_07_time = await table_07.resetTable(data_booking, table_07_time, true)
+            } else if (pindah === true) {
+                var get_off = getVariableTime(data_booking.id_table_1);
+                const table = new TableRegular(data_booking.pindah, ms_all, ms_delay, data_booking.blink, arduino.path, win);
+                var get_on = getVariableTime(data_booking.pindah);
+                get_on = setVariableTime(data_booking.pindah, await table.pindahMeja(data_booking, get_off));
+                if (get_on) {
+                    return {response: true, data: "success"};
+                } else {
+                    return {response: false, data: "failed"};
+                }
+            }
+        }
+    }  else if (id_table === 'table008') {
+        const table_08 = new TableRegular(id_table, ms_all, ms_delay, blink, arduino.path, win);
+        if (stop === true) {
+            table_08.stopTimer(table_08_time, true)
+        } else {
+            if (add_on === true) {
+                table_08_time = await table_08.addOn(ms_delay_add, ms_add, table_08_time, data_booking);
+            } else if (startnew === true) {
+                table_08_time = await table_08.startTimer(data_booking);
+            }
+            
+            if (continuetime === true) {
+                table_08_time = await table_08.continueTimer(ms_delay, ms_add);
+            } else if (reset === true) {
+                table_08_time = await table_08.resetTable(data_booking, table_08_time, true)
+            } else if (pindah === true) {
+                var get_off = getVariableTime(data_booking.id_table_1);
+                const table = new TableRegular(data_booking.pindah, ms_all, ms_delay, data_booking.blink, arduino.path, win);
+                var get_on = getVariableTime(data_booking.pindah);
+                get_on = setVariableTime(data_booking.pindah, await table.pindahMeja(data_booking, get_off));
+                if (get_on) {
+                    return {response: true, data: "success"};
+                } else {
+                    return {response: false, data: "failed"};
+                }
+            }
+        }
+    }  else if (id_table === 'table009') {
+        const table_09 = new TableRegular(id_table, ms_all, ms_delay, blink, arduino.path, win);
+        if (stop === true) {
+            table_09.stopTimer(table_09_time, true)
+        } else {
+            if (add_on === true) {
+                table_09_time = await table_09.addOn(ms_delay_add, ms_add, table_09_time, data_booking);
+            } else if (startnew === true) {
+                table_09_time = await table_09.startTimer(data_booking);
+            }
+            
+            if (continuetime === true) {
+                table_09_time = await table_09.continueTimer(ms_delay, ms_add);
+            } else if (reset === true) {
+                table_09_time = await table_09.resetTable(data_booking, table_09_time, true)
+            } else if (pindah === true) {
+                var get_off = getVariableTime(data_booking.id_table_1);
+                const table = new TableRegular(data_booking.pindah, ms_all, ms_delay, data_booking.blink, arduino.path, win);
+                var get_on = getVariableTime(data_booking.pindah);
+                get_on = setVariableTime(data_booking.pindah, await table.pindahMeja(data_booking, get_off));
+                if (get_on) {
+                    return {response: true, data: "success"};
+                } else {
+                    return {response: false, data: "failed"};
+                }
+            }
+        }
+    }  else if (id_table === 'table010') {
+        const table_10 = new TableRegular(id_table, ms_all, ms_delay, blink, arduino.path, win);
+        if (stop === true) {
+            table_10.stopTimer(table_10_time, true)
+        } else {
+            if (add_on === true) {
+                table_10_time = await table_10.addOn(ms_delay_add, ms_add, table_10_time, data_booking);
+            } else if (startnew === true) {
+                table_10_time = await table_10.startTimer(data_booking);
+            }
+            
+            if (continuetime === true) {
+                table_10_time = await table_10.continueTimer(ms_delay, ms_add);
+            } else if (reset === true) {
+                table_10_time = await table_10.resetTable(data_booking, table_10_time, true)
+            } else if (pindah === true) {
+                var get_off = getVariableTime(data_booking.id_table_1);
+                const table = new TableRegular(data_booking.pindah, ms_all, ms_delay, data_booking.blink, arduino.path, win);
+                var get_on = getVariableTime(data_booking.pindah);
+                get_on = setVariableTime(data_booking.pindah, await table.pindahMeja(data_booking, get_off));
+                if (get_on) {
+                    return {response: true, data: "success"};
+                } else {
+                    return {response: false, data: "failed"};
+                }
+            }
+        }
+    }  else if (id_table === 'table011') {
+        const table_11 = new TableRegular(id_table, ms_all, ms_delay, blink, arduino.path, win);
+        if (stop === true) {
+            table_11.stopTimer(table_11_time, true)
+        } else {
+            if (add_on === true) {
+                table_11_time = await table_11.addOn(ms_delay_add, ms_add, table_11_time, data_booking);
+            } else if (startnew === true) {
+                table_11_time = await table_11.startTimer(data_booking);
+            }
+            
+            if (continuetime === true) {
+                table_11_time = await table_11.continueTimer(ms_delay, ms_add);
+            } else if (reset === true) {
+                table_11_time = await table_11.resetTable(data_booking, table_11_time, true)
+            } else if (pindah === true) {
+                var get_off = getVariableTime(data_booking.id_table_1);
+                const table = new TableRegular(data_booking.pindah, ms_all, ms_delay, data_booking.blink, arduino.path, win);
+                var get_on = getVariableTime(data_booking.pindah);
+                get_on = setVariableTime(data_booking.pindah, await table.pindahMeja(data_booking, get_off));
+                if (get_on) {
+                    return {response: true, data: "success"};
+                } else {
+                    return {response: false, data: "failed"};
+                }
+            }
+        }
+    }  else if (id_table === 'table012') {
+        const table_12 = new TableRegular(id_table, ms_all, ms_delay, blink, arduino.path, win);
+        if (stop === true) {
+            table_12.stopTimer(table_12_time, true)
+        } else {
+            if (add_on === true) {
+                table_12_time = await table_12.addOn(ms_delay_add, ms_add, table_12_time, data_booking);
+            } else if (startnew === true) {
+                table_12_time = await table_12.startTimer(data_booking);
+            }
+            
+            if (continuetime === true) {
+                table_12_time = await table_12.continueTimer(ms_delay, ms_add);
+            } else if (reset === true) {
+                table_12_time = await table_12.resetTable(data_booking, table_12_time, true)
+            } else if (pindah === true) {
+                var get_off = getVariableTime(data_booking.id_table_1);
+                const table = new TableRegular(data_booking.pindah, ms_all, ms_delay, data_booking.blink, arduino.path, win);
+                var get_on = getVariableTime(data_booking.pindah);
+                get_on = setVariableTime(data_booking.pindah, await table.pindahMeja(data_booking, get_off));
+                if (get_on) {
+                    return {response: true, data: "success"};
+                } else {
+                    return {response: false, data: "failed"};
+                }
             }
         }
     }
@@ -678,6 +952,30 @@ ipcMain.handle("printStok", async(event, data) => {
 
 ipcMain.handle("changeName", async(event, data) => {
     return await BillingOperation.changeName(data);
+});
+
+ipcMain.handle("getShiftAdmin", async(event) => {
+    return await AdminSystem.getShiftAdmin();
+});
+
+ipcMain.handle("updateShift", async(event, data) => {
+    return await AdminSystem.updateShift(data);
+});
+
+ipcMain.handle("getHargaBilling", async(event) => {
+    return await AdminSystem.getHargaBilling();
+});
+
+ipcMain.handle("updateHargaBilling", async(event, data) => {
+    return await AdminSystem.updateHargaBilling(data);
+});
+
+ipcMain.handle("getHargaMember", async(event) => {
+    return await AdminSystem.getHargaMember();
+});
+
+ipcMain.handle("updateHargaMember", async(event, data) => {
+    return await AdminSystem.updateHargaMember(data);
 });
 
 //endopration

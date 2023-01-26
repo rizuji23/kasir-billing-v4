@@ -243,10 +243,13 @@ class BillingMalam extends React.Component<any, any> {
     }
 
     handleFilterMalam(dari_tanggal, sampai_tanggal) {
+        const shift_malam = JSON.parse(localStorage.getItem("shift_malam"));
+
         const data_filter = {
             data: this.state.data,
             dari_tanggal: dari_tanggal,
-            sampai_tanggal: sampai_tanggal
+            sampai_tanggal: sampai_tanggal,
+            shift: shift_malam
         }
         const dot = new DotAdded();
 

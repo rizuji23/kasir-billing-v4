@@ -22,6 +22,7 @@ import LaporanResetContainer from "./component/keuangan/reset/LaporanReset";
 import LaporanBelumBayarContainer from "./component/keuangan/belum_bayar/LaporanBelumBayar";
 import LaporanSplitBillContainer from "./component/keuangan/split_bill/LaporanSplitBill";
 import LaporanSummaryContainer from "./component/keuangan/summary/LaporanSummary";
+import AdminContainer from "./component/pengaturan/admin/Admin";
 
 class App extends React.Component {
     render() {
@@ -38,6 +39,8 @@ class App extends React.Component {
                     <Route path="/kategori-menu" element={<KategoriMenuContainer />}></Route>
                     <Route path="/voucher" element={<VoucherContainer />}></Route>
                     <Route path="/api" element={<ApiContainer />}></Route>
+                    <Route path="/admin" element={<AdminContainer />}></Route>
+
                     <Route path="/tentang" element={<TentangContainer />}></Route>
 
 

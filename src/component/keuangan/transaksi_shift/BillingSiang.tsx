@@ -243,10 +243,12 @@ class BillingSiang extends React.Component<any, any> {
     }
 
     handleFilterSiang(dari_tanggal, sampai_tanggal) {
+        const shift_pagi = JSON.parse(localStorage.getItem("shift_pagi"));
         const data_filter = {
             data: this.state.data,
             dari_tanggal: dari_tanggal,
-            sampai_tanggal: sampai_tanggal
+            sampai_tanggal: sampai_tanggal,
+            shift: shift_pagi
         }
         const dot = new DotAdded();
 

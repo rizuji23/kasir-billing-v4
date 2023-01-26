@@ -8,6 +8,7 @@ import moment from "moment";
 import DotAdded from "./DotAdded";
 import BillingOperation from "./BillingOpration";
 import { Struk } from "../entity/Struk";
+import { clear } from "console";
 
 class TableRegular {
     private ms_all:number;
@@ -126,7 +127,7 @@ class TableRegular {
         return this.table_timer;
     }
 
-    async addOn(ms_delay:number, ms_add:number, data_booking:any):Promise<any> {
+    async addOn(ms_delay:number, ms_add:number, table_timer, data_booking:any):Promise<any> {
         this.stopTimer(this.table_timer, false);
         const turn_all = ms_add + ms_delay + this.ms_all;
         const count_time = turn_all / 3600000;
@@ -152,8 +153,9 @@ class TableRegular {
             where: {
                 id_booking: data_booking.id_booking
             }
-        })
+        });
 
+        clearInterval(table_timer);
 
         if (check_table.length !== 0 && check_booking.length !== 0 && check_struk.length !== 0) {
             const durasi_add = check_table[0].durasi + parseInt(data_booking.durasi_booking)

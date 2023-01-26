@@ -17,12 +17,12 @@ class NavbarAnalisis extends React.Component<any, any> {
                                     Pendapatan
                                 </NavLink>
 
-                                <NavLink to={"/analisis-pendapatan"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2"}>
+                                {/* <NavLink to={"/analisis-pendapatan"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2"}>
                                     Pelanggan
                                 </NavLink>
                                 <NavLink to={"/analisis-pendapatan"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10 ms-2"}>
                                     Stok
-                                </NavLink>
+                                </NavLink> */}
                             </div>
                         </div>
                         <div className="col-sm">

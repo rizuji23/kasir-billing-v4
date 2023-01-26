@@ -724,17 +724,24 @@ label {
     font-family: 'Inter-Bold';
     color: #FF8A00;
     margin-bottom: 0px;
+    font-size: 20px;
 }
 
 .container-biliiard p {
     font-family: 'Inter-Regular';
     color: #FFFFFF;
     margin-bottom: 0px;
+    font-size: 16px !important;
+}
+
+.container-biliiard small {
+    color: white;
 }
 
 .container-biliiard {
     margin-top: 0px;
 }
+
 
 .btn-home-top img {
     position: relative;
@@ -1332,7 +1339,7 @@ select {
 .side-home {
     background-color: #0f0f0f;
     height: 100%;
-    width: 400px;
+    width: 450px;
     padding: 20px;
     border-radius: 9px;
 }
@@ -1368,7 +1375,7 @@ select {
 }
 
 .content-list {
-    width: 100%;
+    width: 104px;
     height: 90px;
     color: white;
     padding: 10px;
@@ -1393,4 +1400,45 @@ select {
 .perhatian-box h5 {
     font-family: 'Inter-Bold';
     color: #FFFFFF;
+}
+
+.status {
+    width: 15px;
+    height: 15px;
+    border-radius: 100%;
+}
+
+.s-terpakai {
+    background-color: #dc3545;
+}
+
+.s-hampir-habis {
+    background-color: #ffc107;
+}
+
+.s-tersedia {
+    background-color: #198754;
+}
+
+.s-berakhir {
+    background-color: #0dcaf0;
+}
+
+.status-container {
+    display: inline-flex;
+}
+
+.status-container p {
+    margin-bottom: 0px;
+    color: white;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.status-box {
+    width: 100%;
+    height: auto;
+    background-color: #1a1b1f;
+    padding: 9px;
+    border-radius: 8px;
 }

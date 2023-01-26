@@ -12,7 +12,7 @@ import { Dot } from "recharts";
 import moment from "moment";
 import 'moment-timezone';
 
-class Table_02 extends React.Component<any, any> {
+class Table_10 extends React.Component<any, any> {
     constructor(props) {
         super(props);
 
@@ -24,9 +24,9 @@ class Table_02 extends React.Component<any, any> {
             isUse: false,
             nama: "",
             price: 0,
-            table_name: "Table 02",
+            table_name: "Table 10",
             mode: "Regular",
-            table_id: "table002",
+            table_id: "table010",
             modal_close: false,
             harga_detail: "",
             total_harga: 0,
@@ -970,4 +970,4 @@ class Table_02 extends React.Component<any, any> {
 
 
 
-export default Table_02;
+export default Table_10;
