@@ -6,6 +6,7 @@ import shortid from 'shortid';
 import "moment-timezone";
 import { Stok_Keluar } from "../entity/Stok_Keluar";
 import { Stok_Masuk } from "../entity/Stok_Masuk";
+import Keterangan from "./Keterangan";
 
 class StokSystem {
     static async getStok(day):Promise<any> {
@@ -49,7 +50,7 @@ class StokSystem {
                         terjual: 0,
                         sisa: 0,
                         stok_akhir: el.stok_akhir,
-                        keterangan: "",
+                        keterangan: el.id_menu,
                         shift: "pagi",
                         user_in: day.user_in,
                         created_at: day.date_now,
@@ -64,7 +65,7 @@ class StokSystem {
                         terjual: 0,
                         sisa: 0,
                         stok_akhir: el.stok_akhir,
-                        keterangan: "",
+                        keterangan: el.id_menu,
                         shift: "malam",
                         user_in: day.user_in,
                         created_at: day.date_now,
@@ -94,7 +95,7 @@ class StokSystem {
                         terjual: 0,
                         sisa: 0,
                         stok_akhir: 0,
-                        keterangan: "",
+                        keterangan: el.id_menu,
                         shift: "pagi",
                         user_in: day.user_in,
                         created_at: day.date_now,
@@ -109,7 +110,7 @@ class StokSystem {
                         terjual: 0,
                         sisa: 0,
                         stok_akhir: 0,
-                        keterangan: "",
+                        keterangan: el.id_menu,
                         shift: "malam",
                         user_in: day.user_in,
                         created_at: day.date_now,
@@ -234,6 +235,19 @@ class StokSystem {
                 created_at: date_now,
                 updated_at: date_now,
             }).execute();
+
+            if (data.keterangan.length !== 0) {
+                const id_keterangan = shortid.generate();
+                await service.manager.getRepository(Keterangan).createQueryBuilder().insert().values({
+                    id_keterangan: id_keterangan,
+                    id_stok_main: data.id_stok_main,
+                    id_menu: data.id_menu,
+                    keterangan: data.keterangan,
+                    user_in: data.user_in,
+                    created_at: date_now,
+                    updated_at: date_now,
+                }).execute();
+            }
 
             if (update_stok && insert_masuk) {
                 return {response: true, data: "data is saved"};
@@ -363,6 +377,84 @@ class StokSystem {
                 return {response: true, data: get_stok_keluar};
             } else {
                 return {response: false, data: "data is empty"};
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async getKeterangan(data):Promise<any> {
+        try {
+            let service = await dataSource;
+
+            const get_keterangan = await service.manager.find(Keterangan, {
+                where: {
+                    id_menu: data.id_menu,
+                    id_stok_main: data.id_stok_main,
+                }
+            });
+
+            if (get_keterangan.length !== 0) {
+                return {response: true, data: get_keterangan};
+            } else {
+                return {response: false, data: "data is empty"};
+            }
+
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async getRefresh(data):Promise<any> {
+        try {
+            let service = await dataSource;
+            const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD");
+            const time = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
+            // get menu
+            const get_menu = await service.manager.find(Menu);
+
+            // get stok now
+            const stok_now = await service.manager.query("SELECT * FROM stok_main WHERE date(created_at) = ? AND shift = ?", [date_now, 'pagi']);
+
+            // scanning data
+            const scanning = get_menu.find(b => !stok_now.some(a => a.id_menu === b.id_menu));
+
+            if (scanning?.id_menu === undefined || scanning?.id_menu === null) {
+                return {response: true, data: "not saved"};
+            } else {
+                const insert_new = await service.manager.getRepository(Stok_Main).createQueryBuilder().insert().values([{
+                    id_stok_main: stok_now[0].id_stok_main,
+                    id_menu: scanning.id_menu,
+                    stok_awal: 0,
+                    stok_masuk: 0,
+                    terjual: 0,
+                    sisa: 0,
+                    stok_akhir: 0,
+                    keterangan: scanning.id_menu,
+                    shift: "pagi",
+                    user_in: data.user_in,
+                    created_at: time,
+                    updated_at: time
+                }, {
+                    id_stok_main: stok_now[0].id_stok_main,
+                    id_menu: scanning.id_menu,
+                    stok_awal: 0,
+                    stok_masuk: 0,
+                    terjual: 0,
+                    sisa: 0,
+                    stok_akhir: 0,
+                    keterangan: scanning.id_menu,
+                    shift: "malam",
+                    user_in: data.user_in,
+                    created_at: time,
+                    updated_at: time
+                }]).execute();
+
+                if (insert_new) {
+                    return {response: true, data: "data is saved"};
+                } else {
+                    return {response: false, data: "data not saved"};
+                }
             }
         } catch (err) {
             console.log(err);

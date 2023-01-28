@@ -21,6 +21,7 @@ import { Stok_Main } from "../entity/Stok_Main"
 import { Stok_Masuk } from "../entity/Stok_Masuk"
 import { Stok_Keluar } from "../entity/Stok_Keluar"
 import { Shift } from "../entity/Shift"
+import Keterangan from "./Keterangan"
 
 const AppDataSource = async () => {
     const dataSourceConn = new DataSource({
@@ -51,7 +52,7 @@ const AppDataSource = async () => {
             Stok_Masuk,
             Stok_Keluar,
             Shift,
-            
+            Keterangan,
         ],
         migrations: [
             "./src/migrations/**/*.ts"

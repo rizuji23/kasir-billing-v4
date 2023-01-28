@@ -20,6 +20,7 @@ class ModalStokMasuk extends React.Component<any, any> {
             },
             user_in: sessionStorage.getItem("username"),
             disabled: true,
+
         }
 
         this.handleMenu = this.handleMenu.bind(this);
@@ -27,6 +28,7 @@ class ModalStokMasuk extends React.Component<any, any> {
         this.handleKeterangan = this.handleKeterangan.bind(this);
         this.handleTambah = this.handleTambah.bind(this);
         this.validation = this.validation.bind(this);
+
     }
 
     isObjectEmpty(value) {
@@ -140,6 +142,8 @@ class ModalStokMasuk extends React.Component<any, any> {
             }
         });
     }
+
+
 
     render(): React.ReactNode {
         return (

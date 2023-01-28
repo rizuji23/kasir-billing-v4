@@ -990,4 +990,12 @@ ipcMain.handle("updateHargaMember", async(event, data) => {
     return await AdminSystem.updateHargaMember(data);
 });
 
+ipcMain.handle("getKeterangan", async(event, data) => {
+    return await StokSystem.getKeterangan(data);
+});
+
+ipcMain.handle("getRefresh", async(event, data) => {
+    return await StokSystem.getRefresh(data);
+});
+
 //endopration

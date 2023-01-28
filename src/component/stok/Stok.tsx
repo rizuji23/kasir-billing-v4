@@ -13,6 +13,7 @@ import ModalStokFilter from "./ModalStokFilter";
 import swal from "sweetalert";
 import DotAdded from "../../system/DotAdded";
 import ModalStokExport from "./ModalStokExport";
+import ModalKeterangan from "./ModalKeterangan";
 
 class Stok extends React.Component<any, any> {
     constructor(props: any) {
@@ -36,6 +37,11 @@ class Stok extends React.Component<any, any> {
             tanggal_now: moment().tz("Asia/Jakarta").format("YYYY-MM-DD"),
             disabled_reset: false,
             isOpenExport: false,
+            data_keterangan: {
+                response: "",
+                data: [],
+            },
+            isOpenKeterangan: false,
         }
 
         this.getMenu = this.getMenu.bind(this);
@@ -51,6 +57,9 @@ class Stok extends React.Component<any, any> {
         this.handleDateFilter = this.handleDateFilter.bind(this);
         this.getFilterDate = this.getFilterDate.bind(this);
         this.resetFilter = this.resetFilter.bind(this);
+        this.getKeterangan = this.getKeterangan.bind(this);
+        this.closeModalKeterangan = this.closeModalKeterangan.bind(this);
+        this.handleRefresh = this.handleRefresh.bind(this);
     }
 
     componentDidMount(): void {
@@ -143,7 +152,7 @@ class Stok extends React.Component<any, any> {
                                     <td className="border-start">{night[i].terjual}</td>
                                     <td>{night[i].sisa}</td>
                                     <td className="border-start border-end">{el.stok_akhir}</td>
-                                    <td></td>
+                                    <td><a href="javascript:void(0)" onClick={() => this.getKeterangan(el.id_menu, el.id_stok_main)}>Lihat</a></td>
                                 </tr>
                             </>
                         )
@@ -255,6 +264,48 @@ class Stok extends React.Component<any, any> {
         })
     }
 
+    getKeterangan(id_menu, id_stok_main) {
+        const data = {
+            id_menu: id_menu,
+            id_stok_main: id_stok_main,
+        }
+
+        ipcRenderer.invoke("getKeterangan", data).then((result) => {
+            console.log(result);
+            this.setState({
+                isOpenKeterangan: true,
+                data_keterangan: {
+                    response: result.response,
+                    data: result.data,
+                }
+            })
+        })
+    }
+
+    closeModalKeterangan() {
+        this.setState({
+            isOpenKeterangan: false,
+        })
+    }
+
+    handleRefresh() {
+        const data = {
+            user_in: sessionStorage.getItem("username"),
+        }
+
+        ipcRenderer.invoke("getRefresh", data).then((result) => {
+            console.log(result);
+
+            if (result.response === true) {
+                toast.success("Stok sudah direfresh.");
+                this.getMenu(true);
+            } else {
+                toast.error("Stok gagal direfresh");
+                this.getMenu(true);
+            }
+        })
+    }
+
     render(): React.ReactNode {
         return (
             <>
@@ -329,6 +380,13 @@ class Stok extends React.Component<any, any> {
                                                     {/* <div className="p-1">
                                                         <button className="btn btn-success btn-sm" onClick={this.isOpenMasukEdit}>Edit Stok Masuk</button>
                                                     </div> */}
+                                                    <div className="ps-2">
+                                                        <button className="btn btn-success btn-sm" onClick={this.handleRefresh}>Refresh Menu</button>
+                                                    </div>
+                                                </div>
+
+                                                <div className="alert alert-success mt-3">
+                                                    <span><b>Refresh Menu</b> adalah jika menu baru dimasukan dan pada table <b>Stok</b> tidak ada menu tersebut, maka klik <b>Refresh Menu</b>.</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -342,6 +400,8 @@ class Stok extends React.Component<any, any> {
                 <ModalEditStokMasuk isOpenMasukEdit={this.state.isOpenMasukEdit} closeModalMasukEdit={this.closeModalMasukEdit} option_menu={this.state.option_menu} />
                 <ModalStokFilter isOpenFilter={this.state.isOpenFilter} closeModalFilter={this.closeModalFilter} handleDateFilter={this.handleDateFilter} getFilterDate={this.getFilterDate} disabled_filter={this.state.disabled_filter} />
                 <ModalStokExport isOpenExport={this.state.isOpenExport} closeModalExport={this.closeModalExport} handleDateFilter={this.handleDateFilter} getFilterDate={this.getFilterDate} disabled_filter={this.state.disabled_filter} />
+
+                <ModalKeterangan isOpenKeterangan={this.state.isOpenKeterangan} closeModalKeterangan={this.closeModalKeterangan} data_keterangan={this.state.data_keterangan} />
 
             </>
         )
