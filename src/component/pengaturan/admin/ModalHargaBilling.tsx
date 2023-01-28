@@ -69,14 +69,14 @@ class ModalHargaBilling extends React.Component<any, any> {
     render(): React.ReactNode {
         return (
             <>
-                <Modal show={this.props.isOpenHargaBilling} centered keyboard={false} onHide={this.props.closeShift} size="lg">
+                <Modal show={this.props.isOpenHargaBilling} centered keyboard={false} onHide={this.props.closeHargaBilling} size="lg">
                     <Modal.Header closeButton>
                         <Modal.Title>Update Harga Billing</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <div className="form-group">
                             <label htmlFor="">Harga</label>
-                            <input type="text" className="form-control custom-input" value={this.state.harga} onChange={this.handleHarga} />
+                            <input type="number" className="form-control custom-input" value={this.state.harga} onChange={this.handleHarga} />
                         </div>
                     </Modal.Body>
                     <Modal.Footer>

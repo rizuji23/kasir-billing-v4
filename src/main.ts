@@ -998,4 +998,8 @@ ipcMain.handle("getRefresh", async(event, data) => {
     return await StokSystem.getRefresh(data);
 });
 
+ipcMain.handle("loginAdmin", async(event, data) => {
+    return await AdminSystem.loginAdmin(data);
+});
+
 //endopration

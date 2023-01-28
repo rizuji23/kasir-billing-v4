@@ -5,6 +5,7 @@ import { dataSource } from "./data-source";
 import { Shift } from "../entity/Shift";
 import { Harga_Billing } from "../entity/Harga_Billing";
 import { Harga_Member } from "../entity/Harga_Member";
+import { User_Kasir } from "../entity/User_Kasir";
 
 class AdminSystem {
     static async getShiftAdmin():Promise<any> {
@@ -109,12 +110,35 @@ class AdminSystem {
                 potongan: data.potongan,
                 playing: data.playing,
                 updated_at: date_now,
-            }).where('id_harga_member = :id', {id: data.id_harga_member}).andWhere('jenis_member = :id', {id: data.jenis_member}).execute();
+            }).where('id_harga_member = :id', {id: data.id_harga_member}).execute();
 
             if (update_harga) {
                 return {response: true, data: "data is saved"};
             } else {
                 return {response: false, data: "data is not saved"};
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+
+    static async loginAdmin(data):Promise<any> {
+        try {
+            let service = await dataSource;
+
+            const get_data = await service.manager.find(User_Kasir, {
+                where: {
+                    username: data.username,
+                    password: data.password,
+                    jabatan: "Admin",
+                }
+            });
+
+            if (get_data.length !== 0) {
+                return {response: true, data: "done"};
+            } else {
+                return {response: false, data: "failed"};
             }
         } catch (err) {
             console.log(err);

@@ -1464,3 +1464,28 @@ select {
     padding: 9px;
     border-radius: 8px;
 }
+
+.box-login-admin {
+    width: 100%;
+    height: 100vh;
+    top: -70px;
+    left: 0;
+    bottom: 0;
+    background-color: #1a1b1f;
+    position: absolute;
+    z-index: 999999;
+}
+
+.box-login-content {
+    width: 500px;
+    height: auto;
+    background-color: #3a3b41;
+    border-radius: 10px;
+    margin: 10% auto;
+    padding: 20px;
+}
+
+.box-login-title {
+    text-align: center;
+    color: white;
+}

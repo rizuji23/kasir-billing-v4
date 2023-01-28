@@ -8,6 +8,8 @@ import swal from "sweetalert";
 import ModalShiftAdmin from "./ModalShiftAdmin";
 import DotAdded from "../../../system/DotAdded";
 import ModalHargaBilling from "./ModalHargaBilling";
+import ModalHargaMember from "./ModalHargaMember";
+import LoginAdmin from "./LoginAdmin";
 
 
 class Admin extends React.Component<any, any> {
@@ -21,6 +23,15 @@ class Admin extends React.Component<any, any> {
             data_harga_bill: {},
             isOpenHargaBilling: false,
             data_harga_billing: [],
+            data_harga_member: [],
+            isOpenHargaMember: false,
+            list_member: [],
+            visible: "block",
+            admin: {
+                username: "",
+                password: "",
+            },
+            error: false,
         }
         this.getShift = this.getShift.bind(this);
         this.openShift = this.openShift.bind(this);
@@ -28,6 +39,12 @@ class Admin extends React.Component<any, any> {
         this.getHargaBilling = this.getHargaBilling.bind(this);
         this.openHargaBilling = this.openHargaBilling.bind(this);
         this.closeHargaBilling = this.closeHargaBilling.bind(this);
+        this.getHargaMember = this.getHargaMember.bind(this);
+        this.openHargaMember = this.openHargaMember.bind(this);
+        this.closeHargaMember = this.closeHargaMember.bind(this);
+        this.handleUsername = this.handleUsername.bind(this);
+        this.handlePassword = this.handlePassword.bind(this);
+        this.handleLogin = this.handleLogin.bind(this);
     }
 
     openShift(data_shift) {
@@ -46,6 +63,7 @@ class Admin extends React.Component<any, any> {
     componentDidMount(): void {
         this.getShift();
         this.getHargaBilling();
+        this.getHargaMember();
     }
 
     getShift() {
@@ -101,9 +119,97 @@ class Admin extends React.Component<any, any> {
         });
     }
 
+    getHargaMember() {
+        ipcRenderer.invoke("getHargaMember").then((result) => {
+            console.log(result);
+            if (result.response === true) {
+                const data = result.data.map(el => {
+                    return (
+                        <><li className="list-group-item"><b>{el.jenis_member}</b> (Rp. {new DotAdded().parse(el.harga_member)}) | <a href="javascript:void(0)" onClick={() => this.openHargaMember(el)}>Edit</a> <br /><small>Potongan: <b>{el.potongan}%</b></small><br /><small>Batas Bermain: <b>{el.playing}x</b></small></li></>
+                    )
+                })
+                this.setState({
+                    data_harga_member: data
+                })
+            }
+        });
+    }
+
+    openHargaMember(data) {
+        console.log(data);
+        this.setState({
+            list_member: data,
+            isOpenHargaMember: true,
+        });
+    }
+
+    closeHargaMember() {
+        this.setState({
+            isOpenHargaMember: false,
+        })
+    }
+
+    handleUsername(e) {
+        if (e.target.value.length === 0) {
+            toast.error("Username wajib diisi.");
+            this.setState(prevState => ({
+                admin: {
+                    ...prevState.admin,
+                    username: e.target.value,
+                }
+            }))
+        } else {
+            this.setState(prevState => ({
+                admin: {
+                    ...prevState.admin,
+                    username: e.target.value,
+                }
+            }))
+        }
+    }
+
+
+    handlePassword(e) {
+        if (e.target.value.length === 0) {
+            toast.error("Password wajib diisi.");
+            this.setState(prevState => ({
+                admin: {
+                    ...prevState.admin,
+                    password: e.target.value,
+                }
+            }))
+        } else {
+            this.setState(prevState => ({
+                admin: {
+                    ...prevState.admin,
+                    password: e.target.value,
+                }
+            }))
+        }
+    }
+
+    handleLogin() {
+        ipcRenderer.invoke("loginAdmin", this.state.admin).then((result) => {
+            console.log(result.response);
+            if (result.response === true) {
+                this.setState({
+                    visible: "none",
+                    error: false,
+                });
+            } else {
+                toast.error("Username atau Password Salah!");
+                this.setState({
+                    visible: "block",
+                    error: true,
+                })
+            }
+        })
+    }
+
     render(): React.ReactNode {
         return (
             <>
+                <LoginAdmin visible={this.state.visible} handleLogin={this.handleLogin} handleUsername={this.handleUsername} handlePassword={this.handlePassword} error={this.state.error} />
                 <ToastContainer
                     position="bottom-center"
                     autoClose={3000}
@@ -128,7 +234,7 @@ class Admin extends React.Component<any, any> {
                                 <div className="p-1">
                                     <a href="javascript:void(0)"
                                         className="btn btn-primary btn-primary-cozy border-r-13 pl-20 pr-20 pt-10 pb-10"><img
-                                            src="assets/img/icon/refresh-ccw.png" id="refresh_table" alt="" /></a>
+                                            src="assets/img/icon/refresh-ccw.png" onClick={() => window.location.reload()} alt="" /></a>
                                 </div>
                             </div>
                         </div>
@@ -155,32 +261,19 @@ class Admin extends React.Component<any, any> {
                             </div>
                         </div>
 
-                        <h5 className="mt-4">Hardware</h5>
+                        <h5 className="mt-4">Harga Member</h5>
                         <div className="box-booking">
                             <div className="booking-content">
-                                <div className="form-group">
-                                    <div className="alert alert-danger">
-                                        <b>"Reconnect Arduino"</b> atau <b>Mengganti COM Port</b> akan menyebabkan Lampu mati sesaat.
-                                    </div>
-                                    <button className="btn btn-danger">Reconnect Arduino</button>
-                                </div>
-                                <hr />
-                                <div className="form-group mt-3">
-                                    <label htmlFor="">COM Port</label>
-                                    <select name="" id="" className="form-control custom-input">
-                                        <option value="">Pilih COM Port</option>
-                                    </select>
-                                </div>
-                                <small>Last Selected:</small>
-                                <div className="form-group mt-3 text-end">
-                                    <button className="btn btn-primary btn-primary-cozy btn-sm" >Simpan</button>
-                                </div>
+                                <ul className="list-group">
+                                    {this.state.data_harga_member}
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
                 <ModalShiftAdmin isOpenShift={this.state.isOpenShift} closeShift={this.closeShift} data_shift={this.state.data_shift} getShift={this.getShift} />
                 <ModalHargaBilling isOpenHargaBilling={this.state.isOpenHargaBilling} closeHargaBilling={this.closeHargaBilling} data_harga_billing={this.state.data_harga_billing} getHargaBilling={this.getHargaBilling} />
+                <ModalHargaMember isOpenHargaMember={this.state.isOpenHargaMember} closeHargaMember={this.closeHargaMember} list_member={this.state.list_member} getHargaMember={this.getHargaMember} />
             </>
         )
     }
