@@ -79,11 +79,13 @@ class Home extends React.Component<any, any> {
             },
             booking_aktif: "Loading...",
             perhatian_stok: false,
+            isConnected: "",
         }
 
         this.getTime = this.getTime.bind(this);
         this.getAllTable = this.getAllTable.bind(this);
         this.getPerhatian = this.getPerhatian.bind(this);
+        this.getOpen = this.getOpen.bind(this);
     }
 
     continueTimer() {
@@ -298,6 +300,7 @@ class Home extends React.Component<any, any> {
     componentDidMount(): void {
         this.getAllTable();
         this.getPerhatian();
+        this.getOpen();
     }
 
     getAllTable(): void {
@@ -334,6 +337,23 @@ class Home extends React.Component<any, any> {
         })
     }
 
+    getOpen() {
+        setInterval(() => {
+            ipcRenderer.invoke("getOpen").then((result) => {
+                console.log(result);
+                if (result === false) {
+                    this.setState({
+                        isConnected: false,
+                    });
+                } else {
+                    this.setState({
+                        isConnected: true,
+                    });
+                }
+            });
+        }, 1000);
+    }
+
     render(): React.ReactNode {
 
         return (
@@ -351,6 +371,8 @@ class Home extends React.Component<any, any> {
                         pauseOnHover
                         theme="dark"
                     />
+
+
                     <div className="row">
                         <div className="col-sm">
                             <div className="d-flex mb-2">
@@ -359,6 +381,7 @@ class Home extends React.Component<any, any> {
                                         <h3>Table List</h3>
                                     </div>
                                 </div>
+
                                 {/* <div className="p-1">
                                     <a href="javascript:void(0)"
                                         className="btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10">Home</a>
@@ -370,6 +393,7 @@ class Home extends React.Component<any, any> {
                                         Transaksi</a>
                                 </div> */}
                             </div>
+
                         </div>
                         <div className="col-sm">
                             <div className="d-flex mb-2 float-end">
@@ -386,14 +410,13 @@ class Home extends React.Component<any, any> {
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <div id="error_handler">
-                        </div>
-                    </div>
+                    {this.state.isConnected === false && <div className="alert alert-danger">
+                        <span>Box Billing <b>Tidak Tersambung</b>, silahkan Reconnect.</span>
+                    </div>}
 
                     <div className="d-flex">
                         <div className="p-2 me-auto w-100 table-box">
-                            <div className="row row-cols-1 row-cols-5 g-4 " id="table_billiard">
+                            <div className="row row-cols-1 row-cols-5 g-3 " id="table_billiard">
                                 <Table_01 getTime={this.getTime} />
                                 <Table_02 getTime={this.getTime} />
                                 <Table_03 getTime={this.getTime} />
@@ -415,7 +438,7 @@ class Home extends React.Component<any, any> {
                                     <h1>{this.state.booking_aktif}</h1>
                                 </div>
 
-                                <div className="list-booking">
+                                {/* <div className="list-booking">
                                     <h5>No Table: </h5>
                                     <div className="d-flex">
                                         <div className="">
@@ -507,33 +530,33 @@ class Home extends React.Component<any, any> {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> */}
 
                                 <div className="perhatian-box">
                                     <h5>Perhatian: </h5>
                                     <div className="status-box mb-3">
                                         <h6 style={{ color: 'white' }}>Info Status Table</h6>
-                                        <div className="d-flex">
+                                        <div className="row">
 
-                                            <div className="p-1">
+                                            <div className="col-sm">
                                                 <div className="status-container">
                                                     <div className="status s-tersedia"></div>
                                                     <div><p>Tersedia</p></div>
                                                 </div>
                                             </div>
-                                            <div className="p-1">
+                                            <div className="col-sm">
                                                 <div className="status-container">
                                                     <div className="status s-terpakai"></div>
                                                     <div><p>Terpakai</p></div>
                                                 </div>
                                             </div>
-                                            <div className="p-1">
+                                            <div className="col-sm">
                                                 <div className="status-container">
                                                     <div className="status s-hampir-habis"></div>
                                                     <div><p>Hampir Habis</p></div>
                                                 </div>
                                             </div>
-                                            <div className="p-1">
+                                            <div className="col-sm">
                                                 <div className="status-container">
                                                     <div className="status s-berakhir"></div>
                                                     <div><p>Berakhir</p></div>

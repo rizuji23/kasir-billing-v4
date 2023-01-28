@@ -6,6 +6,14 @@ import { ToastContainer, toast } from "react-toastify";
 import { ipcRenderer } from "electron";
 import swal from "sweetalert";
 
+async function turnon(id) {
+    return new Promise((res, rej) => {
+        ipcRenderer.invoke("lamp", true, false, id).then((result) => {
+            console.log(result);
+            res(result);
+        })
+    })
+}
 
 class Api extends React.Component<any, any> {
     constructor(props: any) {
@@ -34,6 +42,7 @@ class Api extends React.Component<any, any> {
         this.getPortDb = this.getPortDb.bind(this);
         this.handleInputPort = this.handleInputPort.bind(this);
         this.handleSetPort = this.handleSetPort.bind(this);
+        this.handleReconnect = this.handleReconnect.bind(this);
     }
 
     componentDidMount(): void {
@@ -230,6 +239,57 @@ class Api extends React.Component<any, any> {
         });
     }
 
+    handleReconnect() {
+        swal({
+            title: "Apa kamu yakin?",
+            text: "Reconnect akan menyebabkan Lampu Mati sesaat",
+            icon: "warning",
+            buttons: ["Batal", true],
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                ipcRenderer.invoke("reconnectPort").then((result) => {
+                    const arr = Array<string>('table001', 'table002', 'table003', 'table004', 'table005', 'table006', 'table007', 'table008', 'table009', 'table010', 'table011', 'table012');
+
+                    toast.success("Menyiapkan Lampu. (15 Detik)");
+
+                    setTimeout(() => {
+                        toast.success("Menyalakan Lampu...");
+                        const arr_null = Array<string>();
+                        const arr_fine_regular = Array<any>();
+
+                        arr.forEach(el => {
+                            if (localStorage.getItem(el) !== null) {
+                                var data = localStorage.getItem(el).replace(/\[|\]/g, '').split(',');
+                                console.log(data)
+                                if (data[0] !== 'not_active') {
+                                    arr_fine_regular.push(el);
+                                }
+                            } else {
+                                console.log(`${el} is null`);
+                                arr_null.push(el);
+                            }
+                        });
+
+                        let current = 1;
+                        if (arr_fine_regular.length !== 0) {
+                            Promise.all(arr_fine_regular.map(async (val, i) => {
+                                setTimeout(() => {
+                                    turnon(val).then(() => toast.success("On " + current++));
+                                }, 2000 * current++);
+                            }));
+                        } else {
+                            toast.info(`Tidak ada lampu yang dinyalakan.`);
+                        }
+                    }, 15000)
+
+
+                    console.log(result);
+                });
+            }
+        });
+    }
+
     render(): React.ReactNode {
         return (
             <>
@@ -301,7 +361,7 @@ class Api extends React.Component<any, any> {
                                     <div className="alert alert-danger">
                                         <b>"Reconnect Arduino"</b> atau <b>Mengganti COM Port</b> akan menyebabkan Lampu mati sesaat.
                                     </div>
-                                    <button className="btn btn-danger">Reconnect Arduino</button>
+                                    <button className="btn btn-danger" onClick={this.handleReconnect}>Reconnect Arduino</button>
                                 </div>
                                 <hr />
                                 <div className="form-group mt-3">

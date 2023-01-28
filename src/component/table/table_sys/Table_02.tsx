@@ -932,7 +932,7 @@ class Table_02 extends React.Component<any, any> {
                         theme="dark"
                     />
                     <div className="card card-custom-dark h-100 card-table">
-                        <img src="assets/img/billiard-dark.png" className="img-billiard" alt="..." />
+                        {/* <img src="assets/img/billiard-dark.png" className="img-billiard" alt="..." /> */}
                         <div className="card-body">
                             <div className="container-biliiard">
                                 {badges}

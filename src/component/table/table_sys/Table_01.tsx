@@ -599,9 +599,11 @@ class Table_01 extends React.Component<any, any> {
                     } else {
                         blnk = false
                     }
+                    const get_local = localStorage.getItem(this.state.table_id).replace(/\[|\]/g, '').split(',');
+                    console.log(get_local);
+
                     if (result.data[0].status_booking !== 'not_active') {
                         console.log(result.data[0].id_booking)
-
 
                         this.setState({
                             nama: result.data[0].nama_booking,
@@ -610,7 +612,7 @@ class Table_01 extends React.Component<any, any> {
                             mode: result.data[0].tipe_booking,
                             isUse: true,
                             id_booking: result.data[0].id_booking,
-                            info_badges: "terpakai"
+                            info_badges: get_local[0] === 'not_active' ? 'berakhir' : 'terpakai'
                         })
                     } else {
                         this.setState({
@@ -630,6 +632,11 @@ class Table_01 extends React.Component<any, any> {
     }
 
     getTimeString(): void {
+        const get_local = localStorage.getItem(this.state.table_id).replace(/\[|\]/g, '').split(',');
+        console.log(get_local);
+        if (get_local[0] === 'not_active') {
+            this.setState({ time_running: false, timer: 'tidak aktif', disabled_addOn: false, info_badges: "berakhir" })
+        }
         ipcRenderer.on(this.state.table_id, (event, msg) => {
             this.setState({ timer: msg.data });
             if (msg.reponse === true) {
@@ -933,7 +940,7 @@ class Table_01 extends React.Component<any, any> {
                         theme="dark"
                     />
                     <div className="card card-custom-dark h-100 card-table">
-                        <img src="assets/img/billiard-dark.png" className="img-billiard" alt="..." />
+                        {/* <img src="assets/img/billiard-dark.png" className="img-billiard" alt="..." /> */}
                         <div className="card-body">
                             <div className="container-biliiard">
                                 {badges}

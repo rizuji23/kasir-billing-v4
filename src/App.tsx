@@ -23,6 +23,7 @@ import LaporanBelumBayarContainer from "./component/keuangan/belum_bayar/Laporan
 import LaporanSplitBillContainer from "./component/keuangan/split_bill/LaporanSplitBill";
 import LaporanSummaryContainer from "./component/keuangan/summary/LaporanSummary";
 import AdminContainer from "./component/pengaturan/admin/Admin";
+import ManualLampuContainer from "./component/manual_lampu/ManualLampu";
 
 class App extends React.Component {
     render() {
@@ -34,6 +35,7 @@ class App extends React.Component {
                     <Route path="/waiting-list" element={<WaitingList_Container />}></Route>
                     <Route path="/member" element={<Member_Container />}></Route>
                     <Route path="/menu-makanan" element={<Menu_Container />}></Route>
+                    <Route path="/manual-lampu" element={<ManualLampuContainer />}></Route>
 
                     <Route path="/pengaturan" element={<ListMenu_Container />}></Route>
                     <Route path="/kategori-menu" element={<KategoriMenuContainer />}></Route>

@@ -1,6 +1,7 @@
 {
   "name": "kasir",
   "version": "4.0.0",
+  "main": "./dist/src/main.js",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
@@ -54,6 +55,24 @@
       "last 1 safari version"
     ]
   },
+  "build": {
+    "appId": "kasir_cozypool",
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "public/assets/img/icon-desktop.ico",
+      "requestedExecutionLevel": "requireAdministrator"
+    },
+    "nsis": {
+      "installerIcon": "public/assets/img/icon-desktop.ico",
+      "uninstallerIcon": "public/assets/img/icon-desktop.ico",
+      "uninstallDisplayName": "Cozypool Kasir",
+      "license": "license.txt",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
   "browser": {
     "crypto": false,
     "fs": false,
@@ -68,6 +87,7 @@
     "bootstrap": "^5.2.2",
     "concurrently": "^7.5.0",
     "electron": "^21.2.2",
+    "electron-packager": "^17.1.1",
     "electron-rebuild": "^3.2.9",
     "keyv": "^4.5.1",
     "react-bootstrap": "^2.6.0",

@@ -73,13 +73,16 @@ if (!gotTheLock) {
 //init Billing Arduino Port
 var billingArduino:any;
 var arduino;
+let port = "";
 System.getSelectedPort().then((result) => {
     if (result.response === true) {
-        arduino = new PortConnect(billingArduino, 57600, "none", true, false, result.data[0].url);
-        arduino.getConnect()
-        arduino.isOpen()
+        // default 57600
+        arduino = new PortConnect(billingArduino, 9600, "none", true, false, result.data[0].url);
+        arduino.getConnect();
+        port = result.data[0].url;
     }
 });
+
 
 
 //set Regular Timer Billing
@@ -559,11 +562,20 @@ ipcMain.handle('start_loss', async(event, id_table, start, stop, data_booking, r
 });
 //end loss
 
+
 //operation
 const bill = new BillingOperation();
 ipcMain.handle("login",async (event, username, password) => {
     const data_user = new Auth(username, password);
     return await data_user.goAuth()
+});
+
+ipcMain.handle("getOpen", async(event) => {
+    return await arduino.checkOpen(port);
+});
+
+ipcMain.handle("reconnectPort", async(event) => {
+    return await arduino.reconnectPort();
 });
 
 ipcMain.handle("checkHarga", async(event, data) => {

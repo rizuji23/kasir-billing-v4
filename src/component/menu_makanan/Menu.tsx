@@ -16,6 +16,8 @@ class Menu extends React.Component<any, any> {
         super(props);
         this.state = {
             data_menu: [],
+            data_ref: [],
+            filter_ref: [],
             loading_menu: false,
             data_cart: [],
             total_harga: '',
@@ -46,6 +48,7 @@ class Menu extends React.Component<any, any> {
         this.handleBatal = this.handleBatal.bind(this);
         this.handleSimpan = this.handleSimpan.bind(this);
         this.handleTable = this.handleTable.bind(this);
+        this.searchMenu = this.searchMenu.bind(this);
     }
 
     componentDidMount(): void {
@@ -71,8 +74,8 @@ class Menu extends React.Component<any, any> {
             text_submit: 'Pesan',
             data_table: {
                 table_booking: ''
-            }
-
+            },
+            filter_menu: [],
         })
     }
 
@@ -417,7 +420,7 @@ class Menu extends React.Component<any, any> {
                                             </div>
 
                                             <div className="d-grid mt-2">
-                                                <button className="btn btn-primary btn-primary-cozy btn-menu" onClick={() => this.handleTambahKeranjang(el)}>Tambah Keranjang</button>
+                                                <button className="btn btn-primary btn-primary-cozy btn-menu" onClick={() => this.handleTambahKeranjang(el)}>Tambah</button>
                                             </div>
                                         </div>
                                     </div>
@@ -426,9 +429,7 @@ class Menu extends React.Component<any, any> {
                         </>
                     )
                 });
-                setTimeout(() => {
-                    this.setState({ data_menu: data_, loading_menu: false });
-                }, 1000)
+                this.setState({ data_menu: data_, loading_menu: false, filter_ref: data_, data_ref: result.data });
             }
         })
     }
@@ -519,6 +520,52 @@ class Menu extends React.Component<any, any> {
         })
     }
 
+    searchMenu(e) {
+        if (e.target.value.length === 0) {
+            this.setState({
+                filter_ref: this.state.data_menu,
+            })
+        } else {
+            const dot = new DotAdded();
+            const data = this.state.data_ref;
+            const filter = data.filter(el => el.nama_menu.toLowerCase().indexOf(e.target.value.toLowerCase()) >= 0);
+            const data_f = filter.map(el => {
+                return (
+                    <>
+                        <div className="col" key={el.toString()}>
+                            <div className="card card-custom-dark h-100 card-table">
+                                <div className="menu-img">
+                                    <img src={`assets/img/menu/${el.img_file}`} className="img-menu" alt="..." />
+                                </div>
+                                <div className="card-body">
+                                    <div className="container-biliiard">
+                                        <span className="badge rounded-pill text-bg-light mb-2">{el.kategori_menu[0].nama_kategori}</span>
+                                        <h4>{el.nama_menu}</h4>
+                                        <div className="d-flex mt-2">
+                                            <div className="p-1">
+                                                <img src="assets/img/icon/rp_2.png" alt="" />
+                                            </div>
+                                            <div className="p-1">
+                                                <p>Rp. {dot.parse(el.harga_menu)}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="d-grid mt-2">
+                                            <button className="btn btn-primary btn-primary-cozy btn-menu" onClick={() => this.handleTambahKeranjang(el)}>Tambah</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                )
+            })
+            this.setState({
+                filter_ref: data_f
+            })
+        }
+    }
+
     render(): React.ReactNode {
         return (
             <>
@@ -535,14 +582,22 @@ class Menu extends React.Component<any, any> {
                     theme="dark"
                 />
                 <Loading title={"Loading Menu..."} loading={this.state.loading_menu} />
-                <div className="title-header-box">
-                    <h3>Menu</h3>
+                <div className="d-flex">
+                    <div className="title-header-box me-auto">
+                        <h3>Menu</h3>
+                    </div>
+                    <div className="p-1">
+                        <div className="input-group mb-3">
+                            <input type="text" className="form-control" onChange={this.searchMenu} placeholder="Cari Menu" autoFocus={true} aria-label="Recipient's username" aria-describedby="button-addon2" />
+
+                        </div>
+                    </div>
                 </div>
-                <div className="row">
+                <div className="row g-2">
                     <div className="col-md">
                         <div className="overflow-menu">
-                            <div className="row row-cols-1 row-cols-md-3 g-4" id="menu-list">
-                                {this.state.data_menu}
+                            <div className="row row-cols-1 row-cols-md-3 g-3" id="menu-list">
+                                {this.state.filter_ref}
                             </div>
                         </div>
 
