@@ -7,6 +7,7 @@ import { ipcRenderer } from "electron";
 import swal from "sweetalert";
 import ModalShiftAdmin from "./ModalShiftAdmin";
 import DotAdded from "../../../system/DotAdded";
+import ModalHargaBilling from "./ModalHargaBilling";
 
 
 class Admin extends React.Component<any, any> {
@@ -18,11 +19,15 @@ class Admin extends React.Component<any, any> {
             data_shift: {},
             list_harga_bill: [],
             data_harga_bill: {},
+            isOpenHargaBilling: false,
+            data_harga_billing: [],
         }
         this.getShift = this.getShift.bind(this);
         this.openShift = this.openShift.bind(this);
         this.closeShift = this.closeShift.bind(this);
         this.getHargaBilling = this.getHargaBilling.bind(this);
+        this.openHargaBilling = this.openHargaBilling.bind(this);
+        this.closeHargaBilling = this.closeHargaBilling.bind(this);
     }
 
     openShift(data_shift) {
@@ -68,7 +73,7 @@ class Admin extends React.Component<any, any> {
             if (result.response === true) {
                 const container = result.data.map(el => {
                     return (
-                        <><li className="list-group-item"><b>{el.tipe_durasi}</b> (Rp. {new DotAdded().parse(el.harga)}) | <a href="javascript:void(0)">Edit</a></li></>
+                        <><li className="list-group-item"><b>{el.tipe_durasi}</b> (Rp. {new DotAdded().parse(el.harga)}) | <a href="javascript:void(0)" onClick={() => this.openHargaBilling(el.tipe_durasi)}>Edit</a></li></>
                     )
                 });
                 this.setState({
@@ -80,6 +85,21 @@ class Admin extends React.Component<any, any> {
         })
     }
 
+    openHargaBilling(shift) {
+        ipcRenderer.invoke("getHargaBilling").then((result) => {
+            const filter = result.data.filter(el => el.tipe_durasi === shift);
+            this.setState({
+                isOpenHargaBilling: true,
+                data_harga_billing: filter,
+            });
+        });
+    }
+
+    closeHargaBilling() {
+        this.setState({
+            isOpenHargaBilling: false,
+        });
+    }
 
     render(): React.ReactNode {
         return (
@@ -128,7 +148,6 @@ class Admin extends React.Component<any, any> {
 
                         <h5 className="mt-4">Harga Billing</h5>
                         <div className="box-booking">
-                            <p>Harga Umum: </p>
                             <div className="booking-content">
                                 <ul className="list-group">
                                     {this.state.list_harga_bill}
@@ -161,6 +180,7 @@ class Admin extends React.Component<any, any> {
                     </div>
                 </div>
                 <ModalShiftAdmin isOpenShift={this.state.isOpenShift} closeShift={this.closeShift} data_shift={this.state.data_shift} getShift={this.getShift} />
+                <ModalHargaBilling isOpenHargaBilling={this.state.isOpenHargaBilling} closeHargaBilling={this.closeHargaBilling} data_harga_billing={this.state.data_harga_billing} getHargaBilling={this.getHargaBilling} />
             </>
         )
     }

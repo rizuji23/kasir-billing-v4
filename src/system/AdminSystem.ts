@@ -70,7 +70,7 @@ class AdminSystem {
             const update_harga = await service.manager.createQueryBuilder().update(Harga_Billing).set({
                 harga: data.harga,
                 updated_at: date_now,
-            }).where('id_harga_billing = :id', {id: data.id_harga_billing}).andWhere('tipe_durasi = :id', {id: data.tipe_durasi}).execute();
+            }).where('id_harga_billing = :id', {id: data.id_harga_billing}).execute();
 
             if (update_harga) {
                 return {response: true, data: "data is saved"};
