@@ -97,29 +97,6 @@ class Analisis extends React.Component<any, any> {
     render(): React.ReactNode {
         return (
             <>
-                <div className="row mb-2">
-                    <div className="col-sm">
-                        <div className="card card-custom h-100">
-                            <div className="card-body">
-                                <div className="title-pemb">
-                                    <h4>Total penghasilan billing hari ini:</h4>
-                                    <h4>Rp. <span id="total_hari">0</span></h4>
-                                    <p id="date_locale">13-12-2022</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-sm">
-                        <div className="card card-custom-dark h-100">
-                            <div className="card-body">
-                                <div className="title-pemb">
-                                    <h4>Total penghasilan billing semua:</h4>
-                                    <h4>Rp. <span id="total_hari">0</span></h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div className="d-flex">
                     <div className="p-2 w-100">
                         <div className="card card-custom-dark">
@@ -128,7 +105,7 @@ class Analisis extends React.Component<any, any> {
                             </div>
                             <div className="card-body">
                                 <PenjualanBillingHari data={this.state.data_hari} />
-                                <KeputusanCard id={1} />
+                                {/* <KeputusanCard id={1} /> */}
                             </div>
                         </div>
                     </div>
@@ -139,7 +116,7 @@ class Analisis extends React.Component<any, any> {
                             </div>
                             <div className="card-body">
                                 <PenjualanBillingBulan data={this.state.data_bulan} />
-                                <KeputusanCard id={2} />
+                                {/* <KeputusanCard id={2} /> */}
                             </div>
                         </div>
                     </div>
@@ -152,7 +129,7 @@ class Analisis extends React.Component<any, any> {
                             </div>
                             <div className="card-body">
                                 <PenjualanBillingKuartal data={this.state.data_kuartal} />
-                                <KeputusanCard id={3} />
+                                {/* <KeputusanCard id={3} /> */}
                             </div>
                         </div>
                     </div>
@@ -163,7 +140,7 @@ class Analisis extends React.Component<any, any> {
                             </div>
                             <div className="card-body">
                                 <PenjualanBillingTahun data={this.state.data_tahun} />
-                                <KeputusanCard id={4} />
+                                {/* <KeputusanCard id={4} /> */}
                             </div>
                         </div>
                     </div>

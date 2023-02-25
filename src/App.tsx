@@ -24,6 +24,7 @@ import LaporanSplitBillContainer from "./component/keuangan/split_bill/LaporanSp
 import LaporanSummaryContainer from "./component/keuangan/summary/LaporanSummary";
 import AdminContainer from "./component/pengaturan/admin/Admin";
 import ManualLampuContainer from "./component/manual_lampu/ManualLampu";
+import AktivitasContainer from "./component/pengaturan/admin/Aktivitas";
 
 class App extends React.Component {
     render() {
@@ -42,7 +43,7 @@ class App extends React.Component {
                     <Route path="/voucher" element={<VoucherContainer />}></Route>
                     <Route path="/api" element={<ApiContainer />}></Route>
                     <Route path="/admin" element={<AdminContainer />}></Route>
-
+                    <Route path="/aktivitas" element={<AktivitasContainer />}></Route>
                     <Route path="/tentang" element={<TentangContainer />}></Route>
 
 

@@ -24,8 +24,8 @@ class Menu extends React.Component<any, any> {
             date_now: moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss"),
             disabled: true,
             disabled_batal: true,
-            type_pemesanan: '',
-            select_container: '',
+            type_pemesanan: 'Cafe Only',
+            select_container: true,
             data_cafe: {
 
                 uang_cash: '',
@@ -35,7 +35,8 @@ class Menu extends React.Component<any, any> {
             user_in: sessionStorage.getItem('username'),
             data_table: {
                 table_booking: ''
-            }
+            },
+            struk: false,
         }
         this.getMenu = this.getMenu.bind(this);
         this.handleTambahKeranjang = this.handleTambahKeranjang.bind(this);
@@ -54,7 +55,6 @@ class Menu extends React.Component<any, any> {
     componentDidMount(): void {
         this.getMenu();
         this.getCart();
-
     }
 
     clearState() {
@@ -65,8 +65,8 @@ class Menu extends React.Component<any, any> {
             date_now: moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss"),
             disabled: true,
             disabled_batal: true,
-            type_pemesanan: '',
-            select_container: '',
+            type_pemesanan: 'Cafe Only',
+            select_container: true,
             data_cafe: {
                 uang_cash: '',
                 kembalian: '',
@@ -138,7 +138,6 @@ class Menu extends React.Component<any, any> {
                     ipcRenderer.invoke("pesanan", false, false, false, true, false, false, false, menu.id_cart).then((result) => {
                         console.log(result);
                         if (result.response === true) {
-                            toast.success(`${menu.nama_menu} berhasil dihapus`);
                             this.getCart();
                         } else {
                             toast.error(`${menu.nama_menu} gagal dihapus`);
@@ -178,7 +177,6 @@ class Menu extends React.Component<any, any> {
 
                     ipcRenderer.invoke("pesanan", false, false, true, false, false, false, false, data_cart).then((result) => {
                         if (result.response === true) {
-                            toast.success(`${menu.nama_menu} berhasil diedit`);
                             this.getCart();
                         } else {
                             toast.error(`${menu.nama_menu} gagal diedit`);
@@ -205,7 +203,6 @@ class Menu extends React.Component<any, any> {
         ipcRenderer.invoke("pesanan", false, true, false, false, false, false, false, data_cart).then((result) => {
             console.log(result);
             if (result.response === true) {
-                toast.success(`${menu.nama_menu} berhasil ditambahkan ke keranjang`);
                 this.getCart();
             } else {
                 toast.error(`${menu.nama_menu} gagal ditambahkan ke keranjang`);
@@ -347,6 +344,10 @@ class Menu extends React.Component<any, any> {
                     console.log("MALAM")
                 }
 
+                this.setState({
+                    struk: true,
+                })
+
 
                 if (this.state.type_pemesanan === 'Cafe Only') {
                     const data_cart = {
@@ -362,6 +363,11 @@ class Menu extends React.Component<any, any> {
 
                         if (result.response === true) {
                             toast.success("Pesanan berhasil dilakukan");
+                            setTimeout(() => {
+                                this.setState({
+                                    struk: false,
+                                })
+                            }, 3000);
                             this.clearState();
                         } else {
                             toast.error("Pesanan gagal dilakukan");
@@ -486,24 +492,20 @@ class Menu extends React.Component<any, any> {
                     )
                 });
 
-                setTimeout(() => {
-                    const total_harga = result.data.reduce((total, arr) => {
-                        return total + arr.sub_total;
-                    }, 0);
+                const total_harga = result.data.reduce((total, arr) => {
+                    return total + arr.sub_total;
+                }, 0);
 
-                    this.setState(prevState => ({
+                this.setState(prevState => ({
+                    data_cafe: {
                         ...prevState.data_cafe,
-                        data_cafe: {
-                            uang_cash: '',
-                            kembalian: ''
-                        },
-                        data_cart: data_,
-                        total_harga: new DotAdded().parse(total_harga),
-                        disabled_batal: false
-                    }));
-
-
-                }, 500);
+                        uang_cash: '',
+                        kembalian: ''
+                    },
+                    data_cart: data_,
+                    total_harga: new DotAdded().parse(total_harga),
+                    disabled_batal: false
+                }));
 
             } else {
                 this.setState(prevState => ({
@@ -621,14 +623,14 @@ class Menu extends React.Component<any, any> {
                                                 <div className="box-check-total-content">
                                                     <h4>Detail Pembayaran:</h4>
                                                     <small>Tanggal Pembelian: <span>{this.state.date_now}</span></small>
-                                                    <div className="mt-2 label-custom mb-3">
+                                                    {/* <div className="mt-2 label-custom mb-3">
                                                         <label>Pilih Tipe Pemesanan</label>
                                                         <select className="form-control custom-input mt-2" onChange={this.handleTypePemesanan}>
                                                             <option value="">Pilih Pemesanan</option>
                                                             <option value="Cafe Only">Cafe Only</option>
                                                             <option value="With Table">With Table</option>
                                                         </select>
-                                                    </div>
+                                                    </div> */}
                                                     <div className="hr-white"></div>
                                                     {this.state.select_container === true ?
                                                         <>
@@ -651,7 +653,10 @@ class Menu extends React.Component<any, any> {
                                                         <h6>Total Harga: </h6>
                                                         <h4>Rp. {this.state.total_harga}</h4>
                                                     </div>
-                                                    <input type="hidden" id="total_menu_val" />
+                                                    {this.state.struk && <div className="d-flex align-items-center mt-3 mb-3">
+                                                        <strong className="text-info">Sedang Mencetak Struk...</strong>
+                                                        <div className="spinner-border text-info ms-auto" role="status" aria-hidden="true"></div>
+                                                    </div>}
                                                     <div className="d-grid mt-2">
                                                         <button className="btn btn-primary btn-primary-cozy" onClick={this.handleSimpan} disabled={this.state.disabled} id="checkout_cart">{this.state.text_submit}</button>
                                                     </div>

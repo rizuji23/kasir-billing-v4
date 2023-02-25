@@ -22,11 +22,12 @@ import { Stok_Masuk } from "../entity/Stok_Masuk"
 import { Stok_Keluar } from "../entity/Stok_Keluar"
 import { Shift } from "../entity/Shift"
 import Keterangan from "./Keterangan"
+import { Aktivitas } from "../entity/Aktivitas"
 
 const AppDataSource = async () => {
     const dataSourceConn = new DataSource({
         type: "sqlite",
-        database: "./kasirv3.sqlite",
+        database: "./kasirv3_ori.sqlite",
         synchronize: true,
         logging: false,
         entities: [
@@ -53,6 +54,7 @@ const AppDataSource = async () => {
             Stok_Keluar,
             Shift,
             Keterangan,
+            Aktivitas,
         ],
         migrations: [
             "./src/migrations/**/*.ts"

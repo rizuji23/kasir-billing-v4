@@ -135,7 +135,7 @@ class ModalExport extends React.Component<any, any> {
                                     </div>
                                 </div>
                             </>,
-                            data: result.data,
+                            data: result,
                             selected: today,
                         }, () => {
                             this.checkData(this.state.data)
@@ -214,7 +214,7 @@ class ModalExport extends React.Component<any, any> {
                     toast.success("Data tersedia.")
                     this.setState({
                         bulan: e.target.value,
-                        data: result.data,
+                        data: result,
                         selected: e.target.value
                     }, () => {
                         this.checkData(this.state.data)
@@ -285,7 +285,7 @@ class ModalExport extends React.Component<any, any> {
                 if (result.response === true) {
                     toast.success("Data tersedia.");
                     this.setState({
-                        data: result.data,
+                        data: result,
                         selected: `${data.start} ~ ${data.end}`
                     }, () => {
                         this.checkData(this.state.data)
@@ -326,7 +326,7 @@ class ModalExport extends React.Component<any, any> {
 
                 toast.success("Data tersedia.");
                 this.setState({
-                    data: result.data,
+                    data: result,
                     selected: this.state.tahun
                 }, () => {
                     this.checkData(this.state.data)

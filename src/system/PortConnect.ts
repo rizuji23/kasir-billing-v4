@@ -35,15 +35,7 @@ class PortConnect {
     }
 
     async checkOpen(port) {
-        let ports = await SerialPort.list();
-        console.log(port);
-        const scanner = ports.filter((port: any) => port.path === port);
-
-        if (scanner.length !== 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.path.isOpen;
     }
 
     isOpen() {

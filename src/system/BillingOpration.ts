@@ -12,6 +12,7 @@ import shortid from 'shortid'
 import { Struk } from "../entity/Struk";
 import DotAdded from "./DotAdded";
 import StrukSystem from "./StrukSystem";
+import { IsNull, Not } from "typeorm";
 
 
 interface data_pay {
@@ -202,15 +203,21 @@ class BillingOperation {
     async getDetailPriceBill(id_booking):Promise<any> {
         try {
             let service = await dataSource;
-            var get_detail;
-            get_detail = await service.manager.find(Detail_Booking, {
+            
+            const get_detail = await service.manager.find(Detail_Booking, {
                 where: {
                     id_booking: id_booking,
                 }
             });
+
+            const get_booking = await service.manager.find(Booking, {
+                where: {
+                    id_booking: id_booking,
+                }
+            })
     
             if (get_detail.length !== 0) {
-                return {'response': true, data: get_detail};
+                return {'response': true, data: get_detail, data_booking: get_booking};
             } else {
                 return {'response': false, data: 'data empty'};
             }
@@ -384,13 +391,184 @@ class BillingOperation {
             console.log(err);
         }
     }
+
+    static async checkingPayTable(data_pay):Promise<any> {
+        try {
+            let service = await dataSource;
+
+            // calculate all cart & detail_billing
+            var total_menu = 0;
+            var get_cart;
+            const get_pesanan = await service.manager.find(Pesanan, {
+                where: {
+                    id_pesanan: data_pay?.id_pesanan || "",
+                }
+            });
+
+            if (get_pesanan.length !== 0) {
+                get_cart = await service.manager.find(Cart, {
+                    where: {
+                        id_pesanan: data_pay.id_pesanan,
+                        type_bill: IsNull()
+                    }
+                });
+
+                total_menu = await get_cart.reduce((total, arr) => {
+                    return total + arr.sub_total;
+                }, 0);
+            }
+
+            const get_billing = await service.manager.find(Detail_Booking, {
+                where: {
+                    id_booking: data_pay.id_booking,
+                    type_bill: IsNull()
+                }
+            });
+
+            var total_billing= await get_billing.reduce((total, arr) => {
+                return total + arr.harga;
+            }, 0);
+
+            const total_all = await total_billing + total_menu;
+
+            var data_menu;
+
+            if (get_pesanan.length !== 0) {
+                // update pesanan
+                await service.manager.createQueryBuilder().update(Pesanan).set({
+                    total: total_menu,
+                }).where('id_pesanan = :id', {id: data_pay.id_pesanan}).execute();
+
+                data_menu = await service.manager.query("SELECT * FROM cart LEFT OUTER JOIN menu ON cart.id_menu = menu.id_menu WHERE cart.id_pesanan = ? AND cart.type_bill IS ?", [data_pay.id_pesanan, null]);
+            }
+
+            await service.manager.createQueryBuilder().update(Booking).set({
+                total_harga: total_billing,
+            }).where('id_booking = :id', {id: data_pay.id_booking}).execute();
+
+            const update_struk = await service.manager.createQueryBuilder().update(Struk).set({
+                total_struk: total_all,
+            }).where('id_booking = :id', {id: data_pay.id_booking}).execute();
+
+            if (update_struk) {
+                return {response: true, data: "saved", data_billing: get_billing, data_menu: data_menu};
+            } else {
+                return {response: false, data: "something is wrong"};
+            }
+            
+        } catch (err) {
+            console.log(err);            
+        }
+    }
+
+    static async getStruk(id_booking) {
+        try {
+            let service = await dataSource;
+
+            const get_struk = await service.manager.find(Struk, {
+                where: {
+                    id_booking: id_booking,
+                }
+            });
+
+            if (get_struk.length !== 0) {
+                return {response: true, data: get_struk};
+            } else {
+                return {response: false, data: "data is empty"};
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async fixList(data_pay) {
+        const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
+        try {
+            let service = await dataSource;
+            const get_billing = await service.manager.find(Detail_Booking, {
+                where: {
+                    id_booking: data_pay.id_booking,
+                    type_bill: IsNull()
+                }
+            });
+
+            var result_dupli = get_billing.reduce((unique, o) => {
+                if (!unique.some(obj => obj.start_duration === o.start_duration && obj.end_duration === o.end_duration)) {
+                    unique.push(o);
+                }
+                return unique;
+            }, []);
+
+            console.log("result_dupli", result_dupli);
+
+            if (result_dupli.length !== 0) {
+                // delete all data from detail_billing by id_booking
+                const delete_booking = await service.manager.createQueryBuilder().delete().from(Detail_Booking).where('id_booking = :id', {id: data_pay.id_booking}).execute();
+
+                if (delete_booking) {
+                    // insert detail_booking data in result_dupli by id_booking
+                    const insert = await service.manager.createQueryBuilder().insert().into(Detail_Booking).values(result_dupli).execute();
+
+                    if (insert) {
+                        // get data again detail_booking by id_booking
+                        const get_bookings = await service.manager.find(Detail_Booking, {
+                            where: {
+                                id_booking: data_pay.id_booking,
+                            }
+                        });
+
+                        const total_billing = await get_bookings.reduce((total, arr) => {
+                            return total + arr.harga;
+                        }, 0);
+
+                        // update data booking by id_booking
+                        await service.manager.createQueryBuilder().update(Booking).set({
+                            durasi_booking: get_bookings.length,
+                            total_harga: total_billing,
+                            updated_at: date_now,
+                        }).where('id_booking = :id', {id: data_pay.id_booking}).execute();
+
+                        // get pesanan by id_pesanan
+                        const get_pesanan = await service.manager.find(Pesanan, {
+                            where: {
+                                id_pesanan: data_pay?.id_pesanan || "",
+                            }
+                        });
+                        var total_menu = 0;
+                        if (get_pesanan.length !== 0) {
+                            const get_cart = await service.manager.find(Cart, {
+                                where: {
+                                    id_pesanan: data_pay.id_pesanan,
+                                    type_bill: IsNull(),
+                                }
+                            });
+
+                            total_menu = await get_cart.reduce((total, arr) => {
+                                return total + arr.sub_total;
+                            }, 0);
+                        }
+                        
+                        const total_all = await total_billing + total_menu;
+
+                        // update struk by id_booking
+                        const update_struk = await service.manager.createQueryBuilder().update(Struk).set({
+                            total_struk: total_all,
+                        }).where('id_booking = :id', {id: data_pay.id_booking}).execute();
+
+                        if (update_struk) {
+                            return {response: true, data: "saved"};
+                        } else {
+                            return {response: false, data: "Something is wrong"};
+                        }
+                    }
+                }
+            } else {
+                return {response: false, data: "Data is already fixed"};
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
 }
 
-export default BillingOperation
-
-// const bill = new BillingOperation()
-// const data = async () => {
-//     console.log(await bill.checkHarga(3))
-// }
-
-// data()
+export default BillingOperation;

@@ -9,6 +9,7 @@ import DotAdded from "./DotAdded";
 import BillingOperation from "./BillingOpration";
 import { Struk } from "../entity/Struk";
 import { clear } from "console";
+import AktivitasSystem from "./AktivitasSystem";
 
 class TableRegular {
     private ms_all:number;
@@ -120,6 +121,7 @@ class TableRegular {
             created_at: this.date_now,
             updated_at: this.date_now,
         }).execute();
+
 
         this.timerInit(diff, duration, start)
         this.table_timer = setInterval(this.table_timer, 1000);
@@ -260,10 +262,13 @@ class TableRegular {
 
                 if (update_table_1 && update_table_2) {
                     // stop table 1
-                    const table_number_1 = data_booking.id_table_1.split('table0').join('');
-                    clearInterval(table_timer_1);
-                    console.log("table_timer_1", table_timer_1)
-                    await this.port.write(`of ${table_number_1}`);
+                    setTimeout(async() => {
+                        const table_number_1 = data_booking.id_table_1.split('table0').join('');
+                        clearInterval(table_timer_1);
+                        console.log("table_timer_1", table_timer_1)
+                        await this.port.write(`of ${table_number_1}`);
+                    }, 1000);
+
 
                     // start table 1
                     const table_number_2 = this.id_table.split('table0').join('');
@@ -468,6 +473,7 @@ class TablePersonal extends TableRegular {
             created_at: this.date_now,
             updated_at: this.date_now,
         }).execute();
+
        
         this.timerInit(0, 0, 0);
         this.table_timer_2 = setInterval(this.table_timer_2, 1000);

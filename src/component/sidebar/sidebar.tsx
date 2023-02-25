@@ -2,7 +2,13 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 
 class Sidebar extends React.Component<any, any> {
+    handleLogout() {
+        sessionStorage.setItem("username", "");
+        sessionStorage.setItem("nama", "");
+        sessionStorage.setItem("user", "");
 
+        window.location.href = "/"
+    }
     render() {
         return (
             <div className="l-navbar show-sidebar" id="nav-bar">
@@ -60,7 +66,7 @@ class Sidebar extends React.Component<any, any> {
 
                         </div>
                     </div>
-                    <a href="javascript:void(0)" className="nav_link" title="Logout" id="logout-side">
+                    <a href="javascript:void(0)" onClick={this.handleLogout} className="nav_link" title="Logout" id="logout-side">
                         <i className='bx bx-log-out nav_icon'></i>
                         <span className="nav_name">Logout</span>
                     </a>

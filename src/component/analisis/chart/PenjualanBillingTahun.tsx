@@ -27,8 +27,8 @@ class PenjualanBillingTahun extends React.Component<any, any> {
                         <YAxis style={{ fontSize: "12px" }} />
                         <Tooltip />
                         <Legend />
-                        <Bar dataKey="total_billing" fill="#8884d8" />
-                        <Bar dataKey="total_cafe" fill="#82ca9d" />
+                        <Bar dataKey="total_cafe" fill="#8884d8" />
+                        <Bar dataKey="total_billing" fill="#82ca9d" />
                     </BarChart>
                 </ResponsiveContainer>
             </>

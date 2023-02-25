@@ -27,6 +27,7 @@ import ExportSystem from './system/ExportSystem'
 import ShiftSystem from './system/ShiftSystem'
 import { dataSource } from './system/data-source'
 import AdminSystem from './system/AdminSystem'
+import AktivitasSystem from './system/AktivitasSystem'
 
 //init MainWindow
 let win:any;
@@ -77,7 +78,7 @@ let port = "";
 System.getSelectedPort().then((result) => {
     if (result.response === true) {
         // default 57600
-        arduino = new PortConnect(billingArduino, 9600, "none", true, false, result.data[0].url);
+        arduino = new PortConnect(billingArduino, 57600, "none", true, false, result.data[0].url);
         arduino.getConnect();
         port = result.data[0].url;
     }
@@ -540,7 +541,7 @@ ipcMain.handle("start", async (event, id_table:any, ms_all:any, ms_delay:any, bl
 // });
 
 //set Loss Timer Billing
-var table_01_time_loss:any
+var table_01_time_loss:any, table_02_time_loss:any, table_03_time_loss:any, table_04_time_loss:any,table_05_time_loss:any, table_06_time_loss:any, table_07_time_loss:any, table_08_time_loss:any, table_09_time_loss:any, table_10_time_loss:any, table_11_time_loss:any, table_12_time_loss:any
 ipcMain.handle('start_loss', async(event, id_table, start, stop, data_booking, reset, continuetime) => {
     if (id_table === 'table001') {
         const table_01 = new TablePersonal(id_table, arduino.path, win);
@@ -556,6 +557,182 @@ ipcMain.handle('start_loss', async(event, id_table, start, stop, data_booking, r
             } else if (continuetime === true) {
                 table_01_time_loss = await table_01.continueTimerLoss(data_booking);
                 console.log(table_01_time_loss)
+            }
+        }
+    } else if (id_table === 'table002') {
+        const table_02 = new TablePersonal(id_table, arduino.path, win);
+        if (stop === true) {
+            table_02.stopTimer(table_02_time_loss, true)
+        } else {
+            if (start === true) {
+                table_02_time_loss = await table_02.startTimer(data_booking);
+                console.log(table_02_time_loss)
+            } else if (reset === true) {
+                await table_02.resetTable(data_booking, table_02_time_loss, true)
+                console.log(table_02_time_loss)
+            } else if (continuetime === true) {
+                table_02_time_loss = await table_02.continueTimerLoss(data_booking);
+                console.log(table_02_time_loss)
+            }
+        }
+    } else if (id_table === 'table003') {
+        const table_03 = new TablePersonal(id_table, arduino.path, win);
+        if (stop === true) {
+            table_03.stopTimer(table_03_time_loss, true)
+        } else {
+            if (start === true) {
+                table_03_time_loss = await table_03.startTimer(data_booking);
+                console.log(table_03_time_loss)
+            } else if (reset === true) {
+                await table_03.resetTable(data_booking, table_03_time_loss, true)
+                console.log(table_03_time_loss)
+            } else if (continuetime === true) {
+                table_03_time_loss = await table_03.continueTimerLoss(data_booking);
+                console.log(table_03_time_loss)
+            }
+        }
+    } else if (id_table === 'table004') {
+        const table_04 = new TablePersonal(id_table, arduino.path, win);
+        if (stop === true) {
+            table_04.stopTimer(table_04_time_loss, true)
+        } else {
+            if (start === true) {
+                table_04_time_loss = await table_04.startTimer(data_booking);
+                console.log(table_04_time_loss)
+            } else if (reset === true) {
+                await table_04.resetTable(data_booking, table_04_time_loss, true)
+                console.log(table_04_time_loss)
+            } else if (continuetime === true) {
+                table_04_time_loss = await table_04.continueTimerLoss(data_booking);
+                console.log(table_04_time_loss)
+            }
+        }
+    }  else if (id_table === 'table005') {
+        const table_05 = new TablePersonal(id_table, arduino.path, win);
+        if (stop === true) {
+            table_05.stopTimer(table_05_time_loss, true)
+        } else {
+            if (start === true) {
+                table_05_time_loss = await table_05.startTimer(data_booking);
+                console.log(table_05_time_loss)
+            } else if (reset === true) {
+                await table_05.resetTable(data_booking, table_05_time_loss, true)
+                console.log(table_05_time_loss)
+            } else if (continuetime === true) {
+                table_05_time_loss = await table_05.continueTimerLoss(data_booking);
+                console.log(table_05_time_loss)
+            }
+        }
+    }  else if (id_table === 'table006') {
+        const table_06 = new TablePersonal(id_table, arduino.path, win);
+        if (stop === true) {
+            table_06.stopTimer(table_06_time_loss, true)
+        } else {
+            if (start === true) {
+                table_06_time_loss = await table_06.startTimer(data_booking);
+                console.log(table_06_time_loss)
+            } else if (reset === true) {
+                await table_06.resetTable(data_booking, table_06_time_loss, true)
+                console.log(table_06_time_loss)
+            } else if (continuetime === true) {
+                table_06_time_loss = await table_06.continueTimerLoss(data_booking);
+                console.log(table_06_time_loss)
+            }
+        }
+    }  else if (id_table === 'table007') {
+        const table_07 = new TablePersonal(id_table, arduino.path, win);
+        if (stop === true) {
+            table_07.stopTimer(table_07_time_loss, true)
+        } else {
+            if (start === true) {
+                table_07_time_loss = await table_07.startTimer(data_booking);
+                console.log(table_07_time_loss)
+            } else if (reset === true) {
+                await table_07.resetTable(data_booking, table_07_time_loss, true)
+                console.log(table_07_time_loss)
+            } else if (continuetime === true) {
+                table_07_time_loss = await table_07.continueTimerLoss(data_booking);
+                console.log(table_07_time_loss)
+            }
+        }
+    } else if (id_table === 'table008') {
+        const table_08 = new TablePersonal(id_table, arduino.path, win);
+        if (stop === true) {
+            table_08.stopTimer(table_08_time_loss, true)
+        } else {
+            if (start === true) {
+                table_08_time_loss = await table_08.startTimer(data_booking);
+                console.log(table_08_time_loss)
+            } else if (reset === true) {
+                await table_08.resetTable(data_booking, table_08_time_loss, true)
+                console.log(table_08_time_loss)
+            } else if (continuetime === true) {
+                table_08_time_loss = await table_08.continueTimerLoss(data_booking);
+                console.log(table_08_time_loss)
+            }
+        }
+    } else if (id_table === 'table009') {
+        const table_09 = new TablePersonal(id_table, arduino.path, win);
+        if (stop === true) {
+            table_09.stopTimer(table_09_time_loss, true)
+        } else {
+            if (start === true) {
+                table_09_time_loss = await table_09.startTimer(data_booking);
+                console.log(table_09_time_loss)
+            } else if (reset === true) {
+                await table_09.resetTable(data_booking, table_09_time_loss, true)
+                console.log(table_09_time_loss)
+            } else if (continuetime === true) {
+                table_09_time_loss = await table_09.continueTimerLoss(data_booking);
+                console.log(table_09_time_loss)
+            }
+        }
+    }  else if (id_table === 'table010') {
+        const table_10 = new TablePersonal(id_table, arduino.path, win);
+        if (stop === true) {
+            table_10.stopTimer(table_10_time_loss, true)
+        } else {
+            if (start === true) {
+                table_10_time_loss = await table_10.startTimer(data_booking);
+                console.log(table_10_time_loss)
+            } else if (reset === true) {
+                await table_10.resetTable(data_booking, table_10_time_loss, true)
+                console.log(table_10_time_loss)
+            } else if (continuetime === true) {
+                table_10_time_loss = await table_10.continueTimerLoss(data_booking);
+                console.log(table_10_time_loss)
+            }
+        }
+    }  else if (id_table === 'table011') {
+        const table_11 = new TablePersonal(id_table, arduino.path, win);
+        if (stop === true) {
+            table_11.stopTimer(table_11_time_loss, true)
+        } else {
+            if (start === true) {
+                table_11_time_loss = await table_11.startTimer(data_booking);
+                console.log(table_11_time_loss)
+            } else if (reset === true) {
+                await table_11.resetTable(data_booking, table_11_time_loss, true)
+                console.log(table_11_time_loss)
+            } else if (continuetime === true) {
+                table_11_time_loss = await table_11.continueTimerLoss(data_booking);
+                console.log(table_11_time_loss)
+            }
+        }
+    } else if (id_table === 'table012') {
+        const table_12 = new TablePersonal(id_table, arduino.path, win);
+        if (stop === true) {
+            table_12.stopTimer(table_12_time_loss, true)
+        } else {
+            if (start === true) {
+                table_12_time_loss = await table_12.startTimer(data_booking);
+                console.log(table_12_time_loss)
+            } else if (reset === true) {
+                await table_12.resetTable(data_booking, table_12_time_loss, true)
+                console.log(table_12_time_loss)
+            } else if (continuetime === true) {
+                table_12_time_loss = await table_12.continueTimerLoss(data_booking);
+                console.log(table_12_time_loss)
             }
         }
     }
@@ -876,6 +1053,9 @@ ipcMain.handle("printStruk", async(event, id_struk) => {
     return await StrukSystem.print(id_struk);
 });
 
+ipcMain.handle("printTemp", async(event, data) => {
+    return await StrukSystem.printTemp(data);
+})
 
 ipcMain.handle("check_export", async(event, check_today, check_date, check_month, check_year, data) => {
     if (check_today === true) {
@@ -1002,4 +1182,23 @@ ipcMain.handle("loginAdmin", async(event, data) => {
     return await AdminSystem.loginAdmin(data);
 });
 
+ipcMain.handle("getAktivitas", async(event) => {
+    return await AktivitasSystem.getAktivitas();
+});
+
+ipcMain.handle("addAktivitas", async(event, data) => {
+    return await AktivitasSystem.addAktivitas(data);
+});
+
+ipcMain.handle("checkingPayTable", async(event, data) => {
+    return await BillingOperation.checkingPayTable(data);
+});
+
+ipcMain.handle("getStruk", async(event, data) => {
+    return await BillingOperation.getStruk(data);
+});
+
+ipcMain.handle("fixList", async(event, data) => {
+    return await BillingOperation.fixList(data);
+});
 //endopration

@@ -12,10 +12,68 @@ import System from './System';
 import { Pesanan } from '../entity/Pesanan';
 
 class StrukSystem {
+
+    static async printTemp(id_struk:string) {
+        try {
+            let printWindow = new BrowserWindow({
+                show: false,
+                webPreferences: {
+                  nodeIntegration: true,
+                  contextIsolation: false,
+                },
+            });
+            let service = await dataSource;
+            const check_struk = await service.manager.find(Struk, {
+                where: {
+                    id_struk: id_struk
+                }
+            });
+
+            console.log(check_struk);
+
+
+            if (check_struk.length !== 0) {
+                const cart = await service.manager.query("SELECT * FROM cart LEFT OUTER JOIN menu ON cart.id_menu = menu.id_menu WHERE cart.id_pesanan=? AND cart.status = ? ORDER BY cart.id DESC", [check_struk[0].id_pesanan, 'belum dibayar']);
+
+                const billing = await service.manager.query("SELECT * FROM booking LEFT OUTER JOIN detail_booking ON booking.id_booking = detail_booking.id_booking WHERE booking.id_booking=? AND detail_booking.status=? ORDER BY booking.id DESC", [check_struk[0].id_booking, 'active']);
+
+                console.log(check_struk[0].id_booking)
+
+                    const data_struk = {
+                        response: true,
+                        cart: cart,
+                        struk: check_struk,
+                        billing: billing
+                    }
+
+                    printWindow.loadFile('../../public/struk.html');
+                    printWindow.webContents.on('did-finish-load', () => {
+                        
+                        printWindow.webContents.send('message', JSON.stringify(data_struk));
+                        setTimeout(() => {
+                            System.getPrinter([]).then((result) => {
+                            printWindow.webContents.print({
+                                silent: true,
+                                printBackground: true,
+                                copies: 0,
+                                deviceName: result.data[0].url,
+                                margins: {
+                                marginType: "none",
+                                },
+                            });
+                        });
+                        }, 3000)
+                    });
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     static async print(id_struk:string) {
         try {
             let printWindow = new BrowserWindow({
-                show: true,
+                show: false,
                 webPreferences: {
                   nodeIntegration: true,
                   contextIsolation: false,
@@ -49,7 +107,8 @@ class StrukSystem {
                     printWindow.webContents.on('did-finish-load', () => {
                         
                         printWindow.webContents.send('message', JSON.stringify(data_struk));
-                        System.getPrinter([]).then((result) => {
+                        setTimeout(() => {
+                            System.getPrinter([]).then((result) => {
                             printWindow.webContents.print({
                                 silent: true,
                                 printBackground: true,
@@ -60,6 +119,7 @@ class StrukSystem {
                                 },
                             });
                         });
+                        }, 3000)
                     });
             }
         } catch (err) {
@@ -70,7 +130,7 @@ class StrukSystem {
     static async printBilling(id_struk, data_pay):Promise<any> {
         try {
             let printWindow = new BrowserWindow({
-                show: true,
+                show: false,
                 webPreferences: {
                   nodeIntegration: true,
                   contextIsolation: false,
@@ -120,7 +180,8 @@ class StrukSystem {
                     printWindow.loadFile('../../public/struk.html');
                     printWindow.webContents.on('did-finish-load', () => {
                         printWindow.webContents.send('message', JSON.stringify(data_struk));
-                        System.getPrinter([]).then((result) => {
+                        setTimeout(() => {
+                            System.getPrinter([]).then((result) => {
                             printWindow.webContents.print({
                                 silent: true,
                                 printBackground: true,
@@ -131,6 +192,7 @@ class StrukSystem {
                                 },
                             });
                         });
+                        }, 3000)
                     });
             }
             

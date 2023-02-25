@@ -10,6 +10,7 @@ import DotAdded from "../../../system/DotAdded";
 import ModalHargaBilling from "./ModalHargaBilling";
 import ModalHargaMember from "./ModalHargaMember";
 import LoginAdmin from "./LoginAdmin";
+import NavbarAdmin from "./NavbarAdmin";
 
 
 class Admin extends React.Component<any, any> {
@@ -227,6 +228,10 @@ class Admin extends React.Component<any, any> {
                         <div className="col-sm">
                             <div className="d-flex">
                                 <Navbar_Menu />
+                            </div>
+                            <div className="hr-white"></div>
+                            <div className="d-flex mb-3">
+                                <NavbarAdmin />
                             </div>
                         </div>
                         <div className="col-sm-3">

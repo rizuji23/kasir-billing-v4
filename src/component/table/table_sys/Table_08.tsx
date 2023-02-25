@@ -598,9 +598,11 @@ class Table_08 extends React.Component<any, any> {
                     } else {
                         blnk = false
                     }
+                    const get_local = localStorage.getItem(this.state.table_id).replace(/\[|\]/g, '').split(',');
+                    console.log(get_local);
+
                     if (result.data[0].status_booking !== 'not_active') {
                         console.log(result.data[0].id_booking)
-
 
                         this.setState({
                             nama: result.data[0].nama_booking,
@@ -609,7 +611,7 @@ class Table_08 extends React.Component<any, any> {
                             mode: result.data[0].tipe_booking,
                             isUse: true,
                             id_booking: result.data[0].id_booking,
-                            info_badges: "terpakai"
+                            info_badges: get_local[0] === 'not_active' ? 'berakhir' : 'terpakai'
                         })
                     } else {
                         this.setState({
@@ -629,13 +631,18 @@ class Table_08 extends React.Component<any, any> {
     }
 
     getTimeString(): void {
+        const get_local = localStorage.getItem(this.state.table_id).replace(/\[|\]/g, '').split(',');
+        console.log(get_local);
+        if (get_local[0] === 'not_active') {
+            this.setState({ time_running: false, timer: 'tidak aktif', disabled_addOn: false, info_badges: "berakhir" })
+        }
         ipcRenderer.on(this.state.table_id, (event, msg) => {
             this.setState({ timer: msg.data });
             if (msg.reponse === true) {
                 if (msg.mode === 'loss') {
                     localStorage.setItem(this.state.table_id, `[active,${msg.data.split(':')[0]}:${msg.data.split(':')[1]}, Loss]`)
-                    this.setState({ disabled: true, isUse: true, time_running: true, disabled_add: true, info_badges: "terpakai" }, () => this.props.getTime(msg.data, this.state.isUse, this.state.table_id))
-                    if (msg.data.split(':')[1] === '02' && msg.data.split(':')[2] === '00') {
+                    this.setState({ disabled: true, isUse: true, time_running: true, disabled_add: true, info_badges: "terpakai" })
+                    if (msg.data.split(':')[1] === '59' && msg.data.split(':')[2] === '00') {
                         console.log('test loss')
 
                         const shift_pagi = JSON.parse(localStorage.getItem("shift_pagi"));
@@ -683,13 +690,17 @@ class Table_08 extends React.Component<any, any> {
 
                 } else if (msg.mode === 'regular') {
                     localStorage.setItem(this.state.table_id, `[active,${msg.data.split(':')[0]}:${msg.data.split(':')[1]}, Regular]`)
-                    this.setState({ disabled: true, isUse: true, time_running: true, disabled_add: true }, () => this.props.getTime(msg.data, this.state.isUse, this.state.table_id));
+                    this.setState({ disabled: true, isUse: true, time_running: true, disabled_add: true });
                     // disabled_addOn
                     if (msg.data.split(':')[0] === '00' && msg.data.split(':')[1] === '15' && msg.data.split(':')[2] === '00') {
                         this.setState({
                             disabled_addOn: false,
                             info_badges: "hampir_habis",
                         });
+                    } else {
+                        this.setState({
+                            info_badges: "terpakai"
+                        })
                     }
                     if (msg.data.split(':')[0] === '00' && msg.data.split(':')[1] <= '15') {
                         this.setState({
@@ -868,8 +879,10 @@ class Table_08 extends React.Component<any, any> {
                         .then((result) => {
                             console.log(result);
                             if (result.response === true) {
-                                localStorage.setItem(this.state.table_id, "[not_active,00:00]");
-                                window.location.reload();
+                                setTimeout(() => {
+                                    localStorage.setItem(this.state.table_id, "[not_active,00:00]");
+                                    window.location.reload();
+                                }, 2000)
                             } else {
                                 toast.error("Terjadi kesalahan");
                             }

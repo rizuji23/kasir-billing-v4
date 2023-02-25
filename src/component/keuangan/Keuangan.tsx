@@ -50,11 +50,12 @@ const ExpandableRowComponent: React.FC<any> = ({ data }) => {
     async function get_cart(data) {
         return new Promise((res, rej) => {
             ipcRenderer.invoke("keuangan", false, true, false, data).then((result) => {
+                console.log(result)
                 if (result.response === true) {
                     const data = result.data.map((el, i) => {
                         return (
                             <>
-                                <li>{el.nama_menu} @{el.qty} Rp. {dot.parse(el.harga_menu)} = Rp. {dot.parse(el.sub_total)} {el.type_bill === "split_bill" ? <span className="badge text-bg-success">Split Bill - <b>Lunas</b></span>
+                                <li>{el.nama_menu} @{el.qty} Rp. {dot.parse(el.sub_total || 0)} = Rp. {dot.parse(el.sub_total || 0)} {el.type_bill === "split_bill" ? <span className="badge text-bg-success">Split Bill - <b>Lunas</b></span>
                                     : <></>}</li>
                             </>
                         )

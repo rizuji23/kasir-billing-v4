@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 class LoginAdmin extends React.Component<any, any> {
@@ -41,6 +42,9 @@ class LoginAdmin extends React.Component<any, any> {
 
                         <div className="d-grid mt-3">
                             <button className="btn btn-primary btn-primary-cozy" onClick={this.props.handleLogin}>Login</button>
+                        </div>
+                        <div className="d-grid mt-2">
+                            <Link className="btn btn-primary btn-primary-cozy-dark" to={"/pengaturan"}>Kembali</Link>
                         </div>
                     </div>
                 </div>

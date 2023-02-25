@@ -80,12 +80,64 @@ class Home extends React.Component<any, any> {
             booking_aktif: "Loading...",
             perhatian_stok: false,
             isConnected: "",
+            time: "Loading...",
+            shift: false,
+            shift_content: "",
+            shift_text: "",
         }
 
-        this.getTime = this.getTime.bind(this);
+        // this.getTime = this.getTime.bind(this);
         this.getAllTable = this.getAllTable.bind(this);
         this.getPerhatian = this.getPerhatian.bind(this);
-        this.getOpen = this.getOpen.bind(this);
+        this.getTime = this.getTime.bind(this);
+    }
+
+    getTime() {
+        setInterval(() => {
+            this.setState({
+                time: moment().tz("Asia/Jakarta").format("HH:mm:ss")
+            });
+
+            const shift_pagi = JSON.parse(localStorage.getItem("shift_pagi"));
+            const shift_malam = JSON.parse(localStorage.getItem("shift_malam"));
+
+            const hours = moment().tz("Asia/Jakarta").format("HH");
+
+            if (hours >= shift_pagi.start_jam.split(':')[0] && hours < shift_pagi.end_jam.split(':')[0]) {
+                console.log("Pagi");
+                this.setState({
+                    shift_text: "Pagi",
+                });
+            } else if (hours >= shift_malam.start_jam.split(':')[0] || hours < shift_malam.end_jam.split(':')[0]) {
+                console.log("malam")
+                this.setState({
+                    shift_text: "Malam",
+                });
+            }
+
+            if (hours === shift_pagi.start_jam.split(':')[0]) {
+                this.setState({
+                    shift: true,
+                    shift_content: "Saatnya Pergantian shift ke Pagi",
+                });
+            } else {
+                this.setState({
+                    shift: false,
+                })
+            }
+
+            if (hours === shift_malam.start_jam.split(':')[0]) {
+                this.setState({
+                    shift: true,
+                    shift_content: "Saatnya Pergantian shift ke Malam",
+                });
+            } else {
+                this.setState({
+                    shift: false,
+                })
+            }
+
+        }, 1000);
     }
 
     continueTimer() {
@@ -135,172 +187,172 @@ class Home extends React.Component<any, any> {
             });
     }
 
-    getTime(time, isUse, table_id) {
-        console.log(table_id)
-        if (table_id === "table001") {
-            this.setState(prevState => ({
-                timer: {
-                    ...prevState.timer,
-                    table001: time,
-                }
-            }));
+    // getTime(time, isUse, table_id) {
+    //     console.log(table_id)
+    //     if (table_id === "table001") {
+    //         this.setState(prevState => ({
+    //             timer: {
+    //                 ...prevState.timer,
+    //                 table001: time,
+    //             }
+    //         }));
 
-            this.setState(prevState => ({
-                isUse: {
-                    ...prevState.isUse,
-                    table001: isUse
-                }
-            }))
-        } else if (table_id === "table002") {
-            this.setState(prevState => ({
-                timer: {
-                    ...prevState.timer,
-                    table002: time,
-                }
-            }));
-            this.setState(prevState => ({
-                isUse: {
-                    ...prevState.isUse,
-                    table002: isUse
-                }
-            }));
-        } else if (table_id === "table003") {
-            this.setState(prevState => ({
-                timer: {
-                    ...prevState.timer,
-                    table003: time,
-                }
-            }));
-            this.setState(prevState => ({
-                isUse: {
-                    ...prevState.isUse,
-                    table003: isUse
-                }
-            }));
-        } else if (table_id === "table004") {
-            this.setState(prevState => ({
-                timer: {
-                    ...prevState.timer,
-                    table004: time,
-                }
-            }));
-            this.setState(prevState => ({
-                isUse: {
-                    ...prevState.isUse,
-                    table004: isUse
-                }
-            }));
-        } else if (table_id === "table005") {
-            this.setState(prevState => ({
-                timer: {
-                    ...prevState.timer,
-                    table005: time,
-                }
-            }));
-            this.setState(prevState => ({
-                isUse: {
-                    ...prevState.isUse,
-                    table005: isUse
-                }
-            }));
-        } else if (table_id === "table006") {
-            this.setState(prevState => ({
-                timer: {
-                    ...prevState.timer,
-                    table006: time,
-                }
-            }));
-            this.setState(prevState => ({
-                isUse: {
-                    ...prevState.isUse,
-                    table006: isUse
-                }
-            }));
-        } else if (table_id === "table007") {
-            this.setState(prevState => ({
-                timer: {
-                    ...prevState.timer,
-                    table007: time,
-                }
-            }));
-            this.setState(prevState => ({
-                isUse: {
-                    ...prevState.isUse,
-                    table007: isUse
-                }
-            }));
-        } else if (table_id === "table008") {
-            this.setState(prevState => ({
-                timer: {
-                    ...prevState.timer,
-                    table008: time,
-                }
-            }));
-            this.setState(prevState => ({
-                isUse: {
-                    ...prevState.isUse,
-                    table008: isUse
-                }
-            }));
-        } else if (table_id === "table009") {
-            this.setState(prevState => ({
-                timer: {
-                    ...prevState.timer,
-                    table009: time,
-                }
-            }));
-            this.setState(prevState => ({
-                isUse: {
-                    ...prevState.isUse,
-                    table009: isUse
-                }
-            }));
-        } else if (table_id === "table010") {
-            this.setState(prevState => ({
-                timer: {
-                    ...prevState.timer,
-                    table010: time,
-                }
-            }));
-            this.setState(prevState => ({
-                isUse: {
-                    ...prevState.isUse,
-                    table010: isUse
-                }
-            }));
-        } else if (table_id === "table011") {
-            this.setState(prevState => ({
-                timer: {
-                    ...prevState.timer,
-                    table011: time,
-                }
-            }));
-            this.setState(prevState => ({
-                isUse: {
-                    ...prevState.isUse,
-                    table011: isUse
-                }
-            }));
-        } else if (table_id === "table012") {
-            this.setState(prevState => ({
-                timer: {
-                    ...prevState.timer,
-                    table012: time,
-                }
-            }));
-            this.setState(prevState => ({
-                isUse: {
-                    ...prevState.isUse,
-                    table012: isUse
-                }
-            }));
-        }
-    }
+    //         this.setState(prevState => ({
+    //             isUse: {
+    //                 ...prevState.isUse,
+    //                 table001: isUse
+    //             }
+    //         }))
+    //     } else if (table_id === "table002") {
+    //         this.setState(prevState => ({
+    //             timer: {
+    //                 ...prevState.timer,
+    //                 table002: time,
+    //             }
+    //         }));
+    //         this.setState(prevState => ({
+    //             isUse: {
+    //                 ...prevState.isUse,
+    //                 table002: isUse
+    //             }
+    //         }));
+    //     } else if (table_id === "table003") {
+    //         this.setState(prevState => ({
+    //             timer: {
+    //                 ...prevState.timer,
+    //                 table003: time,
+    //             }
+    //         }));
+    //         this.setState(prevState => ({
+    //             isUse: {
+    //                 ...prevState.isUse,
+    //                 table003: isUse
+    //             }
+    //         }));
+    //     } else if (table_id === "table004") {
+    //         this.setState(prevState => ({
+    //             timer: {
+    //                 ...prevState.timer,
+    //                 table004: time,
+    //             }
+    //         }));
+    //         this.setState(prevState => ({
+    //             isUse: {
+    //                 ...prevState.isUse,
+    //                 table004: isUse
+    //             }
+    //         }));
+    //     } else if (table_id === "table005") {
+    //         this.setState(prevState => ({
+    //             timer: {
+    //                 ...prevState.timer,
+    //                 table005: time,
+    //             }
+    //         }));
+    //         this.setState(prevState => ({
+    //             isUse: {
+    //                 ...prevState.isUse,
+    //                 table005: isUse
+    //             }
+    //         }));
+    //     } else if (table_id === "table006") {
+    //         this.setState(prevState => ({
+    //             timer: {
+    //                 ...prevState.timer,
+    //                 table006: time,
+    //             }
+    //         }));
+    //         this.setState(prevState => ({
+    //             isUse: {
+    //                 ...prevState.isUse,
+    //                 table006: isUse
+    //             }
+    //         }));
+    //     } else if (table_id === "table007") {
+    //         this.setState(prevState => ({
+    //             timer: {
+    //                 ...prevState.timer,
+    //                 table007: time,
+    //             }
+    //         }));
+    //         this.setState(prevState => ({
+    //             isUse: {
+    //                 ...prevState.isUse,
+    //                 table007: isUse
+    //             }
+    //         }));
+    //     } else if (table_id === "table008") {
+    //         this.setState(prevState => ({
+    //             timer: {
+    //                 ...prevState.timer,
+    //                 table008: time,
+    //             }
+    //         }));
+    //         this.setState(prevState => ({
+    //             isUse: {
+    //                 ...prevState.isUse,
+    //                 table008: isUse
+    //             }
+    //         }));
+    //     } else if (table_id === "table009") {
+    //         this.setState(prevState => ({
+    //             timer: {
+    //                 ...prevState.timer,
+    //                 table009: time,
+    //             }
+    //         }));
+    //         this.setState(prevState => ({
+    //             isUse: {
+    //                 ...prevState.isUse,
+    //                 table009: isUse
+    //             }
+    //         }));
+    //     } else if (table_id === "table010") {
+    //         this.setState(prevState => ({
+    //             timer: {
+    //                 ...prevState.timer,
+    //                 table010: time,
+    //             }
+    //         }));
+    //         this.setState(prevState => ({
+    //             isUse: {
+    //                 ...prevState.isUse,
+    //                 table010: isUse
+    //             }
+    //         }));
+    //     } else if (table_id === "table011") {
+    //         this.setState(prevState => ({
+    //             timer: {
+    //                 ...prevState.timer,
+    //                 table011: time,
+    //             }
+    //         }));
+    //         this.setState(prevState => ({
+    //             isUse: {
+    //                 ...prevState.isUse,
+    //                 table011: isUse
+    //             }
+    //         }));
+    //     } else if (table_id === "table012") {
+    //         this.setState(prevState => ({
+    //             timer: {
+    //                 ...prevState.timer,
+    //                 table012: time,
+    //             }
+    //         }));
+    //         this.setState(prevState => ({
+    //             isUse: {
+    //                 ...prevState.isUse,
+    //                 table012: isUse
+    //             }
+    //         }));
+    //     }
+    // }
 
     componentDidMount(): void {
         this.getAllTable();
         this.getPerhatian();
-        this.getOpen();
+        this.getTime();
     }
 
     getAllTable(): void {
@@ -337,22 +389,22 @@ class Home extends React.Component<any, any> {
         })
     }
 
-    getOpen() {
-        setInterval(() => {
-            ipcRenderer.invoke("getOpen").then((result) => {
-                console.log(result);
-                if (result === false) {
-                    this.setState({
-                        isConnected: false,
-                    });
-                } else {
-                    this.setState({
-                        isConnected: true,
-                    });
-                }
-            });
-        }, 1000);
-    }
+    // getOpen() {
+    //     setInterval(() => {
+    //         ipcRenderer.invoke("getOpen").then((result) => {
+    //             console.log(result);
+    //             if (result === false) {
+    //                 this.setState({
+    //                     isConnected: false,
+    //                 });
+    //             } else {
+    //                 this.setState({
+    //                     isConnected: true,
+    //                 });
+    //             }
+    //         });
+    //     }, 1000);
+    // }
 
     render(): React.ReactNode {
 
@@ -417,18 +469,18 @@ class Home extends React.Component<any, any> {
                     <div className="d-flex">
                         <div className="p-2 me-auto w-100 table-box">
                             <div className="row row-cols-1 row-cols-5 g-3 " id="table_billiard">
-                                <Table_01 getTime={this.getTime} />
-                                <Table_02 getTime={this.getTime} />
-                                <Table_03 getTime={this.getTime} />
-                                <Table_04 getTime={this.getTime} />
-                                <Table_05 getTime={this.getTime} />
-                                <Table_06 getTime={this.getTime} />
-                                <Table_07 getTime={this.getTime} />
-                                <Table_08 getTime={this.getTime} />
-                                <Table_09 getTime={this.getTime} />
-                                <Table_10 getTime={this.getTime} />
-                                <Table_11 getTime={this.getTime} />
-                                <Table_12 getTime={this.getTime} />
+                                <Table_01 />
+                                <Table_02 />
+                                <Table_03 />
+                                <Table_04 />
+                                <Table_05 />
+                                <Table_06 />
+                                <Table_07 />
+                                <Table_08 />
+                                <Table_09 />
+                                <Table_10 />
+                                <Table_11 />
+                                <Table_12 />
                             </div>
                         </div>
                         <div className="p-2">
@@ -438,100 +490,15 @@ class Home extends React.Component<any, any> {
                                     <h1>{this.state.booking_aktif}</h1>
                                 </div>
 
-                                {/* <div className="list-booking">
-                                    <h5>No Table: </h5>
-                                    <div className="d-flex">
-                                        <div className="">
-                                            <div className="content-list text-center">
-                                                <p>Table 01</p>
-                                                <span>{this.state.timer.table001}</span>
-                                                {this.state.isUse.table001 === true ? <span className="badge rounded-pill text-bg-danger">Terpakai</span> : <span className="badge rounded-pill text-bg-success">Tersedia</span>}
-                                            </div>
-                                        </div>
-                                        <div className="">
-                                            <div className="content-list text-center">
-                                                <p>Table 02</p>
-                                                <span>{this.state.timer.table002}</span>
-                                                {this.state.isUse.table002 === true ? <span className="badge rounded-pill text-bg-danger">Terpakai</span> : <span className="badge rounded-pill text-bg-success">Tersedia</span>}
-                                            </div>
-                                        </div>
-                                        <div className="">
-                                            <div className="content-list text-center">
-                                                <p>Table 03</p>
-                                                <span>{this.state.timer.table003}</span>
-                                                {this.state.isUse.table003 === true ? <span className="badge rounded-pill text-bg-danger">Terpakai</span> : <span className="badge rounded-pill text-bg-success">Tersedia</span>}
-                                            </div>
-                                        </div>
-                                        <div className="">
-                                            <div className="content-list text-center">
-                                                <p>Table 04</p>
-                                                <span>{this.state.timer.table004}</span>
-                                                {this.state.isUse.table004 === true ? <span className="badge rounded-pill text-bg-danger">Terpakai</span> : <span className="badge rounded-pill text-bg-success">Tersedia</span>}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="d-flex">
-                                        <div className="">
-                                            <div className="content-list text-center">
-                                                <p>Table 05</p>
-                                                <span>{this.state.timer.table005}</span>
-                                                {this.state.isUse.table005 === true ? <span className="badge rounded-pill text-bg-danger">Terpakai</span> : <span className="badge rounded-pill text-bg-success">Tersedia</span>}
-                                            </div>
-                                        </div>
-                                        <div className="">
-                                            <div className="content-list text-center">
-                                                <p>Table 06</p>
-                                                <span>{this.state.timer.table006}</span>
-                                                {this.state.isUse.table006 === true ? <span className="badge rounded-pill text-bg-danger">Terpakai</span> : <span className="badge rounded-pill text-bg-success">Tersedia</span>}
-                                            </div>
-                                        </div>
-                                        <div className="">
-                                            <div className="content-list text-center">
-                                                <p>Table 07</p>
-                                                <span>{this.state.timer.table007}</span>
-                                                {this.state.isUse.table007 === true ? <span className="badge rounded-pill text-bg-danger">Terpakai</span> : <span className="badge rounded-pill text-bg-success">Tersedia</span>}
-                                            </div>
-                                        </div>
-                                        <div className="">
-                                            <div className="content-list text-center">
-                                                <p>Table 08</p>
-                                                <span>{this.state.timer.table008}</span>
-                                                {this.state.isUse.table008 === true ? <span className="badge rounded-pill text-bg-danger">Terpakai</span> : <span className="badge rounded-pill text-bg-success">Tersedia</span>}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="d-flex">
-                                        <div className="">
-                                            <div className="content-list text-center">
-                                                <p>Table 09</p>
-                                                <span>{this.state.timer.table009}</span>
-                                                {this.state.isUse.table009 === true ? <span className="badge rounded-pill text-bg-danger">Terpakai</span> : <span className="badge rounded-pill text-bg-success">Tersedia</span>}
-                                            </div>
-                                        </div>
-                                        <div className="">
-                                            <div className="content-list text-center">
-                                                <p>Table 10</p>
-                                                <span>{this.state.timer.table010}</span>
-                                                {this.state.isUse.table010 === true ? <span className="badge rounded-pill text-bg-danger">Terpakai</span> : <span className="badge rounded-pill text-bg-success">Tersedia</span>}
-                                            </div>
-                                        </div>
-                                        <div className="">
-                                            <div className="content-list text-center">
-                                                <p>Table 11</p>
-                                                <span>{this.state.timer.table011}</span>
-                                                {this.state.isUse.table011 === true ? <span className="badge rounded-pill text-bg-danger">Terpakai</span> : <span className="badge rounded-pill text-bg-success">Tersedia</span>}
-                                            </div>
-                                        </div>
-                                        <div className="">
-                                            <div className="content-list text-center">
-                                                <p>Table 12</p>
-                                                <span>{this.state.timer.table012}</span>
-                                                {this.state.isUse.table012 === true ? <span className="badge rounded-pill text-bg-danger">Terpakai</span> : <span className="badge rounded-pill text-bg-success">Tersedia</span>}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> */}
+                                <div className="mt-3 text-light">
+                                    <div className="booking-count">
+                                        <h4 className="text-center mb-3">Jam</h4>
+                                        <h4 style={{ color: "#ff8a00", fontSize: 23 }}>{this.state.time}</h4>
 
+                                        <h4 className="text-center mb-3 mt-3">Shift</h4>
+                                        <h4 style={{ color: "#ff8a00", fontSize: 23 }}>{this.state.shift_text}</h4>
+                                    </div>
+                                </div>
                                 <div className="perhatian-box">
                                     <h5>Perhatian: </h5>
                                     <div className="status-box mb-3">
@@ -565,6 +532,8 @@ class Home extends React.Component<any, any> {
                                         </div>
                                     </div>
                                     {this.state.perhatian_stok && <div className="alert alert-danger"><span style={{ fontSize: 15 }}>Laporan Stok masih kosong,<br />Silahkan <b>Buka Stok Baru</b> terlebih dahulu.</span></div>}
+
+                                    {this.state.shift && <div className="alert alert-info"><span style={{ fontSize: 15 }}>{this.state.shift_content}</span></div>}
 
                                 </div>
                             </div>
