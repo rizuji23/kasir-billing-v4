@@ -590,6 +590,10 @@ class CartSystem {
                                 sisa: sisa,
                                 updated_at: date_now,
                             }).where('id_menu = :id', {id: get_cart[0].id_menu}).andWhere('date(stok_main.created_at) = :date', {date: date_clean}).andWhere('shift = :shift', {shift: "malam"}).execute();
+                            await service.manager.createQueryBuilder().update(Stok_Main).set({
+                                stok_akhir: sisa,
+                                updated_at: date_now,
+                            }).where('id_menu = :id', {id: get_cart[0].id_menu}).andWhere('date(stok_main.created_at) = :date', {date: date_clean}).andWhere('shift = :shift', {shift: "pagi"}).execute();
                         }
                     }
                 } else {
