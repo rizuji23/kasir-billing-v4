@@ -46,6 +46,7 @@ app.on('ready', async() => {
         }
     });
 
+
 //    win.loadURL(path.join(__dirname, '..', '..', 'build', 'index.html'))
    win.loadURL('http://localhost:3000');
 
@@ -88,8 +89,6 @@ System.getSelectedPort().then((result) => {
 
 //set Regular Timer Billing
 var table_01_time:any, table_02_time:any, table_03_time:any, table_04_time:any, table_05_time:any, table_06_time:any, table_07_time:any, table_08_time:any, table_09_time:any, table_10_time:any, table_11_time:any, table_12_time:any;
-
-
 
 ipcMain.handle("start", async (event, id_table:any, ms_all:any, ms_delay:any, blink:any, stop:any, add_on:any, ms_delay_add:any, ms_add:any, data_booking:any, continuetime:boolean, reset:boolean, startnew:boolean, pindah:boolean) => {
     const getVariableTime = (id) => {
@@ -1025,13 +1024,7 @@ ipcMain.handle("api_port", async(event, get_data, set_data, data) => {
 ipcMain.handle("lamp", async(event, turn_on, turn_off, id_table) => {
     const lamp = new LampSystem(id_table, arduino.path, win);
     if (turn_on === true) {
-        await lamp.turnOn().then((result) => {
-            if (result === true) {
-                return {response: true, data: "table " + id_table + "dinyalakan"};
-            } else {
-                return {response: false, data: "table " + id_table + "gagal dinyalakan"};
-            }
-        });
+        return await lamp.turnOn();
     } else if (turn_off === true) {
         await lamp.turnOff().then((result) => {
             if (result === true) {

@@ -68,6 +68,7 @@ class Login extends React.Component<any, any> {
     }
 
     handleSubmit(e) {
+        e.preventDefault();
         const username = this.state.username;
         const password = this.state.password;
 
@@ -127,23 +128,24 @@ class Login extends React.Component<any, any> {
                         </div>
 
                         <div className="pl-20 pr-20">
+                            <form onSubmit={this.handleSubmit}>
+                                <div className="">
+                                    <div className="form-group">
+                                        <label>Username</label>
+                                        <input type="text" className="form-control custom-input" autoFocus value={this.state.username} onChange={this.handleUsername} />
+                                    </div>
+                                    <div className="form-group mt-2">
+                                        <label>Password</label>
+                                        <input type="password" className="form-control custom-input" value={this.state.password} onChange={this.handlePassword} />
+                                    </div>
 
-                            <div className="">
-                                <div className="form-group">
-                                    <label>Username</label>
-                                    <input type="text" className="form-control custom-input" autoFocus value={this.state.username} onChange={this.handleUsername} />
                                 </div>
-                                <div className="form-group mt-2">
-                                    <label>Password</label>
-                                    <input type="password" className="form-control custom-input" value={this.state.password} onChange={this.handlePassword} />
+                                <div className="d-grid mt-3">
+                                    <button id="login"
+                                        className="btn btn-primary btn-primary-cozy d-block" disabled={this.state.disabled}
+                                    >Login</button>
                                 </div>
-
-                            </div>
-                            <div className="d-grid mt-3">
-                                <button id="login"
-                                    className="btn btn-primary btn-primary-cozy d-block" onClick={this.handleSubmit} disabled={this.state.disabled}
-                                >Login</button>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>

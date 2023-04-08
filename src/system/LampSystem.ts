@@ -12,33 +12,23 @@ class LampSystem {
     }
 
     async turnOn():Promise<any> {
-        return new Promise((res, rej) => {
             try {
-                const turnon = this.port.write(`on ${this.table_number}`);
-                if (turnon) {
-                    res(true);
-                } else {
-                    res(false);
-                }
+                const isOpen = this.port.open();
+                this.port.write(`on ${this.table_number}`);
+                return ({response: true, data: true});
             } catch (err) {
-                rej(err);
+                return (err);
             }
-        })
     }
 
     async turnOff():Promise<any> {
-        return new Promise((res, rej) => {
-            try {
-                const turnoff = this.port.write(`of ${this.table_number}`);
-                if (turnoff) {
-                    res(true);
-                } else {
-                    res(false);
-                }
-            } catch (err) {
-                rej(err);
-            }
-        })
+        try {
+            const isOpen = this.port.open();
+            this.port.write(`on ${this.table_number}`);
+            return ({response: true, data: true});
+        } catch (err) {
+            return (err);
+        }
     }
 }
 

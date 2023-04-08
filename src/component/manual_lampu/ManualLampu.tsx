@@ -4,6 +4,7 @@ import Sidebar from "../sidebar/sidebar";
 import { ToastContainer, toast } from "react-toastify";
 import { ipcRenderer } from "electron";
 import swal from "sweetalert";
+import { setInterval } from "timers/promises";
 
 
 class ManualLampu extends React.Component<any, any> {
@@ -65,20 +66,20 @@ class ManualLampu extends React.Component<any, any> {
         }).then((willDelete) => {
             if (willDelete) {
                 console.log(id_table);
-                ipcRenderer.invoke("lamp", true, false, id_table).then((result) => {
-                    console.log(result);
-                    // if (result?.data === true) {
-                    //     toast.success(`Table ${id_table} dinyalakan.`);
-                    // } else {
-                    //     toast.error(`Table ${id_table} gagal dinyalakan.`);
-                    // }
-                    ipcRenderer.invoke("addAktivitas", { aktivitas: `Melakukan Manual Lampu (On) pada ${id_table}`, user_in: sessionStorage.getItem("username") }).then((result) => {
-                        if (result.response === true) {
-                            toast.success(`Table ${id_table} dinyalakan.`);
-                        } else {
-                            toast.error(`Table ${id_table} gagal dinyalakan.`);
-                        }
-                    })
+                ipcRenderer.invoke("lamp", true, false, id_table).then((result1) => {
+                    console.log(result1);
+
+                    if (result1 === true) {
+                        ipcRenderer.invoke("addAktivitas", { aktivitas: `Melakukan Manual Lampu (On) pada ${id_table}`, user_in: sessionStorage.getItem("username") }).then((result) => {
+                            if (result.response === true) {
+                                toast.success(`Table ${id_table} dinyalakan.`);
+                            } else {
+                                toast.error(`Table ${id_table} gagal dinyalakan.`);
+                            }
+                        })
+                    } else {
+                        toast.error(`Table ${id_table} gagal dinyalakan.`);
+                    }
                 })
             }
         });
@@ -95,18 +96,18 @@ class ManualLampu extends React.Component<any, any> {
             if (willDelete) {
                 console.log(id_table);
                 ipcRenderer.invoke("lamp", false, true, id_table).then((result) => {
-                    // if (result?.data === true) {
-                    //     toast.success(`Table ${id_table} dimatikan.`);
-                    // } else {
-                    //     toast.error(`Table ${id_table} gagal dimatikan.`);
-                    // }
-                    ipcRenderer.invoke("addAktivitas", { aktivitas: `Melakukan Manual Lampu (Off) pada ${id_table}`, user_in: sessionStorage.getItem("username") }).then((result) => {
-                        if (result.response === true) {
-                            toast.success(`Table ${id_table} dinyalakan.`);
-                        } else {
-                            toast.error(`Table ${id_table} gagal dinyalakan.`);
-                        }
-                    })
+                    console.log(result)
+                    if (result === true) {
+                        ipcRenderer.invoke("addAktivitas", { aktivitas: `Melakukan Manual Lampu (Off) pada ${id_table}`, user_in: sessionStorage.getItem("username") }).then((result) => {
+                            if (result.response === true) {
+                                toast.success(`Table ${id_table} dimatikan.`);
+                            } else {
+                                toast.error(`Table ${id_table} gagal dimatikan.`);
+                            }
+                        })
+                    } else {
+                        toast.error(`Table ${id_table} gagal dimatikan.`);
+                    }
                 })
             }
         });

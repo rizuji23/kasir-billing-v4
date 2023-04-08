@@ -30,7 +30,7 @@
     "start:web": "set BROWSER=none && react-scripts start",
     "build:web": "react-scripts build",
     "start": "electron ./dist/src/main.js",
-    "start:dev": " concurrently \"npm run start:web\" \"yarn run electron\"",
+    "start:dev": "concurrently \"npm run start:web\" \"yarn run electron\"",
     "electron": "wait-on http://localhost:3000 && npm start",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

@@ -77,7 +77,7 @@
           <div class="col">
             <div class="card">
               <div class="card-body">
-                <h6 class="card-title">Billing</h6>
+                <h6 class="card-title">Billing + Cafe</h6>
                 <h4><b id="total_all_bill">Rp. 0</b></h4>
               </div>
             </div>
@@ -85,7 +85,7 @@
           <div class="col">
             <div class="card">
               <div class="card-body">
-                <h6 class="card-title">Cafe</h6>
+                <h6 class="card-title">Cafe Only</h6>
                 <h4><b id="total_all_cafe">Rp. 0</b></h4>
               </div>
             </div>
@@ -176,7 +176,6 @@
             <thead class="table-primary">
               <tr>
                 <th scope="col">No</th>
-                <th scope="col">Nama</th>
                 <th scope="col">Item</th>
                 <th scope="col">Total</th>
                 <th scope="col">Tanggal</th>
@@ -191,7 +190,7 @@
               <ul>
                 <li>Total Customer: <b id="total_customer_cafe"></b></li>
                 <li>Total Menu Terjual: <b id="total_menu_cafe"></b></li>
-                <li>Rata Rata Menu: <b id="rata_menu"></b></li>
+                <li>Rata-Rata Menu Terjual: <b id="rata_menu"></b></li>
               </ul>
             </div>
 
@@ -330,7 +329,7 @@
         console.log(data);
         $("#selected").html(data.selected);
         $("#shift").html(data.shift);
-
+        console.log("datas", data.data.data);
         // Filter by billing + cafe
         const filter_cafe_billing = data.data.data.filter(
           (el) => el.type_struk === "table",
@@ -384,13 +383,13 @@
           if (el2.id_booking !== null) {
             const filter_bill = el2.id_booking.id_booking.map((el, i) => {
               if (el.type_bill !== "split_bill") {
-                data_billing += `<li class='mt-2'>${el.start_duration} - ${
+                data_billing += `<li class='mt-2'>${
                   el.end_duration
-                } @${el.durasi} Jam = Rp. ${parse_to_rp(el?.harga)}</li>`;
+                } = Rp. ${parse_to_rp(el?.harga)}</li>`;
               } else {
-                data_billing += `<li class='mt-2'><del>${el.start_duration} - ${
+                data_billing += `<li class='mt-2'><del>${
                   el.end_duration
-                } @${el.durasi} Jam = Rp. ${parse_to_rp(el?.harga)}</del> <b>${
+                } = Rp. ${parse_to_rp(el?.harga)}</del> <b>${
                   el.type_bill === "split_bill" ? "(Split Bill)" : ""
                 }</b></li>`;
               }
@@ -403,6 +402,13 @@
         });
 
         const data_bill_cafe = filter_cafe_billing.map((el, i) => {
+          console.log("DAW", el.id_booking.id_booking);
+          var total_dur = 0;
+          el.id_booking.id_booking.map((arr) => {
+            if (arr.type_bill === null) {
+              total_dur += arr.durasi;
+            }
+          }, 0);
           return `<tr>
                             <td>${el.number}</td>
                             <td>${el.nama_customer}</td>
@@ -410,9 +416,7 @@
                               el?.billing === undefined
                                 ? "Tidak ada."
                                 : el.billing
-                            } <li class="mt-2"><b>Total: </b> @${
-            el.id_booking.durasi_booking
-          } = Rp. ${parse_to_rp(
+                            } <li class="mt-2"><b>Total: </b> @${total_dur} Jam = Rp. ${parse_to_rp(
             el.id_booking.total_harga,
           )}</li></ul><hr><p class="mb-0"><b>Menu: </b></p> <ul>${
             el?.menu === undefined ? "Tidak ada." : el.menu
@@ -519,7 +523,6 @@
         const data_cafe = filter_cafe.map((el, i) => {
           return `<tr>
                             <td>${el.number}</td>
-                            <td>${el.nama_customer}</td>
                             <td><p class="mb-0"><p class="mb-0"><b>Menu: </b></p> <ul>${
                               el?.menu === undefined ? "Tidak ada." : el.menu
                             } <li class="mt-2"><b>Total: </b> @${
@@ -549,6 +552,7 @@
         const total_menu_cafe = filter_cafe.reduce((total, arr) => {
           return total + (arr.qty || 0);
         }, 0);
+
         const total_menu_pen_cafe = filter_cafe.reduce(
           (total, arr) => total + (arr.total_menu || 0),
           0,
@@ -573,8 +577,6 @@
                     <li>${el.menu}: <b>${el.qty} Item</b></li>
                 `;
         });
-
-        console.log(menu_terbeli);
 
         $("#table_cafe").html(data_cafe);
         $("#total_customer_cafe").html(`${filter_cafe.length} Customer`);
@@ -621,10 +623,10 @@
 
             if (el3.id_detail_booking !== null) {
               data_billing += `<li class='mt-2'>${
-                el3.id_detail_booking?.start_duration
-              } - ${el3.id_detail_booking?.end_duration} @${
-                el3.id_detail_booking.durasi
-              } Jam = Rp. ${parse_to_rp(el3?.id_detail_booking?.harga)}</li>`;
+                el3.id_detail_booking?.end_duration
+              } @${el3.id_detail_booking.durasi} Jam = Rp. ${parse_to_rp(
+                el3?.id_detail_booking?.harga,
+              )}</li>`;
               total_billing += el3?.id_detail_booking?.harga || 0;
               qty_billing += el3?.id_detail_booking?.durasi || 0;
             }
@@ -708,13 +710,15 @@
 
         // count all money
         const money_all =
-          (total_all || 0) + (total_menu_cafe || 0) + (total_all_split || 0);
-        console.log(money_all);
+          (total_all || 0) +
+          (total_menu_pen_cafe || 0) +
+          (total_all_split || 0);
+        console.log(total_all, total_menu_pen_cafe, total_all_split);
 
         const money_billing = (total_bill || 0) + (total_bill_split || 0);
         const money_menu =
           (total_menu_pen || 0) +
-          (total_menu_cafe || 0) +
+          (total_menu_pen_cafe || 0) +
           (total_menu_pen_split || 0);
 
         const money_modal =

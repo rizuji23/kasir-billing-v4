@@ -247,7 +247,7 @@ class BillingOperation {
                     }
                 });
     
-                var get_detail_cafe = await service.manager.query("SELECT * FROM cart LEFT OUTER JOIN menu ON cart.id_menu = menu.id_menu WHERE cart.id_pesanan=? ORDER BY id DESC", [get_detail_struk[0].id_pesanan]);
+                var get_detail_cafe = await service.manager.query("SELECT * FROM cart LEFT OUTER JOIN menu ON cart.id_menu = menu.id_menu WHERE cart.id_pesanan=? AND cart.status != 'active' ORDER BY id DESC", [get_detail_struk[0].id_pesanan]);
 
                 console.log(get_detail_struk[0].id_pesanan);
                 console.log(get_detail_pesanan)

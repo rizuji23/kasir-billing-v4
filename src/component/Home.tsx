@@ -90,6 +90,7 @@ class Home extends React.Component<any, any> {
         this.getAllTable = this.getAllTable.bind(this);
         this.getPerhatian = this.getPerhatian.bind(this);
         this.getTime = this.getTime.bind(this);
+        this.getOpen = this.getOpen.bind(this);
     }
 
     getTime() {
@@ -118,7 +119,7 @@ class Home extends React.Component<any, any> {
             if (hours === shift_pagi.start_jam.split(':')[0]) {
                 this.setState({
                     shift: true,
-                    shift_content: "Saatnya Pergantian shift ke Pagi",
+                    shift_content: "Saatnya Pergantian shift ke Pagi.",
                 });
             } else {
                 this.setState({
@@ -129,7 +130,7 @@ class Home extends React.Component<any, any> {
             if (hours === shift_malam.start_jam.split(':')[0]) {
                 this.setState({
                     shift: true,
-                    shift_content: "Saatnya Pergantian shift ke Malam",
+                    shift_content: "Saatnya Pergantian shift ke Malam.",
                 });
             } else {
                 this.setState({
@@ -159,14 +160,18 @@ class Home extends React.Component<any, any> {
                     arr.forEach(el => {
                         if (localStorage.getItem(el) !== null) {
                             var data = localStorage.getItem(el).replace(/\[|\]/g, '').split(',');
-                            console.log(data)
-                            if (data[0] !== 'not_active') {
-                                if (data[2] === ' Regular') {
-                                    arr_fine_regular.push(TimeConvert.textToMS(data, el));
-                                } else {
-                                    arr_fine_regular.push(TimeConvert.textToTime(data, el));
+                            console.log(data);
+                            setTimeout(() => {
+                                console.log(data[0] !== 'not_active')
+                                if (data[0] !== 'not_active' && data[1] !== "00:00") {
+                                    console.log("IN")
+                                    if (data[2] === ' Regular') {
+                                        arr_fine_regular.push(TimeConvert.textToMS(data, el));
+                                    } else {
+                                        arr_fine_regular.push(TimeConvert.textToTime(data, el));
+                                    }
                                 }
-                            }
+                            }, 1500);
                         } else {
                             console.log(`${el} is null`);
                             arr_null.push(el);
@@ -181,7 +186,7 @@ class Home extends React.Component<any, any> {
                             }, 2000 * current++);
                         }));
                     } else {
-                        toast.info(`Tidak ada waktu yang dijalankan!`);
+                        toast.info(`Tidak ada waktu yang dijalankan.`);
                     }
                 }
             });
@@ -353,6 +358,7 @@ class Home extends React.Component<any, any> {
         this.getAllTable();
         this.getPerhatian();
         this.getTime();
+        this.getOpen();
     }
 
     getAllTable(): void {
@@ -389,22 +395,22 @@ class Home extends React.Component<any, any> {
         })
     }
 
-    // getOpen() {
-    //     setInterval(() => {
-    //         ipcRenderer.invoke("getOpen").then((result) => {
-    //             console.log(result);
-    //             if (result === false) {
-    //                 this.setState({
-    //                     isConnected: false,
-    //                 });
-    //             } else {
-    //                 this.setState({
-    //                     isConnected: true,
-    //                 });
-    //             }
-    //         });
-    //     }, 1000);
-    // }
+    getOpen() {
+        setInterval(() => {
+            ipcRenderer.invoke("getOpen").then((result) => {
+                console.log(result);
+                if (result === false) {
+                    this.setState({
+                        isConnected: false,
+                    });
+                } else {
+                    this.setState({
+                        isConnected: true,
+                    });
+                }
+            });
+        }, 1000);
+    }
 
     render(): React.ReactNode {
 
@@ -462,9 +468,7 @@ class Home extends React.Component<any, any> {
                             </div>
                         </div>
                     </div>
-                    {this.state.isConnected === false && <div className="alert alert-danger">
-                        <span>Box Billing <b>Tidak Tersambung</b>, silahkan Reconnect.</span>
-                    </div>}
+
 
                     <div className="d-flex">
                         <div className="p-2 me-auto w-100 table-box">
@@ -531,10 +535,12 @@ class Home extends React.Component<any, any> {
                                             </div>
                                         </div>
                                     </div>
-                                    {this.state.perhatian_stok && <div className="alert alert-danger"><span style={{ fontSize: 15 }}>Laporan Stok masih kosong,<br />Silahkan <b>Buka Stok Baru</b> terlebih dahulu.</span></div>}
-
+                                    <h5>Notifikasi: </h5>
+                                    {this.state.perhatian_stok && <div className="alert alert-danger"><span style={{ fontSize: 15 }}>Laporan Stok masih kosong!.</span></div>}
+                                    {this.state.isConnected === false && <div className="alert alert-danger">
+                                        <span>Box Billing <b>Tidak Tersambung</b>!.</span>
+                                    </div>}
                                     {this.state.shift && <div className="alert alert-info"><span style={{ fontSize: 15 }}>{this.state.shift_content}</span></div>}
-
                                 </div>
                             </div>
                         </div>

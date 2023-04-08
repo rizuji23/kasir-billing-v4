@@ -135,12 +135,11 @@ class PortConnect {
             });
 
             notif.show();
-            this.closePort();
+            this.path.close();
             setTimeout(() => {
                 const data = this.getConnect();
                 console.log("data", data);
                 return data;
-
             }, 2000)
     }
 

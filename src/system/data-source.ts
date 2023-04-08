@@ -27,7 +27,7 @@ import { Aktivitas } from "../entity/Aktivitas"
 const AppDataSource = async () => {
     const dataSourceConn = new DataSource({
         type: "sqlite",
-        database: "./kasirv3_ori.sqlite",
+        database: "./kasirv3.sqlite",
         synchronize: true,
         logging: false,
         entities: [

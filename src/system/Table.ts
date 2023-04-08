@@ -125,6 +125,7 @@ class TableRegular {
 
         this.timerInit(diff, duration, start)
         this.table_timer = setInterval(this.table_timer, 1000);
+        this.port.open();
         await this.port.write(`on ${this.table_number}`);
         return this.table_timer;
     }
@@ -194,6 +195,7 @@ class TableRegular {
                         if (update_struk) {
                             this.timerInit(diff, duration, start);
                             this.table_timer = setInterval(this.table_timer, 1000);
+                            this.port.open();
                             this.port.write(`on ${this.table_number}`);
                             return this.table_timer;
                         } 
@@ -274,6 +276,7 @@ class TableRegular {
                     const table_number_2 = this.id_table.split('table0').join('');
                     this.timerInit(diff, duration, start)
                     this.table_timer = setInterval(this.table_timer, 1000);
+                    this.port.open();
                     await this.port.write(`on ${table_number_2}`);
                     return this.table_timer;
                 }
@@ -477,6 +480,7 @@ class TablePersonal extends TableRegular {
        
         this.timerInit(0, 0, 0);
         this.table_timer_2 = setInterval(this.table_timer_2, 1000);
+        this.port.open();
         await this.port.write(`on ${this.table_number}`);
         return this.table_timer_2;
     }
@@ -484,6 +488,7 @@ class TablePersonal extends TableRegular {
     async continueTimerLoss(data_booking): Promise<any> {
         this.timerInit(data_booking.hh, data_booking.mm, 0);
         this.table_timer_2 = setInterval(this.table_timer_2, 1000);
+        this.port.open();
         await this.port.write(`on ${this.table_number}`);
         return this.table_timer_2;
     }
@@ -547,6 +552,7 @@ class TablePersonal extends TableRegular {
     async stopTimer(table_timer:any, turn_off:boolean):Promise<any> {
         clearInterval(table_timer);
         if (turn_off === true) {
+            this.port.open();
             await this.port.write(`of ${this.table_number}`);
         }
 

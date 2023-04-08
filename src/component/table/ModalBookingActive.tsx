@@ -580,7 +580,8 @@ class ModalBookingActive extends React.Component<any, any> {
                             </>
                         )
                     });
-                    console.log(result)
+                    console.log(result);
+                    console.log(result.data_cafe.length)
                     this.setState({
                         list_menu: data_,
                         total_pesanan: result.data_cafe.length === 0 ? 0 : dot.parse(result?.data_pesanan[0]?.total || 0),
