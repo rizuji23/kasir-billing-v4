@@ -34,42 +34,48 @@ let win:any;
 const gotTheLock = app.requestSingleInstanceLock();
 var printer_list;
 
-app.on('ready', async() => {
-   win = new BrowserWindow({
-        width:800,
-        height:600,
-        icon:path.join(__dirname, '..', '/public/assets/img/icon-desktop.png'),
-        webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false,
-            webSecurity: false
-        }
-    });
-
-
-//    win.loadURL(path.join(__dirname, '..', '..', 'build', 'index.html'))
-   win.loadURL('http://localhost:3000');
-
-   win.on('closed', () => {
-       win = null;
-        app.quit();
-        process.exit(1)
-    });
-
-    win.on("did-finish-load", () => {
-        printer_list = win.getPrintersAsync();
-    });
-})
-
 if (!gotTheLock) {
     app.quit();
 } else {
     app.on("second-instance", () => {
         if (win) {
-            if (win.isMinimized())win.restore();
-           win.focus();
+            if (win.isMinimized()) win.restore();
+            win.focus();
         }
-    })
+    });
+
+    app.on('ready', async() => {
+        win = new BrowserWindow({
+             width:800,
+             height:600,
+             icon:path.join(__dirname, '..', '/public/assets/img/icon-desktop.png'),
+             webPreferences: {
+                 nodeIntegration: true,
+                 contextIsolation: false,
+                 webSecurity: false
+             }
+         });
+     
+     
+     //    win.loadURL(path.join(__dirname, '..', '..', 'build', 'index.html'))
+        win.loadURL('http://localhost:3000');
+     
+        win.on('closed', () => {
+             win = null;
+             app.quit();
+             process.exit(1)
+         });
+     
+         win.on('window-all-closed', () => {
+             if (process.platform !== "darwin") {
+                 app.quit();
+             }
+         });
+     
+         win.on("did-finish-load", () => {
+             printer_list = win.getPrintersAsync();
+         });
+     })
 }
 
 //init Billing Arduino Port

@@ -221,7 +221,7 @@ class KeuanganCafe extends React.Component<any, any> {
                     total_harian: dot.parse(total_hari),
                     total_bulanan: dot.parse(total_bulan),
                     tanggal: moment().tz("Asia/Jakarta").format("YYYY-MM-DD"),
-                    bulan: moment().tz("Asia/Jakarta").subtract(0, "month").format("MMMM")
+                    bulan: moment().tz("Asia/Jakarta").subtract(0, "month").format("MMMM YYYY")
                 });
             }
         })
@@ -280,12 +280,12 @@ class KeuanganCafe extends React.Component<any, any> {
                     total_harian: dot.parse(total_hari),
                     total_bulanan: dot.parse(total_bulan),
                     tanggal: `${moment(dari_tanggal).format("YYYY-MM-DD")} ~ ${moment(sampai_tanggal).format("YYYY-MM-DD")}`,
-                    bulan: `${moment(dari_tanggal).subtract(0, "month").format("MMMM")} ~ ${moment(sampai_tanggal).subtract(0, "month").format("MMMM")}`,
+                    bulan: `${moment(dari_tanggal).subtract(0, "month").format("MMMM YYYY")} ~ ${moment(sampai_tanggal).subtract(0, "month").format("MMMM YYYY")}`,
                     isOpen: false,
                     reset_disable: false,
                 });
             } else {
-                toast.error("Data kosong!");
+
                 this.getDataKeuangan();
                 this.setState({
                     isOpen: false,
@@ -324,9 +324,9 @@ class KeuanganCafe extends React.Component<any, any> {
                         <div className="card card-custom">
                             <div className="card-body">
                                 <div className="title-pemb">
-                                    <h4>Total penghasilan cafe hari ini:</h4>
+                                    <h4>Penghasilan Cafe Hari Ini</h4>
                                     <h4>Rp. <span id="total_hari">{this.state.total_harian}</span></h4>
-                                    <p id="date_locale">{this.state.tanggal}</p>
+                                    <p id="date_locale">{moment(this.state.tanggal, "YYYY-MM-DD").format("DD-MM-YYYY")}</p>
                                 </div>
                             </div>
                         </div>
@@ -335,7 +335,7 @@ class KeuanganCafe extends React.Component<any, any> {
                         <div className="card card-custom" style={{ 'backgroundColor': "#1A1B1F !important" }}>
                             <div className="card-body">
                                 <div className="title-pemb">
-                                    <h4>Total penghasilan cafe bulan ini:</h4>
+                                    <h4>Penghasilan Cafe Bulan Ini</h4>
                                     <h4>Rp. <span id="total_bulan">{this.state.total_bulanan}</span></h4>
                                     <p id="date_locale_bulan">{this.state.bulan}</p>
                                 </div>
@@ -349,7 +349,7 @@ class KeuanganCafe extends React.Component<any, any> {
                         <div className="card-header">
                             <div className="d-flex">
                                 <div className="p-2 w-100">
-                                    <h4>List Transaksi Cafe</h4>
+                                    <h4>Rincian Transaksi</h4>
                                 </div>
                                 <div className="p-2 me-auto">
                                     <button className="btn btn-primary btn-primary-cozy" onClick={this.openModal}>Filter</button>

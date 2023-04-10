@@ -187,7 +187,6 @@ class LaporanBelumBayar extends React.Component<any, any> {
                     total_belum: dot.parse(total_belum),
                 });
             } else {
-                toast.error("Data kosong!");
             }
         })
     }
@@ -230,7 +229,6 @@ class LaporanBelumBayar extends React.Component<any, any> {
                     total_belum: dot.parse(total_belum),
                 });
             } else {
-                toast.error("Data kosong!");
                 this.getDataKeuangan();
                 this.setState({
                     isOpen: false,
@@ -266,7 +264,7 @@ class LaporanBelumBayar extends React.Component<any, any> {
                 <div className="card card-custom mt-3">
                     <div className="card-body">
                         <div className="title-pemb">
-                            <h4>Total transaksi belum bayar:</h4>
+                            <h4>Total Transaksi Belum Bayar</h4>
                             <h4>Rp. <span id="total_hari">{this.state.total_belum}</span></h4>
                             <p id="date_locale"></p>
                         </div>
@@ -278,7 +276,7 @@ class LaporanBelumBayar extends React.Component<any, any> {
                         <div className="card-header">
                             <div className="d-flex">
                                 <div className="p-2 w-100">
-                                    <h4>List Transaksi Belum Bayar</h4>
+                                    <h4>Rincian Transaksi</h4>
                                 </div>
                                 <div className="p-2 me-auto">
                                     <button className="btn btn-primary btn-primary-cozy" onClick={this.openModal}>Filter</button>

@@ -135,6 +135,10 @@ class Stok extends React.Component<any, any> {
                     }
                 });
 
+                day.sort((a, b) => a.nama_menu.toLowerCase().localeCompare(b.nama_menu.toLowerCase()))
+                night.sort((a, b) => a.nama_menu.toLowerCase().localeCompare(b.nama_menu.toLowerCase()))
+                result.data.sort((a, b) => a.nama_menu.toLowerCase().localeCompare(b.nama_menu.toLowerCase()))
+
                 var total_stok_masuk = 0;
 
                 const component_menu = day.map((el, i) => {

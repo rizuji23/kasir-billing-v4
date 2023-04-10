@@ -107,18 +107,18 @@ class Tentang extends React.Component<any, any> {
                                                 <p>Email: weeeeworks@gmail.com
                                                     <br />Telepon: 085172110864
                                                     <br />Website: https://weworks.ink/
-                                                    <br />Instagram: Weworks
+                                                    <br />Instagram: weworks.ink
                                                 </p>
                                             </div>
 
                                             <div className="mt-4">
                                                 <h5>Informasi Aplikasi</h5>
                                                 <div className="alert alert-primary">
-                                                    <span>Untuk informasi detail aplikasi ini dapat dilihat pada website https://billing.weworks.ink</span>
+                                                    <span>Untuk informasi detail aplikasi ini dapat dilihat pada website <b>https://billing.weworks.ink</b></span>
                                                 </div>
 
                                                 <div className="alert alert-danger">
-                                                    <span>Jika mengalami kendala pada software/hardware, silakan hubungi nomor (089657581114 - Rizki Fauzi) atau bisa mengunjungi web https://problem.weworks.ink. Kami siap membantu anda 24 Jam.</span>
+                                                    <span>Jika mengalami kendala pada software/hardware, silakan hubungi nomor <b>(089657581114 - Rizki Fauzi)</b> atau bisa mengunjungi web <b>https://ticket.weworks.ink</b>. Kami siap membantu anda 24 Jam.</span>
                                                 </div>
 
                                                 <div className="box-booking mb-0">

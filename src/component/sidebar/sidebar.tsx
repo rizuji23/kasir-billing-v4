@@ -62,8 +62,6 @@ class Sidebar extends React.Component<any, any> {
                                 <i className='bx bx-cog nav_icon'></i>
                                 <span className="nav_name">Pengaturan</span>
                             </NavLink>
-
-
                         </div>
                     </div>
                     <a href="javascript:void(0)" onClick={this.handleLogout} className="nav_link" title="Logout" id="logout-side">

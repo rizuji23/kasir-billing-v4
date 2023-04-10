@@ -545,6 +545,7 @@ class ModalBookingActive extends React.Component<any, any> {
                                     {el.end_duration} = Rp. {dot.parse(el.harga)} {el.status === 'active' ? <span className="badge rounded-pill text-bg-danger">Belum Dibayar</span> : <span className="badge rounded-pill text-bg-success">Sudah Dibayar</span>}
                                 </label>
                             </div>
+                            <hr />
                         </>
                     )
                 });
@@ -574,9 +575,10 @@ class ModalBookingActive extends React.Component<any, any> {
 
                                     <label className="form-check-label">{el.nama_menu} @{el.qty} = Rp. {dot.parse(el.sub_total)}
                                         {
-                                            el.status === 'belum dibayar' ? <> (<a href="javascript:void(0)" onClick={() => this.handleEditMenu(el)} className="text-info">Edit</a> | <a className="text-danger" onClick={() => this.handleDeleteMenu(el)} href="javascript:void(0)">Delete</a>) <span className="badge rounded-pill text-bg-danger">Belum Dibayar</span></> : <> <span className="badge rounded-pill text-bg-success">Sudah Dibayar</span></>
+                                            el.status === 'belum dibayar' ? <> <br /> (<a href="javascript:void(0)" onClick={() => this.handleEditMenu(el)} className="text-info">Edit</a> | <a className="text-danger" onClick={() => this.handleDeleteMenu(el)} href="javascript:void(0)">Delete</a>) <span className="badge rounded-pill text-bg-danger">Belum Dibayar</span></> : <> <span className="badge rounded-pill text-bg-success">Sudah Dibayar</span></>
                                         }</label>
                                 </div>
+                                <hr />
                             </>
                         )
                     });
@@ -1040,7 +1042,7 @@ class ModalBookingActive extends React.Component<any, any> {
                                                         <small>List Billing</small>
                                                     </div>
                                                     <div>
-                                                        <a href="javascript:void(0)" onClick={this.fixList}>Fix List</a>
+                                                        <button className="btn btn-info btn-sm" onClick={this.fixList}>Fix List</button>
                                                     </div>
                                                 </div>
                                                 <ul>

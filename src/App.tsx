@@ -52,15 +52,11 @@ class App extends React.Component {
                     <Route path="/keuangan-cafe" element={<KeuanganCafeContainer />}></Route>
 
                     <Route path="/transaksi-shift" element={<TransaksiShiftContainer />}></Route>
-
                     <Route path="/transaksi-shift-cafe" element={<TransaksiCafeShiftContainer />}></Route>
 
                     <Route path="/laporan-belum-bayar" element={<LaporanBelumBayarContainer />}></Route>
-
                     <Route path="/laporan-reset" element={<LaporanResetContainer />}></Route>
-
                     <Route path="/laporan-split-bill" element={<LaporanSplitBillContainer />}></Route>
-
                     <Route path="/laporan-summary" element={<LaporanSummaryContainer />}></Route>
 
                     <Route path="/analisis" element={<AnalisisContainer />}></Route>

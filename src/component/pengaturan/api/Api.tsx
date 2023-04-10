@@ -249,6 +249,7 @@ class Api extends React.Component<any, any> {
         }).then((willDelete) => {
             if (willDelete) {
                 ipcRenderer.invoke("reconnectPort").then((result) => {
+                    console.log(result);
                     const arr = Array<string>('table001', 'table002', 'table003', 'table004', 'table005', 'table006', 'table007', 'table008', 'table009', 'table010', 'table011', 'table012');
 
                     toast.success("Menyiapkan Lampu. (15 Detik)");

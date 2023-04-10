@@ -33,7 +33,7 @@ class ManualLampu extends React.Component<any, any> {
                             <div className="card card-custom-dark h-100 card-table">
                                 <div className="card-body">
                                     <div className="container-biliiard">
-                                        <h4 style={{ fontSize: 20 }}>{el.nama_table}</h4>
+                                        <h4 style={{ fontSize: 20 }} className="mt-0">{el.nama_table}</h4>
                                         <div className="d-flex mt-2">
                                             <div className="p-1">
                                                 <button className="btn btn-primary btn-sm" onClick={() => this.turnOn(el.id_table)}>Turn On</button>

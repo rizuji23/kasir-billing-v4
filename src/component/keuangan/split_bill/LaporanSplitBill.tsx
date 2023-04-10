@@ -233,7 +233,6 @@ class LaporanSplitBill extends React.Component<any, any> {
                     reset_disable: false,
                 });
             } else {
-                toast.error("Data kosong!");
                 this.getSplitBill();
                 this.setState({
                     isOpen: false,
@@ -271,7 +270,7 @@ class LaporanSplitBill extends React.Component<any, any> {
                 <div className="card card-custom mt-3">
                     <div className="card-body">
                         <div className="title-pemb">
-                            <h4>Total transaksi split bill:</h4>
+                            <h4>Total Transaksi Split Bill</h4>
                             <h4>Rp. <span id="total_hari">{this.state.total_split_bill}</span></h4>
                             <p id="date_locale"></p>
                         </div>
@@ -283,7 +282,7 @@ class LaporanSplitBill extends React.Component<any, any> {
                         <div className="card-header">
                             <div className="d-flex">
                                 <div className="p-2 w-100">
-                                    <h4>List Transaksi Split Bill</h4>
+                                    <h4>Rincian Transaksi</h4>
                                 </div>
                                 <div className="p-2 me-auto">
                                     <button className="btn btn-primary btn-primary-cozy" onClick={this.openModal}>Filter</button>

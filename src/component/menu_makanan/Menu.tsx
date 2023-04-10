@@ -404,10 +404,11 @@ class Menu extends React.Component<any, any> {
             this.setState({ loading_menu: true })
             if (result.response === true) {
                 const dot = new DotAdded();
+                result.data.sort((a, b) => a.nama_menu.toLowerCase().localeCompare(b.nama_menu.toLowerCase()))
                 const data_ = result.data.map((el, i) => {
                     return (
                         <>
-                            <div className="col" key={el.toString()}>
+                            <div className="col" key={el.toString()} onClick={() => this.handleTambahKeranjang(el)}>
                                 <div className="card card-custom-dark h-100 card-table">
                                     <div className="menu-img">
                                         <img src={`assets/img/menu/${el.img_file}`} className="img-menu" alt="..." />
@@ -416,7 +417,7 @@ class Menu extends React.Component<any, any> {
                                         <div className="container-biliiard">
                                             <span className="badge rounded-pill text-bg-light mb-2">{el.kategori_menu[0].nama_kategori}</span>
                                             <h4>{el.nama_menu}</h4>
-                                            <div className="d-flex mt-2">
+                                            <div className="d-flex mt-1">
                                                 <div className="p-1">
                                                     <img src="assets/img/icon/rp_2.png" alt="" />
                                                 </div>
@@ -425,9 +426,9 @@ class Menu extends React.Component<any, any> {
                                                 </div>
                                             </div>
 
-                                            <div className="d-grid mt-2">
+                                            {/* <div className="d-grid mt-2">
                                                 <button className="btn btn-primary btn-primary-cozy btn-menu" onClick={() => this.handleTambahKeranjang(el)}>Tambah</button>
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </div>
                                 </div>

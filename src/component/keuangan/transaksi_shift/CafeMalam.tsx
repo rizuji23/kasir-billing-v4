@@ -291,7 +291,6 @@ class CafeMalam extends React.Component<any, any> {
                     reset_disable: false,
                 });
             } else {
-                toast.error("Data malam kosong!");
                 this.getDataKeuangan();
                 this.setState({
                     isOpen: false,
@@ -329,7 +328,7 @@ class CafeMalam extends React.Component<any, any> {
                         <div className="card card-custom">
                             <div className="card-body">
                                 <div className="title-pemb">
-                                    <h4>Total penghasilan cafe hari ini:</h4>
+                                    <h4>Penghasilan Cafe Hari Ini</h4>
                                     <h4>Rp. <span id="total_hari">{this.state.total_harian}</span></h4>
                                     <p id="date_locale">{this.state.tanggal}</p>
                                 </div>
@@ -340,7 +339,7 @@ class CafeMalam extends React.Component<any, any> {
                         <div className="card card-custom" style={{ 'backgroundColor': "#1A1B1F !important" }}>
                             <div className="card-body">
                                 <div className="title-pemb">
-                                    <h4>Total penghasilan cafe bulan ini:</h4>
+                                    <h4>Penghasilan Cafe Bulan Ini</h4>
                                     <h4>Rp. <span id="total_bulan">{this.state.total_bulanan}</span></h4>
                                     <p id="date_locale_bulan">{this.state.bulan}</p>
                                 </div>
@@ -354,7 +353,7 @@ class CafeMalam extends React.Component<any, any> {
                         <div className="card-header">
                             <div className="d-flex">
                                 <div className="p-2 w-100">
-                                    <h4>List Transaksi Cafe</h4>
+                                    <h4>Rincian Transaksi</h4>
                                 </div>
                                 <div className="p-2 me-auto">
                                     <button className="btn btn-primary btn-primary-cozy" onClick={this.openModal}>Filter</button>

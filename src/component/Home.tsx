@@ -105,12 +105,10 @@ class Home extends React.Component<any, any> {
             const hours = moment().tz("Asia/Jakarta").format("HH");
 
             if (hours >= shift_pagi.start_jam.split(':')[0] && hours < shift_pagi.end_jam.split(':')[0]) {
-                console.log("Pagi");
                 this.setState({
                     shift_text: "Pagi",
                 });
             } else if (hours >= shift_malam.start_jam.split(':')[0] || hours < shift_malam.end_jam.split(':')[0]) {
-                console.log("malam")
                 this.setState({
                     shift_text: "Malam",
                 });

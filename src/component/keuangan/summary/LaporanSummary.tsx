@@ -537,18 +537,18 @@ class LaporanSummary extends React.Component<any, any> {
                 <div className="hr-white"></div>
 
                 <div className="alert alert-primary mt-3">
-                    <p className="mb-0"><b>Keterangan: </b></p>
+                    <p className="mb-0"><b>Keterangan </b></p>
                     <span>Rumus dari total dibawah adalah <i>(Total Transaksi Billing & Cafe + Cafe Only + Split Bill)</i></span>
                 </div>
                 <div className="analisis-header">
-                    <h3>Transaksi</h3>
+                    <h3>Total Transaksi</h3>
                 </div>
                 <div className="row">
                     <div className="col-sm">
                         <div className="card card-custom mt-2">
                             <div className="card-body">
                                 <div className="title-pemb">
-                                    <h4>Total transaksi semua hari ini:</h4>
+                                    <h4>Hari Ini</h4>
                                     <h4>Rp. <span>{this.state.total_hari}</span></h4>
                                     <p>{this.state.date_now}</p>
 
@@ -565,7 +565,42 @@ class LaporanSummary extends React.Component<any, any> {
                         <div className="card card-custom mt-2">
                             <div className="card-body">
                                 <div className="title-pemb">
-                                    <h4>Total transaksi semua bulan:</h4>
+                                    <h4>Bulan</h4>
+                                    <h4>Rp. <span>{this.state.total_bulan}</span></h4>
+                                    <p>{this.state.date_month}</p>
+                                    <div className="text-end">
+                                        <button className="btn btn-primary btn-primary-cozy-dark btn-sm" onClick={this.openModalBulan}>Filter</button>
+                                        {this.state.reset_bulan === true ? <button className="btn btn-primary btn-primary ms-2" onClick={this.resetBulan}>Reset</button> : <></>}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="row mt-3">
+                    <div className="col-sm">
+                        <div className="card card-custom mt-2">
+                            <div className="card-body">
+                                <div className="title-pemb">
+                                    <h4>&#x26C5; Shift Pagi Hari Ini</h4>
+                                    <h4>Rp. <span>{this.state.total_hari}</span></h4>
+                                    <p>{this.state.date_now}</p>
+
+                                    <div className="text-end">
+                                        <button className="btn btn-primary btn-primary-cozy-dark btn-sm" onClick={this.openModalHari}>Filter</button>
+                                        {this.state.reset_hari === true ? <button className="btn btn-primary btn-primary ms-2" onClick={this.resetHari}>Reset</button> : <></>}
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-sm">
+                        <div className="card card-custom mt-2">
+                            <div className="card-body">
+                                <div className="title-pemb">
+                                    <h4>&#x1F311; Shift Malam Hari Ini</h4>
                                     <h4>Rp. <span>{this.state.total_bulan}</span></h4>
                                     <p>{this.state.date_month}</p>
                                     <div className="text-end">
@@ -580,7 +615,7 @@ class LaporanSummary extends React.Component<any, any> {
 
                 <div className="d-flex  mt-5">
                     <div className="analisis-header me-auto">
-                        <h3>Tidak termasuk Transaksi</h3>
+                        <h3>Total Tidak Termasuk Transaksi</h3>
                     </div>
 
                     <div>
@@ -594,9 +629,9 @@ class LaporanSummary extends React.Component<any, any> {
                         <div className="card card-custom-dark mt-2">
                             <div className="card-body">
                                 <div className="title-pemb">
-                                    <h4>Total belum bayar semua hari ini:</h4>
+                                    <h4>Belum Bayar Hari Ini</h4>
                                     <h4>Rp. <span>{this.state.total_belum_hari}</span></h4>
-                                    <p>{this.state.date_now_not}</p>
+                                    <p>{moment(this.state.date_now_not, "YYYY-MM-DD").format("DD-MM-YYYY")}</p>
                                 </div>
 
                             </div>
@@ -606,7 +641,7 @@ class LaporanSummary extends React.Component<any, any> {
                         <div className="card card-custom-dark mt-2">
                             <div className="card-body">
                                 <div className="title-pemb">
-                                    <h4>Total belum bayar semua bulan:</h4>
+                                    <h4>Belum Bayar Bulan</h4>
                                     <h4>Rp. <span>{this.state.total_belum_bulan}</span></h4>
                                     <p>{this.state.date_month_not}</p>
                                 </div>
@@ -620,9 +655,9 @@ class LaporanSummary extends React.Component<any, any> {
                         <div className="card card-custom-dark mt-2">
                             <div className="card-body">
                                 <div className="title-pemb">
-                                    <h4>Total reset semua hari ini:</h4>
+                                    <h4>Reset Hari Ini</h4>
                                     <h4>Rp. <span>{this.state.total_reset_hari}</span></h4>
-                                    <p>{this.state.date_now_not}</p>
+                                    <p>{moment(this.state.date_now_not, "YYYY-MM-DD").format("DD-MM-YYYY")}</p>
                                 </div>
 
                             </div>
@@ -632,7 +667,7 @@ class LaporanSummary extends React.Component<any, any> {
                         <div className="card card-custom-dark mt-2">
                             <div className="card-body">
                                 <div className="title-pemb">
-                                    <h4>Total reset semua bulan:</h4>
+                                    <h4>Reset Bulan</h4>
                                     <h4>Rp. <span>{this.state.total_reset_bulan}</span></h4>
                                     <p>{this.state.date_month_not}</p>
                                 </div>
