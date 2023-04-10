@@ -159,17 +159,15 @@ class Home extends React.Component<any, any> {
                         if (localStorage.getItem(el) !== null) {
                             var data = localStorage.getItem(el).replace(/\[|\]/g, '').split(',');
                             console.log(data);
-                            setTimeout(() => {
-                                console.log(data[0] !== 'not_active')
-                                if (data[0] !== 'not_active' && data[1] !== "00:00") {
-                                    console.log("IN")
-                                    if (data[2] === ' Regular') {
-                                        arr_fine_regular.push(TimeConvert.textToMS(data, el));
-                                    } else {
-                                        arr_fine_regular.push(TimeConvert.textToTime(data, el));
-                                    }
+                            console.log(data[1])
+                            if (data[0] !== 'not_active' && data[1] !== "00:00") {
+                                console.log("IN")
+                                if (data[2] === ' Regular') {
+                                    arr_fine_regular.push(TimeConvert.textToMS(data, el));
+                                } else {
+                                    arr_fine_regular.push(TimeConvert.textToTime(data, el));
                                 }
-                            }, 1500);
+                            }
                         } else {
                             console.log(`${el} is null`);
                             arr_null.push(el);
@@ -396,7 +394,6 @@ class Home extends React.Component<any, any> {
     getOpen() {
         setInterval(() => {
             ipcRenderer.invoke("getOpen").then((result) => {
-                console.log(result);
                 if (result === false) {
                     this.setState({
                         isConnected: false,

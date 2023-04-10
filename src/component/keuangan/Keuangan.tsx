@@ -383,7 +383,7 @@ class KeuanganContainer extends React.Component<any, any> {
         return (
             <>
                 <div id="body-pd" className="body-pd">
-                    <Header />
+
                     <Sidebar />
                     <div className="box-bg">
                         <NavbarKeuangan />

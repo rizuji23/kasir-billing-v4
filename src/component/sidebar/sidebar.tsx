@@ -2,6 +2,14 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 
 class Sidebar extends React.Component<any, any> {
+    constructor(props) {
+        super(props);
+        this.state = {
+            nama: sessionStorage.getItem("nama")
+        }
+    }
+
+
     handleLogout() {
         sessionStorage.setItem("username", "");
         sessionStorage.setItem("nama", "");
@@ -64,10 +72,20 @@ class Sidebar extends React.Component<any, any> {
                             </NavLink>
                         </div>
                     </div>
-                    <a href="javascript:void(0)" onClick={this.handleLogout} className="nav_link" title="Logout" id="logout-side">
-                        <i className='bx bx-log-out nav_icon'></i>
-                        <span className="nav_name">Logout</span>
-                    </a>
+
+                    <div className="card card-custom-dark ms-2 mb-5">
+                        <div className="card-body">
+                            <div className="header_img">
+                                <img src="assets/img/user.png" alt="" />
+                                <p className="header-name">{this.state.nama}</p>
+                            </div>
+                            <a href="javascript:void(0)" onClick={this.handleLogout} className="nav_link mb-0" title="Logout" id="logout-side">
+                                <i className='bx bx-log-out nav_icon'></i>
+                                <span className="nav_name">Logout</span>
+                            </a>
+                        </div>
+                    </div>
+
                 </nav>
             </div>
         )

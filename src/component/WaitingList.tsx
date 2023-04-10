@@ -31,12 +31,10 @@ createTheme('solarized', {
 
 async function deleteWaiting(data) {
     return new Promise(res => {
-        setTimeout(() => {
-            ipcRenderer.invoke("waitinglist", false, false, true, data, []).then((result) => {
-                console.log(result)
-                res(result)
-            })
-        }, 1000)
+        ipcRenderer.invoke("waitinglist", false, false, true, data, []).then((result) => {
+            console.log(result)
+            res(result)
+        })
     })
 }
 
@@ -166,9 +164,10 @@ class WaitingList extends React.Component<any, any> {
 
     getAllTable(): void {
         ipcRenderer.invoke("getAllTable", true).then((result) => {
-            var data_list = '';
-            result.data.forEach(element => {
-                data_list += `<option value='${element.nama_table}'>${element.nama_table}</option>`;
+            const data_list = result.data.map(element => {
+                return (
+                    <><option value={element.nama_table}>{element.nama_table}</option></>
+                )
             });
 
             this.setState({
@@ -248,7 +247,9 @@ class WaitingList extends React.Component<any, any> {
                                         </div>
                                         <div className="mt-3">
                                             <label>Table</label>
-                                            <select className="form-control custom-input mt-2" onChange={this.handleTable} dangerouslySetInnerHTML={{ __html: this.state.list_table }} >
+                                            <select className="form-control custom-input mt-2" onChange={this.handleTable}>
+                                                <option value="">Pilih Table</option>
+                                                {this.state.list_table}
                                             </select>
                                         </div>
 
@@ -298,7 +299,7 @@ class WaitingList_Container extends React.Component<any, any> {
         return (
             <>
                 <div id="body-pd" className="body-pd">
-                    <Header />
+
                     <Sidebar />
                     <div className="box-bg">
                         <WaitingList />

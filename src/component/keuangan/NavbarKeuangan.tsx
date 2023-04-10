@@ -32,7 +32,7 @@ class NavbarKeuangan extends React.Component<any, any> {
     render(): React.ReactNode {
         return (
             <>
-                <div className="overview-pemb mb-1">
+                <div className="navbar-custom mb-1">
                     <div className="d-flex mb-2">
                         <div className="me-auto">
                             <NavLink to={"/laporan-summary"} className={({ isActive }) => isActive ? "btn btn-primary btn-primary-cozy btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10" : "btn btn-primary btn-primary-cozy-dark btn-home-top border-r-13 pl-20 pr-20 pt-10 pb-10"}>
