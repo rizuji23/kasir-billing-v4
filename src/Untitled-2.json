@@ -1,2 +1,0 @@
-"start": " concurrently \"webpack serve --port 3000\" \"yarn run electron\"",
-    "electron": "wait-on http://localhost:3000 && electron .",
