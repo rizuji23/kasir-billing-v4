@@ -6,6 +6,7 @@ import fs from 'fs'
 import { Detail_Cafe } from "../entity/Detail_Cafe";
 import DotAdded from "./DotAdded";
 import { Kategori_Menu } from "../entity/Kategori_Menu";
+import * as path from 'path'
 
 const date_now = moment().tz("Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
 const dot = new DotAdded();
@@ -32,8 +33,9 @@ class MenuSystem {
             const split_img = data_menu.gambar[0].name;
             const img = split_img.split('.');
             const name_img = img[0] = `${id_menu}-${img[0]}`
-            const dir_upload = `./public/assets/img/menu/${name_img}.${img[1]}`
-
+            // const dir_upload = `./public/assets/img/menu/${name_img}.${img[1]}`
+            console.log(path.join(__dirname, '..', '..', 'public', 'assets', 'img', 'menu', `${name_img}.${img[1]}`))
+            const dir_upload = path.join(__dirname, '..', '..', 'public', 'assets', 'img', 'menu', `${name_img}.${img[1]}`)
             const img_file = `${name_img}.${img[1]}`;
             const harga = {
                 harga: dot.decode(data_menu.harga),

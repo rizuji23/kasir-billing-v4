@@ -9,7 +9,11 @@ class AktivitasSystem {
         try {
             let service = await dataSource;
 
-            const get_aktivitas = await service.manager.find(Aktivitas);
+            const get_aktivitas = await service.manager.find(Aktivitas, {
+                order: {
+                    'id': 'DESC',
+                }
+            });
             if (get_aktivitas.length !== 0) {
                 return {response: true, data: get_aktivitas};
             } else {

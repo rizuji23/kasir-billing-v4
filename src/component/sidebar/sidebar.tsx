@@ -1,12 +1,16 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { Navigate } from 'react-router-dom';
 
 class Sidebar extends React.Component<any, any> {
     constructor(props) {
         super(props);
         this.state = {
-            nama: sessionStorage.getItem("nama")
+            nama: sessionStorage.getItem("nama"),
+            navigate: false,
         }
+
+        this.handleLogout = this.handleLogout.bind(this);
     }
 
 
@@ -15,10 +19,16 @@ class Sidebar extends React.Component<any, any> {
         sessionStorage.setItem("nama", "");
         sessionStorage.setItem("user", "");
 
-        window.location.href = "/"
+        this.setState({
+            navigate: true,
+        })
     }
     render() {
+        if (this.state.navigate) {
+            return <Navigate to="/" replace={true} />
+        }
         return (
+
             <div className="l-navbar show-sidebar" id="nav-bar">
                 <nav className="nav">
                     <div>

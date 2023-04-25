@@ -9,12 +9,19 @@
     "target": "es6",
     "module": "CommonJS",
     "moduleResolution": "node",
-    "outDir": "./dist",
+    "outDir": "./compiled",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "jsx": "react",
     "allowJs": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-  }
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": [
+    "public/**/*",
+    "dist/**/*",
+    "node_modules/**/*",
+    "build/**/*",
+    "compiled/**/*"
+  ]
 }

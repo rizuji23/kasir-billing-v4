@@ -29,6 +29,7 @@ import { dataSource } from './system/data-source'
 import AdminSystem from './system/AdminSystem'
 import AktivitasSystem from './system/AktivitasSystem'
 
+
 //init MainWindow
 let win:any;
 const gotTheLock = app.requestSingleInstanceLock();
@@ -58,12 +59,19 @@ if (!gotTheLock) {
      
      
      //    win.loadURL(path.join(__dirname, '..', '..', 'build', 'index.html'))
-        win.loadURL('http://localhost:3000');
+        console.log((process.env.NODE_ENV || '').trim())
+
+        if ((process.env.NODE_ENV || '').trim() === 'development') {
+            win.loadURL('http://localhost:3000');
+        } else {
+            console.log("in2")
+            win.loadURL(path.join(__dirname, '..', 'build', 'index.html'))
+        }
      
         win.on('closed', () => {
              win = null;
              app.quit();
-             process.exit(1)
+             process.exit(1);
          });
      
          win.on('window-all-closed', () => {

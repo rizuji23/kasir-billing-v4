@@ -207,6 +207,26 @@ class Admin extends React.Component<any, any> {
         })
     }
 
+    handleSubmit(e) {
+        e.preventDefault();
+
+        ipcRenderer.invoke("loginAdmin", this.state.admin).then((result) => {
+            console.log(result.response);
+            if (result.response === true) {
+                this.setState({
+                    visible: "none",
+                    error: false,
+                });
+            } else {
+                toast.error("Username atau Password Salah!");
+                this.setState({
+                    visible: "block",
+                    error: true,
+                })
+            }
+        })
+    }
+
     render(): React.ReactNode {
         return (
             <>

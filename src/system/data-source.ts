@@ -23,11 +23,12 @@ import { Stok_Keluar } from "../entity/Stok_Keluar"
 import { Shift } from "../entity/Shift"
 import Keterangan from "./Keterangan"
 import { Aktivitas } from "../entity/Aktivitas"
+import path from "path"
 
 const AppDataSource = async () => {
     const dataSourceConn = new DataSource({
         type: "sqlite",
-        database: "./kasirv3.sqlite",
+        database: path.join(__dirname, '..', '..', 'kasirv3.sqlite'),
         synchronize: true,
         logging: false,
         entities: [

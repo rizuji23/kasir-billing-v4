@@ -12,6 +12,7 @@
 /build
 /dist
 /release-builds
+/compiled
 
 # misc
 .DS_Store
